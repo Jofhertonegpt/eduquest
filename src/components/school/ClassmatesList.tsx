@@ -3,6 +3,9 @@ import { supabase } from "@/lib/supabase";
 import { motion } from "framer-motion";
 import { User } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Database } from "@/lib/database.types";
+
+type Profile = Database['public']['Tables']['profiles']['Row'];
 
 export const ClassmatesList = ({ schoolId }: { schoolId: string }) => {
   const { data: classmates, isLoading } = useQuery({
@@ -20,7 +23,7 @@ export const ClassmatesList = ({ schoolId }: { schoolId: string }) => {
         .eq("school_id", schoolId);
       
       if (error) throw error;
-      return data?.map(item => item.profiles) || [];
+      return data?.map(item => item.profiles as Profile) || [];
     },
     enabled: !!schoolId,
   });
@@ -47,7 +50,7 @@ export const ClassmatesList = ({ schoolId }: { schoolId: string }) => {
             {classmate.avatar_url ? (
               <img
                 src={classmate.avatar_url}
-                alt={classmate.full_name}
+                alt={classmate.full_name || ''}
                 className="h-6 w-6 rounded-full mr-2"
               />
             ) : (
