@@ -23,11 +23,12 @@ const Dashboard = () => {
             id,
             name,
             description,
-            logo_url
+            logo_url,
+            created_at
           )
         `)
         .eq("student_id", user.id)
-        .maybeSingle(); // Changed from .single() to .maybeSingle()
+        .maybeSingle();
       
       if (error && error.code !== 'PGRST116') throw error;
       return data?.schools as School | null;

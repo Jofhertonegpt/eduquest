@@ -22,9 +22,9 @@ export const AcademicProgress = ({
     completedDegrees?.includes(d.id)
   );
 
-  const certificatesData = certificates.map(certId =>
-    certificates.find(c => c.id === certId)
-  ).filter(Boolean);
+  const certificatesData = certificates
+    .map(certId => certificates.find(c => c.id === certId))
+    .filter((cert): cert is typeof certificates[0] => cert !== undefined);
 
   return (
     <div className="glass-panel rounded-xl p-6">
@@ -73,7 +73,7 @@ export const AcademicProgress = ({
           <div className="p-4 rounded-lg bg-background/50">
             <h4 className="font-semibold text-lg mb-4">Certificates</h4>
             <div className="space-y-4">
-              {certificatesData.map(cert => cert && (
+              {certificatesData.map(cert => (
                 <div key={cert.id} className="flex items-center justify-between">
                   <div>
                     <p className="font-medium">{cert.title}</p>

@@ -1,4 +1,4 @@
-import { Trophy, Rocket, Brain, Book, Code, Star, Target, Users, Clock, Lightning, Heart, Coffee } from "lucide-react";
+import { Trophy, Rocket, Brain, Book, Code, Star, Target, Users, Clock, Zap, Heart, Coffee } from "lucide-react";
 
 export type AchievementCategory = 
   | 'academic'
@@ -33,7 +33,7 @@ export const achievements: Achievement[] = [
     title: "Course Streak",
     description: "Complete 5 courses in a row",
     category: "academic",
-    icon: Lightning,
+    icon: Zap,
     points: 200
   },
   {
@@ -177,7 +177,7 @@ export const achievements: Achievement[] = [
     title: "Innovation",
     description: "Create a new project or idea",
     category: "technical",
-    icon: Lightning,
+    icon: Zap,
     points: 600
   },
   {
@@ -233,7 +233,7 @@ export const achievements: Achievement[] = [
     title: "Leadership Training",
     description: "Complete a leadership training program",
     category: "personal",
-    icon: Lightning,
+    icon: Zap,
     points: 500
   },
   {
@@ -249,7 +249,7 @@ export const achievements: Achievement[] = [
     title: "Study Abroad",
     description: "Participate in a study abroad program",
     category: "academic",
-    icon: Globe,
+    icon: Book,
     points: 800
   },
   {
