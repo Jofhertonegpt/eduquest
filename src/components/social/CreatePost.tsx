@@ -7,10 +7,12 @@ import { supabase } from "@/lib/supabase";
 import { useToast } from "@/hooks/use-toast";
 import { Upload, Image, FileText, Video, X, Loader2 } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
+import { Progress } from "@/components/ui/progress";
 
 export const CreatePost = () => {
   const [content, setContent] = useState("");
   const [files, setFiles] = useState<File[]>([]);
+  const [uploadProgress, setUploadProgress] = useState<Record<string, number>>({});
   const [hashtags, setHashtags] = useState<string[]>([]);
   const [hashtagInput, setHashtagInput] = useState("");
   const [isUploading, setIsUploading] = useState(false);
@@ -47,6 +49,7 @@ export const CreatePost = () => {
       setContent("");
       setFiles([]);
       setHashtags([]);
+      setUploadProgress({});
       queryClient.invalidateQueries({ queryKey: ["social-posts"] });
       toast({
         title: "Success",
@@ -63,9 +66,43 @@ export const CreatePost = () => {
     },
   });
 
+  const validateFile = (file: File) => {
+    const maxSize = 10 * 1024 * 1024; // 10MB
+    const allowedTypes = [
+      'image/jpeg',
+      'image/png',
+      'image/gif',
+      'video/mp4',
+      'application/pdf',
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    ];
+
+    if (file.size > maxSize) {
+      toast({
+        title: "Error",
+        description: "File size must be less than 10MB",
+        variant: "destructive",
+      });
+      return false;
+    }
+
+    if (!allowedTypes.includes(file.type)) {
+      toast({
+        title: "Error",
+        description: "File type not supported",
+        variant: "destructive",
+      });
+      return false;
+    }
+
+    return true;
+  };
+
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      setFiles(Array.from(e.target.files));
+      const newFiles = Array.from(e.target.files).filter(validateFile);
+      setFiles(prev => [...prev, ...newFiles]);
     }
   };
 
@@ -96,7 +133,15 @@ export const CreatePost = () => {
 
         const { error: uploadError } = await supabase.storage
           .from('social-media')
-          .upload(filePath, file);
+          .upload(filePath, file, {
+            onUploadProgress: (progress) => {
+              const percent = (progress.loaded / progress.total) * 100;
+              setUploadProgress(prev => ({
+                ...prev,
+                [fileName]: percent
+              }));
+            }
+          });
 
         if (uploadError) throw uploadError;
 
@@ -124,6 +169,42 @@ export const CreatePost = () => {
     }
   };
 
+  const renderFilePreview = (file: File) => {
+    const progress = uploadProgress[file.name] || 0;
+
+    return (
+      <div key={file.name} className="flex items-center gap-2 bg-muted p-2 rounded relative">
+        {file.type.startsWith('image/') && (
+          <div className="relative w-12 h-12">
+            <img
+              src={URL.createObjectURL(file)}
+              alt={file.name}
+              className="w-12 h-12 object-cover rounded"
+            />
+          </div>
+        )}
+        {file.type.startsWith('video/') && <Video className="h-4 w-4" />}
+        {!file.type.startsWith('image/') && !file.type.startsWith('video/') && (
+          <FileText className="h-4 w-4" />
+        )}
+        <div className="flex-1">
+          <p className="text-sm truncate max-w-[150px]">{file.name}</p>
+          {isUploading && (
+            <Progress value={progress} className="h-1 mt-1" />
+          )}
+        </div>
+        <button
+          type="button"
+          onClick={() => setFiles(files.filter(f => f !== file))}
+          className="hover:text-destructive"
+          disabled={isUploading}
+        >
+          <X className="h-4 w-4" />
+        </button>
+      </div>
+    );
+  };
+
   return (
     <form onSubmit={handleSubmit} className="space-y-4 p-4 border rounded-lg bg-card">
       <Textarea
@@ -131,6 +212,7 @@ export const CreatePost = () => {
         onChange={(e) => setContent(e.target.value)}
         placeholder="What's on your mind?"
         className="min-h-[100px]"
+        disabled={isUploading}
       />
       
       <div className="flex flex-wrap gap-2">
@@ -141,6 +223,7 @@ export const CreatePost = () => {
               type="button"
               onClick={() => setHashtags(hashtags.filter((_, i) => i !== index))}
               className="hover:text-destructive"
+              disabled={isUploading}
             >
               <X className="h-4 w-4" />
             </button>
@@ -152,6 +235,7 @@ export const CreatePost = () => {
           onKeyDown={handleHashtagAdd}
           placeholder="Add hashtags..."
           className="w-32"
+          disabled={isUploading}
         />
       </div>
 
@@ -162,26 +246,11 @@ export const CreatePost = () => {
         multiple
         className="hidden"
         accept="image/*,video/*,application/*"
+        disabled={isUploading}
       />
 
       <div className="flex flex-wrap gap-2">
-        {files.map((file, index) => (
-          <div key={index} className="flex items-center gap-2 bg-muted p-2 rounded">
-            {file.type.startsWith('image/') && <Image className="h-4 w-4" />}
-            {file.type.startsWith('video/') && <Video className="h-4 w-4" />}
-            {!file.type.startsWith('image/') && !file.type.startsWith('video/') && (
-              <FileText className="h-4 w-4" />
-            )}
-            <span className="text-sm truncate max-w-[100px]">{file.name}</span>
-            <button
-              type="button"
-              onClick={() => setFiles(files.filter((_, i) => i !== index))}
-              className="hover:text-destructive"
-            >
-              <X className="h-4 w-4" />
-            </button>
-          </div>
-        ))}
+        {files.map(renderFilePreview)}
       </div>
 
       <div className="flex justify-between items-center">
@@ -190,6 +259,7 @@ export const CreatePost = () => {
           variant="outline"
           size="icon"
           onClick={() => fileInputRef.current?.click()}
+          disabled={isUploading}
         >
           <Upload className="h-4 w-4" />
         </Button>
