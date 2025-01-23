@@ -43,7 +43,7 @@ const Dashboard = () => {
       // Then create the default posts
       const postsWithSchoolId = DEFAULT_SCHOOL_POSTS.map(post => ({
         ...post,
-        created_by: DEFAULT_SCHOOL.id // Using school ID as creator since these are system posts
+        created_by: DEFAULT_SCHOOL.id
       }));
 
       const { error: postsError } = await supabase
@@ -88,32 +88,39 @@ const Dashboard = () => {
       if (!memberData) return null;
       return memberData.schools as School;
     },
-    onSettled: async (school) => {
-      // If user has no school and default school exists, join it
-      if (!school && defaultSchool) {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return;
+  });
 
-        const { error } = await supabase
-          .from("school_members")
-          .insert({
-            school_id: DEFAULT_SCHOOL.id,
-            student_id: user.id,
-          });
+  // Handle school joining and creation in a separate effect
+  useQuery({
+    queryKey: ["handle-school-setup"],
+    queryFn: async () => null,
+    enabled: !isLoading && !!defaultSchool,
+    meta: {
+      onSettled: async () => {
+        if (!activeSchool && defaultSchool) {
+          const { data: { user } } = await supabase.auth.getUser();
+          if (!user) return;
 
-        if (!error) {
-          toast({
-            title: "Welcome to the Learning Hub!",
-            description: "You've been automatically joined to our learning community.",
-          });
-          queryClient.invalidateQueries({ queryKey: ["active-school"] });
+          const { error } = await supabase
+            .from("school_members")
+            .insert({
+              school_id: DEFAULT_SCHOOL.id,
+              student_id: user.id,
+            });
+
+          if (!error) {
+            toast({
+              title: "Welcome to the Learning Hub!",
+              description: "You've been automatically joined to our learning community.",
+            });
+            queryClient.invalidateQueries({ queryKey: ["active-school"] });
+          }
+        }
+        else if (!activeSchool && !defaultSchool) {
+          createDefaultSchool.mutate();
         }
       }
-      // If default school doesn't exist, create it
-      else if (!school && !defaultSchool) {
-        createDefaultSchool.mutate();
-      }
-    },
+    }
   });
 
   if (isLoading) {
