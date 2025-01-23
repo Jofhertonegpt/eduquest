@@ -1,11 +1,15 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { motion } from "framer-motion";
 import { MessageSquare, ThumbsUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 import { getMockSchoolPostsBySchoolId, getMockProfileById, mockDelay } from "@/data/mockData";
 
 export const SchoolPosts = ({ schoolId }: { schoolId: string }) => {
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+
   const { data: posts, isLoading } = useQuery({
     queryKey: ["school-posts", schoolId],
     queryFn: async () => {
@@ -26,7 +30,6 @@ export const SchoolPosts = ({ schoolId }: { schoolId: string }) => {
         if (error) throw error;
 
         if (!data?.length) {
-          // Use mock data if no real data is available
           await mockDelay();
           const mockPosts = getMockSchoolPostsBySchoolId(schoolId);
           return mockPosts.map(post => ({
@@ -38,7 +41,6 @@ export const SchoolPosts = ({ schoolId }: { schoolId: string }) => {
         return data || [];
       } catch (error) {
         console.error("Error fetching posts:", error);
-        // Fallback to mock data on error
         await mockDelay();
         const mockPosts = getMockSchoolPostsBySchoolId(schoolId);
         return mockPosts.map(post => ({
@@ -48,6 +50,37 @@ export const SchoolPosts = ({ schoolId }: { schoolId: string }) => {
       }
     },
     enabled: !!schoolId,
+  });
+
+  const likeMutation = useMutation({
+    mutationFn: async (postId: string) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not authenticated");
+
+      const { data, error } = await supabase
+        .from("post_likes")
+        .upsert({ post_id: postId, user_id: user.id })
+        .select("id")
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["school-posts", schoolId] });
+      toast({
+        title: "Success",
+        description: "Post liked successfully!",
+      });
+    },
+    onError: (error) => {
+      console.error("Error liking post:", error);
+      toast({
+        title: "Error",
+        description: "Failed to like post. Please try again.",
+        variant: "destructive",
+      });
+    },
   });
 
   if (isLoading) {
@@ -88,7 +121,11 @@ export const SchoolPosts = ({ schoolId }: { schoolId: string }) => {
           </div>
           <p>{post.content}</p>
           <div className="flex items-center gap-4">
-            <Button variant="ghost" size="sm">
+            <Button 
+              variant="ghost" 
+              size="sm"
+              onClick={() => likeMutation.mutate(post.id)}
+            >
               <ThumbsUp className="h-4 w-4 mr-2" />
               {post.likes_count || 0}
             </Button>

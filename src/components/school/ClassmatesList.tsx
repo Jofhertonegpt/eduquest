@@ -5,10 +5,15 @@ import { User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Database } from "@/lib/database.types";
 import { getMockSchoolMembersBySchoolId, getMockProfileById, mockDelay } from "@/data/mockData";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { useState } from "react";
+import { MessageInput } from "@/components/messages/MessageInput";
 
 type Profile = Database['public']['Tables']['profiles']['Row'];
 
 export const ClassmatesList = ({ schoolId }: { schoolId: string }) => {
+  const [selectedClassmate, setSelectedClassmate] = useState<Profile | null>(null);
+
   const { data: classmates, isLoading } = useQuery({
     queryKey: ["classmates", schoolId],
     queryFn: async () => {
@@ -32,7 +37,6 @@ export const ClassmatesList = ({ schoolId }: { schoolId: string }) => {
         if (error) throw error;
         
         if (!data?.length) {
-          // Use mock data if no real data is available
           await mockDelay();
           const mockMembers = getMockSchoolMembersBySchoolId(schoolId);
           return mockMembers.map(member => {
@@ -56,7 +60,6 @@ export const ClassmatesList = ({ schoolId }: { schoolId: string }) => {
         }) || [];
       } catch (error) {
         console.error("Error fetching classmates:", error);
-        // Fallback to mock data on error
         await mockDelay();
         const mockMembers = getMockSchoolMembersBySchoolId(schoolId);
         return mockMembers.map(member => {
@@ -73,33 +76,49 @@ export const ClassmatesList = ({ schoolId }: { schoolId: string }) => {
   }
 
   return (
-    <motion.div
-      initial={{ opacity: 0, x: -20 }}
-      animate={{ opacity: 1, x: 0 }}
-      className="w-64 border-r p-4 space-y-4 hidden md:block"
-    >
-      <h2 className="font-semibold">Classmates</h2>
-      <div className="space-y-2">
-        {classmates?.map((classmate) => (
-          <Button
-            key={classmate.id}
-            variant="ghost"
-            className="w-full justify-start"
-            onClick={() => {/* TODO: Implement direct message */}}
-          >
-            {classmate.avatar_url ? (
-              <img
-                src={classmate.avatar_url}
-                alt={classmate.full_name || ''}
-                className="h-6 w-6 rounded-full mr-2"
-              />
-            ) : (
-              <User className="h-6 w-6 mr-2" />
-            )}
-            <span className="truncate">{classmate.full_name}</span>
-          </Button>
-        ))}
-      </div>
-    </motion.div>
+    <>
+      <motion.div
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        className="w-64 border-r p-4 space-y-4 hidden md:block"
+      >
+        <h2 className="font-semibold">Classmates</h2>
+        <div className="space-y-2">
+          {classmates?.map((classmate) => (
+            <Button
+              key={classmate.id}
+              variant="ghost"
+              className="w-full justify-start"
+              onClick={() => setSelectedClassmate(classmate)}
+            >
+              {classmate.avatar_url ? (
+                <img
+                  src={classmate.avatar_url}
+                  alt={classmate.full_name || ''}
+                  className="h-6 w-6 rounded-full mr-2"
+                />
+              ) : (
+                <User className="h-6 w-6 mr-2" />
+              )}
+              <span className="truncate">{classmate.full_name}</span>
+            </Button>
+          ))}
+        </div>
+      </motion.div>
+
+      <Dialog open={!!selectedClassmate} onOpenChange={() => setSelectedClassmate(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Chat with {selectedClassmate?.full_name}</DialogTitle>
+          </DialogHeader>
+          <div className="h-[400px] flex flex-col">
+            <div className="flex-1 overflow-y-auto p-4 space-y-4">
+              {/* Messages will be displayed here */}
+            </div>
+            <MessageInput recipientId={selectedClassmate?.id} />
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 };
