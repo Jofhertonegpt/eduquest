@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { Home, BookOpen, User, School } from "lucide-react";
+import { Home, BookOpen, User, School, MessageSquare } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const Navigation = () => {
@@ -8,12 +8,23 @@ const Navigation = () => {
   const links = [
     { to: "/", icon: Home, label: "Dashboard", ariaLabel: "Go to Dashboard" },
     { to: "/school", icon: School, label: "School", ariaLabel: "Go to School" },
-    { to: "/learning", icon: BookOpen, label: "Learning", ariaLabel: "Go to Learning" },
+    {
+      to: "/learning",
+      icon: BookOpen,
+      label: "Learning",
+      ariaLabel: "Go to Learning",
+    },
+    {
+      to: "/chatter",
+      icon: MessageSquare,
+      label: "Chatter",
+      ariaLabel: "Go to Chatter",
+    },
     { to: "/profile", icon: User, label: "Profile", ariaLabel: "Go to Profile" },
   ];
 
   return (
-    <nav 
+    <nav
       className="fixed bottom-0 left-0 right-0 bg-background/80 backdrop-blur-lg border-t md:top-0 md:bottom-auto z-50"
       role="navigation"
       aria-label="Main navigation"

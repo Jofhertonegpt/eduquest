@@ -113,6 +113,134 @@ export interface Database {
           comments_count?: number
         }
       }
+
+      social_posts: {
+        Row: {
+          id: string
+          content: string
+          user_id: string
+          media_urls: string[]
+          file_urls: string[]
+          created_at: string
+          hashtags: string[]
+          likes_count: number
+          comments_count: number
+          shares_count: number
+        }
+        Insert: {
+          id?: string
+          content: string
+          user_id: string
+          media_urls?: string[]
+          file_urls?: string[]
+          created_at?: string
+          hashtags?: string[]
+          likes_count?: number
+          comments_count?: number
+          shares_count?: number
+        }
+        Update: {
+          id?: string
+          content?: string
+          user_id?: string
+          media_urls?: string[]
+          file_urls?: string[]
+          created_at?: string
+          hashtags?: string[]
+          likes_count?: number
+          comments_count?: number
+          shares_count?: number
+        }
+      }
+      social_comments: {
+        Row: {
+          id: string
+          post_id: string
+          user_id: string
+          content: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          post_id: string
+          user_id: string
+          content: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          post_id?: string
+          user_id?: string
+          content?: string
+          created_at?: string
+        }
+      }
+      social_likes: {
+        Row: {
+          id: string
+          post_id: string
+          user_id: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          post_id: string
+          user_id: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          post_id?: string
+          user_id?: string
+          created_at?: string
+        }
+      }
+      social_follows: {
+        Row: {
+          id: string
+          follower_id: string
+          following_id: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          follower_id: string
+          following_id: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          follower_id?: string
+          following_id?: string
+          created_at?: string
+        }
+      }
+      social_messages: {
+        Row: {
+          id: string
+          sender_id: string
+          recipient_id: string
+          content: string
+          created_at: string
+          read_at: string | null
+        }
+        Insert: {
+          id?: string
+          sender_id: string
+          recipient_id: string
+          content: string
+          created_at?: string
+          read_at?: string | null
+        }
+        Update: {
+          id?: string
+          sender_id?: string
+          recipient_id?: string
+          content?: string
+          created_at?: string
+          read_at?: string | null
+        }
+      }
     }
   }
 }

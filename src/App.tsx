@@ -13,6 +13,7 @@ import Profile from "./pages/Profile";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import JoinSchool from "./pages/JoinSchool";
+import Chatter from "./pages/Chatter";
 
 const queryClient = new QueryClient();
 
@@ -56,12 +57,15 @@ const App = () => (
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
-            <Route path="/join-school" element={
-              <ProtectedRoute>
-                <Navigation />
-                <JoinSchool />
-              </ProtectedRoute>
-            } />
+            <Route
+              path="/join-school"
+              element={
+                <ProtectedRoute>
+                  <Navigation />
+                  <JoinSchool />
+                </ProtectedRoute>
+              }
+            />
             <Route
               path="/"
               element={
@@ -102,6 +106,17 @@ const App = () => (
                   <>
                     <Navigation />
                     <Profile />
+                  </>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/chatter"
+              element={
+                <ProtectedRoute>
+                  <>
+                    <Navigation />
+                    <Chatter />
                   </>
                 </ProtectedRoute>
               }
