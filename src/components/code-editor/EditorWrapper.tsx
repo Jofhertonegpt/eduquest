@@ -66,13 +66,9 @@ const EditorWrapper = memo(({ height = "calc(80vh - 2rem)", ...props }: EditorWr
             enabled: true,
           },
           tabCompletion: "on",
-          semanticHighlighting: {
-            enabled: true,
-          },
           bracketPairColorization: {
             enabled: true,
           },
-          "bracketPairColorization.enabled": true,
           autoClosingBrackets: "always",
           autoClosingQuotes: "always",
           autoIndent: "full",
