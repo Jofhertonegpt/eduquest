@@ -1,65 +1,17 @@
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { useToast } from "@/hooks/use-toast";
-import { Progress } from "@/components/ui/progress";
-import { User, GraduationCap, Trophy, Settings } from "lucide-react";
-import CodeEditor from "@/components/CodeEditor";
-import { supabase } from "@/lib/supabase";
-import { useQuery } from "@tanstack/react-query";
-
-interface Grade {
-  subject: string;
-  score: number;
-  date: string;
-}
+import { useProfile } from "@/hooks/useProfile";
+import { ProfileHeader } from "@/components/profile/ProfileHeader";
+import { AcademicProgress } from "@/components/profile/AcademicProgress";
+import { Achievements } from "@/components/profile/Achievements";
 
 const Profile = () => {
-  const { toast } = useToast();
+  const { userData, isLoading, updateProfile } = useProfile();
   const [editMode, setEditMode] = useState(false);
   const [profile, setProfile] = useState({
     name: "",
     email: "",
     level: "Intermediate",
-  });
-
-  const { data: userData, isLoading, error } = useQuery({
-    queryKey: ['user-profile'],
-    queryFn: async () => {
-      // First get the current user
-      const { data: { user }, error: userError } = await supabase.auth.getUser();
-      if (userError) throw userError;
-      if (!user) throw new Error('No user found');
-
-      // Then try to get their profile
-      const { data: profile, error: profileError } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)
-        .maybeSingle();
-
-      if (profileError) throw profileError;
-      
-      // If no profile exists, create one
-      if (!profile) {
-        const { data: newProfile, error: createError } = await supabase
-          .from('profiles')
-          .insert([{ 
-            id: user.id,
-            full_name: user.email?.split('@')[0] || '',
-            level: 'Intermediate'
-          }])
-          .select()
-          .single();
-
-        if (createError) throw createError;
-        return { user, profile: newProfile };
-      }
-
-      return { user, profile };
-    },
-    retry: 1
   });
 
   useEffect(() => {
@@ -72,41 +24,12 @@ const Profile = () => {
     }
   }, [userData]);
 
-  const handleProfileUpdate = async () => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('No user found');
-
-      const { error } = await supabase
-        .from('profiles')
-        .upsert({
-          id: user.id,
-          full_name: profile.name,
-          level: profile.level,
-          updated_at: new Date().toISOString(),
-        });
-
-      if (error) throw error;
-
-      setEditMode(false);
-      toast({
-        title: "Profile Updated",
-        description: "Your profile has been successfully updated.",
-      });
-    } catch (error) {
-      console.error('Profile update error:', error);
-      toast({
-        title: "Error",
-        description: "Failed to update profile. Please try again.",
-        variant: "destructive",
-      });
-    }
-  };
-
   if (isLoading) {
-    return <div className="flex items-center justify-center min-h-screen">
-      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-    </div>;
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
   }
 
   return (
@@ -117,111 +40,31 @@ const Profile = () => {
       className="container mx-auto px-4 py-8"
     >
       <div className="max-w-4xl mx-auto space-y-8">
-        {/* Profile Section */}
         <div className="glass-panel rounded-xl p-6">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-4">
-              <div className="h-20 w-20 rounded-full bg-primary/10 flex items-center justify-center">
-                <User className="h-10 w-10 text-primary" />
-              </div>
-              <div>
-                {editMode ? (
-                  <Input
-                    value={profile.name}
-                    onChange={(e) =>
-                      setProfile({ ...profile, name: e.target.value })
-                    }
-                    className="mb-2"
-                  />
-                ) : (
-                  <h2 className="text-2xl font-bold">{profile.name}</h2>
-                )}
-                <p className="text-muted-foreground">{profile.email}</p>
-              </div>
-            </div>
-            <div className="flex gap-2">
-              <CodeEditor />
-              <Button
-                variant={editMode ? "default" : "outline"}
-                onClick={() => {
-                  if (editMode) {
-                    handleProfileUpdate();
-                  } else {
-                    setEditMode(true);
-                  }
-                }}
-              >
-                <Settings className="h-4 w-4 mr-2" />
-                {editMode ? "Save Changes" : "Edit Profile"}
-              </Button>
-            </div>
-          </div>
+          <ProfileHeader
+            name={profile.name}
+            email={profile.email}
+            editMode={editMode}
+            onNameChange={(name) => setProfile({ ...profile, name })}
+            onEditToggle={() => setEditMode(true)}
+            onSave={() => {
+              updateProfile({
+                name: profile.name,
+                level: profile.level,
+              });
+              setEditMode(false);
+            }}
+          />
         </div>
 
-        {/* Academic Progress Section */}
-        <div className="glass-panel rounded-xl p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <GraduationCap className="h-6 w-6 text-primary" />
-            <h3 className="text-xl font-bold">Academic Progress</h3>
-          </div>
-          <div className="space-y-4">
-            {userData?.profile?.current_degree && (
-              <div className="p-4 rounded-lg bg-background/50">
-                <h4 className="font-semibold text-lg mb-2">Current Degree Program</h4>
-                <p className="text-muted-foreground">{userData.profile.current_degree}</p>
-                <div className="mt-4">
-                  <div className="flex justify-between mb-2">
-                    <span>Progress</span>
-                    <span>60%</span>
-                  </div>
-                  <Progress value={60} className="h-2" />
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
+        <AcademicProgress
+          currentDegree={userData?.profile?.current_degree}
+        />
 
-        {/* Achievements Section */}
-        <div className="glass-panel rounded-xl p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <Trophy className="h-6 w-6 text-primary" />
-            <h3 className="text-xl font-bold">Achievements</h3>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {[
-              {
-                title: "Fast Learner",
-                description: "Completed 5 courses in record time",
-                icon: "🚀",
-              },
-              {
-                title: "Perfect Score",
-                description: "Achieved 100% in a quiz",
-                icon: "⭐",
-              },
-              {
-                title: "Code Master",
-                description: "Completed 10 programming challenges",
-                icon: "💻",
-              },
-            ].map((achievement, index) => (
-              <div
-                key={index}
-                className="p-4 rounded-lg bg-background/50 hover:bg-background/70 transition-colors"
-              >
-                <div className="text-3xl mb-2">{achievement.icon}</div>
-                <h4 className="font-semibold">{achievement.title}</h4>
-                <p className="text-sm text-muted-foreground">
-                  {achievement.description}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
+        <Achievements />
       </div>
     </motion.div>
   );
-
 };
 
 export default Profile;
