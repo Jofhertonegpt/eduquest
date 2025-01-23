@@ -6,8 +6,8 @@ import { ClassmatesList } from "@/components/school/ClassmatesList";
 import { SchoolPosts } from "@/components/school/SchoolPosts";
 import { NoSchool } from "@/components/school/NoSchool";
 import { Database } from "@/lib/database.types";
-import { DEFAULT_SCHOOL } from "@/data/defaultSchool";
-import { useToast } from "@/components/ui/use-toast";
+import { DEFAULT_SCHOOL, DEFAULT_SCHOOL_POSTS } from "@/data/defaultSchool";
+import { useToast } from "@/hooks/use-toast";
 
 type School = Database['public']['Tables']['schools']['Row'];
 
@@ -22,7 +22,7 @@ const Dashboard = () => {
         .from("schools")
         .select("*")
         .eq("id", DEFAULT_SCHOOL.id)
-        .single();
+        .maybeSingle();
       
       if (error && error.code !== "PGRST116") throw error;
       return data as School | null;
@@ -31,12 +31,28 @@ const Dashboard = () => {
 
   const createDefaultSchool = useMutation({
     mutationFn: async () => {
-      const { error: schoolError } = await supabase
+      // First create the default school
+      const { data: school, error: schoolError } = await supabase
         .from("schools")
-        .insert([DEFAULT_SCHOOL]);
+        .insert([DEFAULT_SCHOOL])
+        .select()
+        .single();
       
       if (schoolError) throw schoolError;
-      return DEFAULT_SCHOOL as School;
+
+      // Then create the default posts
+      const postsWithSchoolId = DEFAULT_SCHOOL_POSTS.map(post => ({
+        ...post,
+        created_by: DEFAULT_SCHOOL.id // Using school ID as creator since these are system posts
+      }));
+
+      const { error: postsError } = await supabase
+        .from("school_posts")
+        .insert(postsWithSchoolId);
+      
+      if (postsError) throw postsError;
+
+      return school as School;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["default-school"] });
@@ -90,7 +106,6 @@ const Dashboard = () => {
             title: "Welcome to the Learning Hub!",
             description: "You've been automatically joined to our learning community.",
           });
-          // Refetch the active school query
           queryClient.invalidateQueries({ queryKey: ["active-school"] });
         }
       }
