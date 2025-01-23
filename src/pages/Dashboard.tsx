@@ -2,19 +2,27 @@ import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
-import { Plus, School, Users, MessageSquare, Send, BookOpen } from "lucide-react";
+import { Plus, School, Users, MessageSquare, Send } from "lucide-react";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 
 const Dashboard = () => {
   const [message, setMessage] = useState("");
-  const { data: schools, isLoading: loadingSchools } = useQuery({
-    queryKey: ["schools"],
+  
+  const { data: schoolMemberships, isLoading: loadingSchools } = useQuery({
+    queryKey: ["school-memberships"],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("schools")
-        .select("*")
+        .from("school_members")
+        .select(`
+          school_id,
+          schools (
+            id,
+            name,
+            description
+          )
+        `)
         .eq("student_id", (await supabase.auth.getUser()).data.user?.id);
       
       if (error) {
@@ -30,7 +38,16 @@ const Dashboard = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("messages")
-        .select("*, profiles(full_name)")
+        .select(`
+          id,
+          content,
+          created_at,
+          sender: sender_id (
+            id,
+            email,
+            user_metadata->>full_name as full_name
+          )
+        `)
         .order("created_at", { ascending: false })
         .limit(5);
       
@@ -115,7 +132,7 @@ const Dashboard = () => {
             <div className="flex items-center justify-center py-8">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
             </div>
-          ) : schools?.length === 0 ? (
+          ) : schoolMemberships?.length === 0 ? (
             <div className="text-center py-8">
               <p className="text-muted-foreground mb-4">
                 You haven't joined any schools yet
@@ -127,14 +144,14 @@ const Dashboard = () => {
             </div>
           ) : (
             <div className="space-y-4">
-              {schools?.map((school) => (
+              {schoolMemberships?.map((membership) => (
                 <motion.div
-                  key={school.id}
+                  key={membership.school_id}
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   className="p-4 bg-background rounded-lg border"
                 >
-                  {school.name}
+                  {membership.schools?.name}
                 </motion.div>
               ))}
             </div>
@@ -184,7 +201,7 @@ const Dashboard = () => {
                       className="p-3 bg-background rounded-lg border"
                     >
                       <p className="font-semibold text-sm text-primary">
-                        {msg.profiles?.full_name}
+                        {msg.sender?.full_name || msg.sender?.email}
                       </p>
                       <p className="text-sm">{msg.content}</p>
                     </motion.div>
