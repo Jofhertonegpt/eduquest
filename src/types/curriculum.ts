@@ -40,6 +40,28 @@ export interface Module {
     assignmentsSubmitted: string[];
     quizzesCompleted: string[];
   };
+  prerequisites?: string[];
+  credits: number;
+}
+
+export interface Course {
+  id: string;
+  title: string;
+  description: string;
+  modules: Module[];
+  credits: number;
+  level: 'introductory' | 'intermediate' | 'advanced';
+  prerequisites?: string[];
+}
+
+export interface Degree {
+  id: string;
+  title: string;
+  type: 'associates' | 'bachelors' | 'masters' | 'doctorate';
+  description: string;
+  courses: Course[];
+  requiredCredits: number;
+  specialization?: string;
 }
 
 export interface UserProgress {
@@ -59,13 +81,15 @@ export interface User {
   role: 'student' | 'instructor' | 'admin';
   progress: UserProgress[];
   enrolledCourses: string[];
+  currentDegree?: Degree;
+  completedDegrees?: Degree[];
 }
 
 export interface Curriculum {
   id: string;
   name: string;
   description: string;
-  modules: Module[];
+  degrees: Degree[];
   enrolledUsers?: User[];
   createdBy?: string;
   createdAt?: string;
