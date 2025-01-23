@@ -21,6 +21,7 @@ export const CreatePost = ({ schoolId }: { schoolId: string }) => {
 
   const createPostMutation = useMutation({
     mutationFn: async (content: string) => {
+      // First, verify user authentication
       const { data: { user }, error: userError } = await supabase.auth.getUser();
       if (userError) {
         console.error("Auth error:", userError);
@@ -29,6 +30,24 @@ export const CreatePost = ({ schoolId }: { schoolId: string }) => {
       if (!user) {
         console.error("No user found");
         throw new Error("Not authenticated");
+      }
+
+      // Check if user is a member of the school
+      const { data: membershipData, error: membershipError } = await supabase
+        .from("school_members")
+        .select("id")
+        .eq("school_id", schoolId)
+        .eq("student_id", user.id)
+        .maybeSingle();
+
+      if (membershipError) {
+        console.error("Membership check error:", membershipError);
+        throw new Error("Failed to verify school membership");
+      }
+
+      if (!membershipData && schoolId !== "00000000-0000-0000-0000-000000000000") {
+        console.error("User is not a member of this school");
+        throw new Error("You must be a member of this school to create posts");
       }
 
       console.log("Attempting to create post with:", {
