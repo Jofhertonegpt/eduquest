@@ -1,7 +1,16 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { motion } from "framer-motion";
+import { Cat, Dog, Rabbit, Squirrel, Turtle } from "lucide-react";
 import { DEFAULT_SCHOOL } from "@/data/defaultSchool";
+
+const SCHOOL_ICONS = {
+  Cat,
+  Dog,
+  Rabbit,
+  Squirrel,
+  Turtle,
+};
 
 export const SchoolHeader = ({ schoolId }: { schoolId: string }) => {
   const { data: school } = useQuery({
@@ -16,7 +25,6 @@ export const SchoolHeader = ({ schoolId }: { schoolId: string }) => {
         
         if (error) throw error;
         
-        // If no school is found in the database, return the default school
         if (!data) {
           return DEFAULT_SCHOOL;
         }
@@ -24,12 +32,13 @@ export const SchoolHeader = ({ schoolId }: { schoolId: string }) => {
         return data;
       } catch (error) {
         console.error("Error fetching school:", error);
-        // Return default school as fallback
         return DEFAULT_SCHOOL;
       }
     },
     enabled: !!schoolId,
   });
+
+  const IconComponent = school?.icon_type ? SCHOOL_ICONS[school.icon_type as keyof typeof SCHOOL_ICONS] : Cat;
 
   return (
     <motion.div
@@ -38,17 +47,9 @@ export const SchoolHeader = ({ schoolId }: { schoolId: string }) => {
       className="w-full bg-background/80 backdrop-blur-lg border-b sticky top-0 z-10"
     >
       <div className="container mx-auto px-4 py-3 flex items-center gap-4">
-        {school?.logo_url ? (
-          <img 
-            src={school.logo_url} 
-            alt={school.name} 
-            className="h-10 w-10 rounded-full"
-          />
-        ) : (
-          <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-            {school?.name?.charAt(0)}
-          </div>
-        )}
+        <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+          <IconComponent className="h-6 w-6" />
+        </div>
         <div>
           <h1 className="text-xl font-bold">{school?.name}</h1>
           <p className="text-sm text-muted-foreground">{school?.description}</p>
