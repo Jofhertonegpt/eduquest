@@ -1,16 +1,16 @@
-import { Suspense, lazy, useState, useEffect } from "react";
+import { Suspense, lazy } from "react";
 import { motion } from "framer-motion";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink } from "@/components/ui/breadcrumb";
 import CurriculumImport from "@/components/CurriculumImport";
 import type { Curriculum, Module, Course } from "@/types/curriculum";
-import { supabase } from "@/lib/supabase";
-import { useQuery } from "@tanstack/react-query";
-import { Skeleton } from "@/components/ui/skeleton";
+import { useState, useEffect } from "react";
 
 // Lazy load components
-const ModuleList = lazy(() => import('@/components/learning/ModuleList'));
-const ModuleContent = lazy(() => import('@/components/learning/ModuleContent'));
+const ModuleList = lazy(() => import('@/components/learning/ModuleList').then(mod => ({ default: mod.default })));
+const ModuleContent = lazy(() => import('@/components/learning/ModuleContent').then(mod => ({ default: mod.default })));
 
 const Learning = () => {
   const [curriculum, setCurriculum] = useState<Curriculum | null>(null);
@@ -18,7 +18,6 @@ const Learning = () => {
   const [activeCourse, setActiveCourse] = useState<Course | null>(null);
   const { toast } = useToast();
 
-  // Query to fetch only user's uploaded curriculum
   const { data: savedCurriculum, isLoading } = useQuery({
     queryKey: ['saved-curriculum'],
     queryFn: async () => {
@@ -94,18 +93,44 @@ const Learning = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
+      <Breadcrumb className="mb-6">
+        <BreadcrumbItem>
+          <BreadcrumbLink href="/">Dashboard</BreadcrumbLink>
+        </BreadcrumbItem>
+        <BreadcrumbItem>
+          <BreadcrumbLink href="/learning">Learning</BreadcrumbLink>
+        </BreadcrumbItem>
+        {activeCourse && (
+          <BreadcrumbItem>
+            <BreadcrumbLink>{activeCourse.title}</BreadcrumbLink>
+          </BreadcrumbItem>
+        )}
+        {activeModule && (
+          <BreadcrumbItem isCurrentPage>
+            <BreadcrumbLink>{activeModule.title}</BreadcrumbLink>
+          </BreadcrumbItem>
+        )}
+      </Breadcrumb>
+
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
         {isLoading ? (
-          <div className="flex items-center justify-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+          <div className="space-y-6">
+            <Skeleton className="h-8 w-64" />
+            <Skeleton className="h-4 w-32" />
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              <Skeleton className="h-[300px]" />
+              <div className="md:col-span-3">
+                <Skeleton className="h-[600px]" />
+              </div>
+            </div>
           </div>
         ) : !curriculum ? (
           <Suspense fallback={<Skeleton className="h-[400px] w-full" />}>
-            <CurriculumImport onImport={handleImport} />
+            <CurriculumImport onImport={setCurriculum} />
           </Suspense>
         ) : (
           <>
@@ -115,7 +140,13 @@ const Learning = () => {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-              <Suspense fallback={<Skeleton className="h-[300px] w-full" />}>
+              <Suspense 
+                fallback={
+                  <div className="glass-panel rounded-xl p-4">
+                    <Skeleton className="h-[300px]" />
+                  </div>
+                }
+              >
                 {activeCourse && (
                   <ModuleList
                     modules={activeCourse.modules}
@@ -125,7 +156,13 @@ const Learning = () => {
                 )}
               </Suspense>
               <div className="md:col-span-3">
-                <Suspense fallback={<Skeleton className="h-[600px] w-full" />}>
+                <Suspense 
+                  fallback={
+                    <div className="glass-panel rounded-xl p-6">
+                      <Skeleton className="h-[600px]" />
+                    </div>
+                  }
+                >
                   {activeModule && <ModuleContent module={activeModule} />}
                 </Suspense>
               </div>

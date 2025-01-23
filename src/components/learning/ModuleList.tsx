@@ -6,7 +6,7 @@ interface ModuleListProps {
   onModuleSelect: (module: Module) => void;
 }
 
-export const ModuleList = ({ modules, activeModule, onModuleSelect }: ModuleListProps) => {
+const ModuleList = ({ modules, activeModule, onModuleSelect }: ModuleListProps) => {
   return (
     <div className="glass-panel rounded-xl p-4">
       <h2 className="font-semibold mb-4">Modules</h2>
@@ -28,3 +28,5 @@ export const ModuleList = ({ modules, activeModule, onModuleSelect }: ModuleList
     </div>
   );
 };
+
+export default ModuleList;

@@ -14,9 +14,11 @@ interface Props {
 const CurriculumImport = ({ onImport }: Props) => {
   const { toast } = useToast();
   const [isDragging, setIsDragging] = useState(false);
+  const [isValidating, setIsValidating] = useState(false);
 
   const handleFileImport = async (file: File) => {
     try {
+      setIsValidating(true);
       const text = await file.text();
       const rawCurriculum = JSON.parse(text);
       
@@ -27,11 +29,15 @@ const CurriculumImport = ({ onImport }: Props) => {
         throw new Error("Invalid curriculum format: " + validationResult.error.message);
       }
 
-      // Ensure required properties are present
+      // Ensure required properties are present and add default values
       const curriculum: Curriculum = {
         name: sanitizeInput(validationResult.data.name || ''),
         description: sanitizeInput(validationResult.data.description || ''),
-        degrees: validationResult.data.degrees || [],
+        degrees: validationResult.data.degrees.map(degree => ({
+          ...degree,
+          requiredCredits: degree.requiredCredits || 0,
+          courses: degree.courses || []
+        })),
       };
 
       // Get the current user
@@ -75,6 +81,8 @@ const CurriculumImport = ({ onImport }: Props) => {
         description: error instanceof Error ? error.message : "Failed to import curriculum",
         variant: "destructive",
       });
+    } finally {
+      setIsValidating(false);
     }
   };
 
@@ -106,27 +114,36 @@ const CurriculumImport = ({ onImport }: Props) => {
       onDragLeave={() => setIsDragging(false)}
       onDrop={handleDrop}
     >
-      <Upload className="w-12 h-12 mx-auto mb-4 text-gray-400" />
-      <h3 className="text-lg font-semibold mb-2">Import Curriculum</h3>
-      <p className="text-sm text-muted-foreground mb-4">
-        Drag and drop your JSON curriculum file here
-      </p>
-      <input
-        type="file"
-        id="file-input"
-        className="hidden"
-        accept="application/json"
-        onChange={(e) => {
-          const file = e.target.files?.[0];
-          if (file) handleFileImport(file);
-        }}
-      />
-      <Button
-        variant="outline"
-        onClick={() => document.getElementById("file-input")?.click()}
-      >
-        Select File
-      </Button>
+      {isValidating ? (
+        <div className="space-y-4">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto" />
+          <p className="text-sm text-muted-foreground">Validating curriculum...</p>
+        </div>
+      ) : (
+        <>
+          <Upload className="w-12 h-12 mx-auto mb-4 text-gray-400" />
+          <h3 className="text-lg font-semibold mb-2">Import Curriculum</h3>
+          <p className="text-sm text-muted-foreground mb-4">
+            Drag and drop your JSON curriculum file here
+          </p>
+          <input
+            type="file"
+            id="file-input"
+            className="hidden"
+            accept="application/json"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) handleFileImport(file);
+            }}
+          />
+          <Button
+            variant="outline"
+            onClick={() => document.getElementById("file-input")?.click()}
+          >
+            Select File
+          </Button>
+        </>
+      )}
     </div>
   );
 };
