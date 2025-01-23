@@ -20,9 +20,11 @@ export interface Quiz {
 export interface LearningResource {
   id: string;
   title: string;
-  type: 'video' | 'article' | 'document';
+  type: 'video' | 'pdf' | 'epub' | 'article' | 'document';
   content: string;
   duration?: string;
+  url?: string;
+  embedType?: 'youtube' | 'pdf' | 'epub';
 }
 
 export interface Module {

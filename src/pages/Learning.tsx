@@ -4,7 +4,44 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import { BookOpen, FileText, CheckCircle } from "lucide-react";
 import CurriculumImport from "@/components/CurriculumImport";
-import type { Curriculum, Module } from "@/types/curriculum";
+import type { Curriculum, Module, LearningResource } from "@/types/curriculum";
+
+const ResourceViewer = ({ resource }: { resource: LearningResource }) => {
+  if (resource.type === 'video' && resource.embedType === 'youtube' && resource.url) {
+    const videoId = resource.url.split('v=')[1];
+    return (
+      <div className="aspect-video w-full">
+        <iframe
+          width="100%"
+          height="100%"
+          src={`https://www.youtube.com/embed/${videoId}`}
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+          className="rounded-lg"
+        />
+      </div>
+    );
+  }
+
+  if ((resource.type === 'pdf' || resource.type === 'epub') && resource.url) {
+    return (
+      <div className="aspect-[4/3] w-full">
+        <iframe
+          src={resource.url}
+          width="100%"
+          height="100%"
+          className="rounded-lg border"
+        />
+      </div>
+    );
+  }
+
+  return (
+    <div className="p-4 rounded-lg border">
+      <p className="text-sm text-muted-foreground">{resource.content}</p>
+    </div>
+  );
+};
 
 const Learning = () => {
   const [curriculum, setCurriculum] = useState<Curriculum | null>(null);
@@ -89,16 +126,17 @@ const Learning = () => {
                   </TabsList>
 
                   <TabsContent value="resources" className="mt-4">
-                    <div className="space-y-4">
+                    <div className="space-y-6">
                       {activeModule.resources.map((resource) => (
                         <div
                           key={resource.id}
-                          className="p-4 rounded-lg border hover:border-primary transition-colors cursor-pointer"
+                          className="p-4 rounded-lg border hover:border-primary transition-colors"
                         >
-                          <h3 className="font-semibold">{resource.title}</h3>
-                          <p className="text-sm text-muted-foreground">
+                          <h3 className="font-semibold mb-2">{resource.title}</h3>
+                          <p className="text-sm text-muted-foreground mb-4">
                             {resource.type} • {resource.duration || "No duration"}
                           </p>
+                          <ResourceViewer resource={resource} />
                         </div>
                       ))}
                     </div>
