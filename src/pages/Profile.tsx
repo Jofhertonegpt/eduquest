@@ -1,10 +1,12 @@
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { User, GraduationCap, Trophy, Settings } from "lucide-react";
 import CodeEditor from "@/components/CodeEditor";
+import { supabase } from "@/lib/supabase";
+import { useQuery } from "@tanstack/react-query";
 
 interface Grade {
   subject: string;
@@ -16,23 +18,73 @@ const Profile = () => {
   const { toast } = useToast();
   const [editMode, setEditMode] = useState(false);
   const [profile, setProfile] = useState({
-    name: "Student Name",
-    email: "student@example.com",
+    name: "",
+    email: "",
     level: "Intermediate",
   });
-  const [grades, setGrades] = useState<Grade[]>([
-    { subject: "Mathematics", score: 85, date: "2024-02-20" },
-    { subject: "Science", score: 92, date: "2024-02-19" },
-    { subject: "Programming", score: 88, date: "2024-02-18" },
-  ]);
 
-  const handleProfileUpdate = () => {
-    setEditMode(false);
-    toast({
-      title: "Profile Updated",
-      description: "Your profile has been successfully updated.",
-    });
+  const { data: userData, isLoading } = useQuery({
+    queryKey: ['user-profile'],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('No user found');
+
+      const { data: profile, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+
+      if (error) throw error;
+      return { user, profile };
+    }
+  });
+
+  useEffect(() => {
+    if (userData) {
+      setProfile({
+        name: userData.profile?.full_name || userData.user.email?.split('@')[0] || '',
+        email: userData.user.email || '',
+        level: userData.profile?.level || 'Intermediate',
+      });
+    }
+  }, [userData]);
+
+  const handleProfileUpdate = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('No user found');
+
+      const { error } = await supabase
+        .from('profiles')
+        .upsert({
+          id: user.id,
+          full_name: profile.name,
+          level: profile.level,
+          updated_at: new Date().toISOString(),
+        });
+
+      if (error) throw error;
+
+      setEditMode(false);
+      toast({
+        title: "Profile Updated",
+        description: "Your profile has been successfully updated.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update profile. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
+
+  if (isLoading) {
+    return <div className="flex items-center justify-center min-h-screen">
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+    </div>;
+  }
 
   return (
     <motion.div
@@ -83,37 +135,26 @@ const Profile = () => {
           </div>
         </div>
 
-        {/* Grades Section */}
+        {/* Academic Progress Section */}
         <div className="glass-panel rounded-xl p-6">
           <div className="flex items-center gap-2 mb-4">
             <GraduationCap className="h-6 w-6 text-primary" />
-            <h3 className="text-xl font-bold">Grade Tracking</h3>
+            <h3 className="text-xl font-bold">Academic Progress</h3>
           </div>
           <div className="space-y-4">
-            {grades.map((grade, index) => (
-              <div
-                key={index}
-                className="flex items-center justify-between p-4 rounded-lg bg-background/50"
-              >
-                <div>
-                  <h4 className="font-semibold">{grade.subject}</h4>
-                  <p className="text-sm text-muted-foreground">{grade.date}</p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span
-                    className={`text-lg font-bold ${
-                      grade.score >= 90
-                        ? "text-green-500"
-                        : grade.score >= 80
-                        ? "text-blue-500"
-                        : "text-orange-500"
-                    }`}
-                  >
-                    {grade.score}%
-                  </span>
+            {userData?.profile?.current_degree && (
+              <div className="p-4 rounded-lg bg-background/50">
+                <h4 className="font-semibold text-lg mb-2">Current Degree Program</h4>
+                <p className="text-muted-foreground">{userData.profile.current_degree}</p>
+                <div className="mt-4">
+                  <div className="flex justify-between mb-2">
+                    <span>Progress</span>
+                    <span>60%</span>
+                  </div>
+                  <Progress value={60} className="h-2" />
                 </div>
               </div>
-            ))}
+            )}
           </div>
         </div>
 
