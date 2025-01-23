@@ -1,0 +1,72 @@
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/lib/supabase";
+import { BookOpen, Trophy } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
+import type { CourseProgress } from "@/types/academic";
+
+export const CourseProgressCard = () => {
+  const { data: progress, isLoading } = useQuery({
+    queryKey: ["course-progress"],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not authenticated");
+
+      const { data, error } = await supabase
+        .from("course_progress")
+        .select("*")
+        .eq("user_id", user.id)
+        .single();
+
+      if (error) throw error;
+      return data as CourseProgress;
+    },
+  });
+
+  if (isLoading) {
+    return <div>Loading progress...</div>;
+  }
+
+  if (!progress) {
+    return <div>No course progress found</div>;
+  }
+
+  const progressPercentage = (progress.completedModules / progress.totalModules) * 100;
+
+  return (
+    <div className="glass-panel rounded-xl p-4">
+      <div className="flex items-center gap-2 mb-4">
+        <BookOpen className="h-5 w-5 text-primary" />
+        <h2 className="font-semibold">Course Progress</h2>
+      </div>
+      
+      <div className="space-y-4">
+        <div>
+          <div className="flex justify-between mb-2">
+            <span>Progress</span>
+            <span>{Math.round(progressPercentage)}%</span>
+          </div>
+          <Progress value={progressPercentage} className="h-2" />
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div className="p-3 rounded-lg bg-background/50">
+            <p className="text-sm text-muted-foreground">Current Grade</p>
+            <p className="text-2xl font-bold">{progress.currentGrade}%</p>
+          </div>
+          
+          {progress.rank && progress.totalStudents && (
+            <div className="p-3 rounded-lg bg-background/50">
+              <p className="text-sm text-muted-foreground">Class Rank</p>
+              <div className="flex items-center gap-2">
+                <Trophy className="h-4 w-4 text-yellow-500" />
+                <p className="text-2xl font-bold">
+                  {progress.rank}/{progress.totalStudents}
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
