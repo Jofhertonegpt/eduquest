@@ -27,16 +27,19 @@ const Profile = () => {
   const { data: userData, isLoading, error } = useQuery({
     queryKey: ['user-profile'],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      // First get the current user
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError) throw userError;
       if (!user) throw new Error('No user found');
 
-      const { data: profile, error } = await supabase
+      // Then try to get their profile
+      const { data: profile, error: profileError } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', user.id)
         .maybeSingle();
 
-      if (error) throw error;
+      if (profileError) throw profileError;
       
       // If no profile exists, create one
       if (!profile) {
@@ -55,7 +58,8 @@ const Profile = () => {
       }
 
       return { user, profile };
-    }
+    },
+    retry: 1
   });
 
   useEffect(() => {
@@ -90,6 +94,7 @@ const Profile = () => {
         description: "Your profile has been successfully updated.",
       });
     } catch (error) {
+      console.error('Profile update error:', error);
       toast({
         title: "Error",
         description: "Failed to update profile. Please try again.",
@@ -216,6 +221,7 @@ const Profile = () => {
       </div>
     </motion.div>
   );
+
 };
 
 export default Profile;
