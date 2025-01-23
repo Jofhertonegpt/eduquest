@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { BookOpen, FileText, CheckCircle, Clock, Target, Code, Award } from "lucide-react";
 import type { Module } from "@/types/curriculum";
 import { ResourceViewer } from "./ResourceViewer";
+import { QuizPlayer } from "./QuizPlayer";
 import CodeEditor from "@/components/CodeEditor";
 
 export const ModuleContent = ({ module }: { module: Module }) => {
@@ -120,16 +121,10 @@ export const ModuleContent = ({ module }: { module: Module }) => {
         <TabsContent value="quizzes" className="mt-4">
           <div className="space-y-4">
             {module.quizzes.map((quiz) => (
-              <Card key={quiz.id} className="cursor-pointer hover:border-primary transition-colors">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Award className="w-5 h-5" />
-                    {quiz.title}
-                  </CardTitle>
-                  <CardDescription>
-                    {quiz.questions.length} questions
-                  </CardDescription>
-                </CardHeader>
+              <Card key={quiz.id}>
+                <CardContent className="pt-6">
+                  <QuizPlayer quiz={quiz} />
+                </CardContent>
               </Card>
             ))}
           </div>
