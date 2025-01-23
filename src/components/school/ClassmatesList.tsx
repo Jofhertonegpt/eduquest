@@ -17,13 +17,18 @@ export const ClassmatesList = ({ schoolId }: { schoolId: string }) => {
           profiles (
             id,
             full_name,
-            avatar_url
+            avatar_url,
+            level,
+            current_degree,
+            completed_degrees,
+            created_at,
+            updated_at
           )
         `)
         .eq("school_id", schoolId);
       
       if (error) throw error;
-      return data?.map(item => item.profiles as Profile) || [];
+      return data?.map(item => item.profiles) as Profile[] || [];
     },
     enabled: !!schoolId,
   });
