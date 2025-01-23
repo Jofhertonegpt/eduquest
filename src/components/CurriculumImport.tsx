@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { Upload } from "lucide-react";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Curriculum } from "@/types/curriculum";
+import { supabase } from "@/lib/supabase";
 
 interface Props {
   onImport: (curriculum: Curriculum) => void;
@@ -22,12 +23,28 @@ const CurriculumImport = ({ onImport }: Props) => {
         throw new Error("Invalid curriculum format");
       }
 
+      // Get the current user
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError) throw userError;
+      if (!user) throw new Error("Not authenticated");
+
+      // Save to Supabase
+      const { error: saveError } = await supabase
+        .from('imported_curricula')
+        .insert({
+          user_id: user.id,
+          curriculum,
+        });
+
+      if (saveError) throw saveError;
+
       onImport(curriculum);
       toast({
         title: "Success",
-        description: "Curriculum imported successfully",
+        description: "Curriculum imported and saved successfully",
       });
     } catch (error) {
+      console.error("Import error:", error);
       toast({
         title: "Error",
         description: "Failed to import curriculum. Please check the file format.",
