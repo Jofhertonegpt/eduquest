@@ -1,5 +1,8 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BookOpen, FileText, CheckCircle } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { BookOpen, FileText, CheckCircle, Clock, Target, Code, Award } from "lucide-react";
 import type { Module } from "@/types/curriculum";
 import { ResourceViewer } from "./ResourceViewer";
 import CodeEditor from "@/components/CodeEditor";
@@ -7,8 +10,41 @@ import CodeEditor from "@/components/CodeEditor";
 export const ModuleContent = ({ module }: { module: Module }) => {
   return (
     <div className="glass-panel rounded-xl p-6">
-      <h2 className="text-2xl font-bold mb-4">{module.title}</h2>
-      <p className="text-muted-foreground mb-6">{module.description}</p>
+      <div className="mb-6">
+        <h2 className="text-2xl font-bold mb-2">{module.title}</h2>
+        <p className="text-muted-foreground mb-4">{module.description}</p>
+        
+        <div className="flex flex-wrap gap-2 mb-4">
+          <Badge variant="outline" className="flex items-center gap-1">
+            <Clock className="w-3 h-3" />
+            {module.metadata.estimatedTime} mins
+          </Badge>
+          <Badge variant="outline" className="flex items-center gap-1">
+            {module.metadata.difficulty}
+          </Badge>
+          {module.metadata.tags.map((tag) => (
+            <Badge key={tag} variant="secondary">
+              {tag}
+            </Badge>
+          ))}
+        </div>
+
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Target className="w-5 h-5" />
+              Learning Objectives
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ul className="list-disc list-inside space-y-2">
+              {module.learningObjectives.map((objective) => (
+                <li key={objective.id}>{objective.description}</li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
+      </div>
 
       <Tabs defaultValue="resources">
         <TabsList>
@@ -24,21 +60,26 @@ export const ModuleContent = ({ module }: { module: Module }) => {
             <CheckCircle className="w-4 h-4 mr-2" />
             Quizzes
           </TabsTrigger>
+          <TabsTrigger value="coding">
+            <Code className="w-4 h-4 mr-2" />
+            Practice
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="resources" className="mt-4">
           <div className="space-y-6">
             {module.resources.map((resource) => (
-              <div
-                key={resource.id}
-                className="p-4 rounded-lg border hover:border-primary transition-colors"
-              >
-                <h3 className="font-semibold mb-2">{resource.title}</h3>
-                <p className="text-sm text-muted-foreground mb-4">
-                  {resource.type} • {resource.duration || "No duration"}
-                </p>
-                <ResourceViewer resource={resource} />
-              </div>
+              <Card key={resource.id}>
+                <CardHeader>
+                  <CardTitle>{resource.title}</CardTitle>
+                  <CardDescription>
+                    {resource.type} • {resource.duration || "No duration"}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <ResourceViewer resource={resource} />
+                </CardContent>
+              </Card>
             ))}
           </div>
         </TabsContent>
@@ -46,20 +87,32 @@ export const ModuleContent = ({ module }: { module: Module }) => {
         <TabsContent value="assignments" className="mt-4">
           <div className="space-y-4">
             {module.assignments.map((assignment) => (
-              <div
-                key={assignment.id}
-                className="p-4 rounded-lg border hover:border-primary transition-colors"
-              >
-                <h3 className="font-semibold">{assignment.title}</h3>
-                <p className="text-sm text-muted-foreground mb-2">
-                  {assignment.description}
-                </p>
-                <div className="flex justify-between text-sm mb-4">
-                  <span>Due: {assignment.dueDate}</span>
-                  <span>{assignment.points} points</span>
-                </div>
-                <CodeEditor />
-              </div>
+              <Card key={assignment.id}>
+                <CardHeader>
+                  <CardTitle>{assignment.title}</CardTitle>
+                  <CardDescription>{assignment.description}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex justify-between text-sm mb-4">
+                    <span>Due: {new Date(assignment.dueDate).toLocaleDateString()}</span>
+                    <span>{assignment.points} points</span>
+                  </div>
+                  {assignment.rubric && (
+                    <div className="mt-4">
+                      <h4 className="font-semibold mb-2">Grading Rubric</h4>
+                      <ul className="space-y-2">
+                        {assignment.rubric.criteria.map((criterion, index) => (
+                          <li key={index} className="flex justify-between">
+                            <span>{criterion.name}</span>
+                            <span>{criterion.points} pts</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  <CodeEditor />
+                </CardContent>
+              </Card>
             ))}
           </div>
         </TabsContent>
@@ -67,16 +120,35 @@ export const ModuleContent = ({ module }: { module: Module }) => {
         <TabsContent value="quizzes" className="mt-4">
           <div className="space-y-4">
             {module.quizzes.map((quiz) => (
-              <div
-                key={quiz.id}
-                className="p-4 rounded-lg border hover:border-primary transition-colors cursor-pointer"
-              >
-                <h3 className="font-semibold">{quiz.title}</h3>
-                <p className="text-sm text-muted-foreground">
-                  {quiz.questions.length} questions
-                </p>
-              </div>
+              <Card key={quiz.id} className="cursor-pointer hover:border-primary transition-colors">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Award className="w-5 h-5" />
+                    {quiz.title}
+                  </CardTitle>
+                  <CardDescription>
+                    {quiz.questions.length} questions
+                  </CardDescription>
+                </CardHeader>
+              </Card>
             ))}
+          </div>
+        </TabsContent>
+
+        <TabsContent value="coding" className="mt-4">
+          <div className="space-y-4">
+            {module.resources
+              .filter((resource) => resource.type === 'code')
+              .map((resource) => (
+                <Card key={resource.id}>
+                  <CardHeader>
+                    <CardTitle>{resource.title}</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <CodeEditor />
+                  </CardContent>
+                </Card>
+              ))}
           </div>
         </TabsContent>
       </Tabs>

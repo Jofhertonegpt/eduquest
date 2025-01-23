@@ -30,6 +30,28 @@ export const ResourceViewer = ({ resource }: { resource: LearningResource }) => 
     );
   }
 
+  if (resource.type === 'code' && resource.code) {
+    return (
+      <div className="space-y-4">
+        <CodeEditor
+          value={resource.code.initialCode}
+          onChange={() => {}}
+          language="javascript"
+        />
+        <div className="text-sm text-muted-foreground">
+          <h4 className="font-semibold mb-2">Test Cases:</h4>
+          <ul className="list-disc list-inside">
+            {resource.code.testCases.map((testCase, index) => (
+              <li key={index}>
+                Input: {testCase.input} → Expected: {testCase.expectedOutput}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="p-4 rounded-lg border">
       <p className="text-sm text-muted-foreground">{resource.content}</p>
