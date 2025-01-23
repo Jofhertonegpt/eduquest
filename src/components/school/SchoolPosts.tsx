@@ -5,6 +5,8 @@ import { MessageSquare, ThumbsUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { getMockSchoolPostsBySchoolId, getMockProfileById, mockDelay } from "@/data/mockData";
+import { CreatePost } from "./CreatePost";
+import { PostComments } from "./PostComments";
 
 export const SchoolPosts = ({ schoolId }: { schoolId: string }) => {
   const { toast } = useToast();
@@ -93,6 +95,8 @@ export const SchoolPosts = ({ schoolId }: { schoolId: string }) => {
       animate={{ opacity: 1, y: 0 }}
       className="flex-1 p-4 space-y-4 max-w-3xl mx-auto"
     >
+      <CreatePost schoolId={schoolId} />
+      
       {posts?.map((post) => (
         <motion.div
           key={post.id}
@@ -134,6 +138,7 @@ export const SchoolPosts = ({ schoolId }: { schoolId: string }) => {
               {post.comments_count || 0}
             </Button>
           </div>
+          <PostComments postId={post.id} />
         </motion.div>
       ))}
     </motion.div>

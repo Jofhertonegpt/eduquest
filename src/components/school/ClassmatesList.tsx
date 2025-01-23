@@ -112,8 +112,8 @@ export const ClassmatesList = ({ schoolId }: { schoolId: string }) => {
             <DialogTitle>Chat with {selectedClassmate?.full_name}</DialogTitle>
           </DialogHeader>
           <div className="h-[400px] flex flex-col">
-            <div className="flex-1 overflow-y-auto p-4 space-y-4">
-              {/* Messages will be displayed here */}
+            <div className="flex-1 overflow-y-auto p-4">
+              <MessageList recipientId={selectedClassmate?.id} />
             </div>
             <MessageInput recipientId={selectedClassmate?.id} />
           </div>
