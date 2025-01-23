@@ -21,40 +21,43 @@ export const CreatePost = ({ schoolId }: { schoolId: string }) => {
 
   const createPostMutation = useMutation({
     mutationFn: async (content: string) => {
-      // First, verify user authentication
-      const { data: { user }, error: userError } = await supabase.auth.getUser();
-      if (userError) throw userError;
-      if (!user) throw new Error("Not authenticated");
+      try {
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+        if (userError) throw userError;
+        if (!user) throw new Error("Not authenticated");
 
-      // Create the post data object
-      const postData = {
-        school_id: schoolId,
-        content: content.trim(),
-        created_by: user.id
-      };
+        const postData = {
+          school_id: schoolId,
+          content: content.trim(),
+          created_by: user.id,
+          created_at: new Date().toISOString()
+        };
 
-      console.log("Creating post with data:", postData);
+        console.log("Attempting to create post with data:", postData);
 
-      const { data, error } = await supabase
-        .from("school_posts")
-        .insert(postData)
-        .select()
-        .single();
+        const { data, error } = await supabase
+          .from("school_posts")
+          .insert(postData)
+          .select()
+          .single();
 
-      if (error) {
-        console.error("Supabase error:", error);
+        if (error) {
+          console.error("Supabase error details:", error);
+          throw error;
+        }
+        
+        console.log("Post created successfully:", data);
+        return data as Post;
+      } catch (error: any) {
+        console.error("Error in createPostMutation:", error);
         throw error;
       }
-      
-      console.log("Post created successfully:", data);
-      return data as Post;
     },
     onMutate: async (newContent) => {
       await queryClient.cancelQueries({ queryKey: ["school-posts", schoolId] });
       
       const previousPosts = queryClient.getQueryData(["school-posts", schoolId]);
       
-      // Optimistically add the new post
       queryClient.setQueryData(["school-posts", schoolId], (old: any[]) => {
         const optimisticPost = {
           id: 'temp-' + Date.now(),
@@ -79,12 +82,15 @@ export const CreatePost = ({ schoolId }: { schoolId: string }) => {
       console.error("Error creating post:", error);
       queryClient.setQueryData(["school-posts", schoolId], context?.previousPosts);
       
-      // Provide a more user-friendly error message
       let errorMessage = "Failed to create post. Please try again.";
       if (error.code === "42501") {
         errorMessage = "You don't have permission to create posts in this school.";
       } else if (error.code === "23502") {
         errorMessage = "Missing required fields.";
+      } else if (error.code === "23505") {
+        errorMessage = "This post already exists.";
+      } else if (error.status === 409) {
+        errorMessage = "There was a conflict creating your post. Please try again.";
       }
       
       toast({
