@@ -31,7 +31,6 @@ const Dashboard = () => {
 
   const createDefaultSchool = useMutation({
     mutationFn: async () => {
-      // First create the default school
       const { data: school, error: schoolError } = await supabase
         .from("schools")
         .insert([DEFAULT_SCHOOL])
@@ -40,7 +39,6 @@ const Dashboard = () => {
       
       if (schoolError) throw schoolError;
 
-      // Then create the default posts
       const postsWithSchoolId = DEFAULT_SCHOOL_POSTS.map(post => ({
         ...post,
         created_by: DEFAULT_SCHOOL.id
@@ -85,7 +83,7 @@ const Dashboard = () => {
       
       if (memberError) throw memberError;
       
-      if (!memberData) return null;
+      if (!memberData?.schools) return null;
       return memberData.schools as School;
     },
   });

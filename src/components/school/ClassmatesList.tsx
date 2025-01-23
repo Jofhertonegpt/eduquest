@@ -29,8 +29,8 @@ export const ClassmatesList = ({ schoolId }: { schoolId: string }) => {
       
       if (error) throw error;
       
-      // Fix the type conversion by properly extracting the profiles data
-      return data?.map(item => item.profiles) as Profile[];
+      // Properly extract and type the profiles data
+      return (data || []).map(item => (item.profiles as Profile)) as Profile[];
     },
     enabled: !!schoolId,
   });
