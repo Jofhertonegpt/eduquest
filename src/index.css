@@ -78,6 +78,7 @@
   body {
     @apply bg-background text-foreground transition-colors duration-300;
     background: var(--background);
+    background-color: hsl(var(--background));
   }
 }
 

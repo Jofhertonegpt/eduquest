@@ -51,7 +51,13 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <ThemeProvider defaultTheme="system" enableSystem={true} attribute="class" themes={["light", "dark", "rainbow"]}>
+    <ThemeProvider 
+      defaultTheme="system" 
+      enableSystem={true} 
+      attribute="class" 
+      themes={["light", "dark", "rainbow"]}
+      disableTransitionOnChange
+    >
       <TooltipProvider>
         <Toaster />
         <Sonner />
