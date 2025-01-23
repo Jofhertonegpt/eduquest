@@ -21,8 +21,21 @@ export const CreatePost = ({ schoolId }: { schoolId: string }) => {
 
   const createPostMutation = useMutation({
     mutationFn: async (content: string) => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError) {
+        console.error("Auth error:", userError);
+        throw userError;
+      }
+      if (!user) {
+        console.error("No user found");
+        throw new Error("Not authenticated");
+      }
+
+      console.log("Attempting to create post with:", {
+        school_id: schoolId,
+        content,
+        created_by: user.id
+      });
 
       const { data, error } = await supabase
         .from("school_posts")
@@ -34,7 +47,12 @@ export const CreatePost = ({ schoolId }: { schoolId: string }) => {
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error("Supabase error:", error);
+        throw error;
+      }
+      
+      console.log("Post created successfully:", data);
       return data as Post;
     },
     onMutate: async (newContent) => {
@@ -63,11 +81,12 @@ export const CreatePost = ({ schoolId }: { schoolId: string }) => {
       
       return { previousPosts };
     },
-    onError: (error, variables, context) => {
+    onError: (error: any, variables, context) => {
+      console.error("Error creating post:", error);
       queryClient.setQueryData(["school-posts", schoolId], context?.previousPosts);
       toast({
         title: "Error",
-        description: "Failed to create post. Please try again.",
+        description: error.message || "Failed to create post. Please try again.",
         variant: "destructive",
       });
     },
@@ -86,6 +105,7 @@ export const CreatePost = ({ schoolId }: { schoolId: string }) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!content.trim()) return;
+    console.log("Submitting post with content:", content);
     createPostMutation.mutate(content);
   };
 
