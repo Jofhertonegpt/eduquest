@@ -84,7 +84,15 @@ const Dashboard = () => {
       if (memberError) throw memberError;
       
       if (!memberData?.schools) return null;
-      return memberData.schools as School;
+
+      const schoolData = memberData.schools as unknown as School;
+      return {
+        id: schoolData.id,
+        name: schoolData.name,
+        description: schoolData.description,
+        logo_url: schoolData.logo_url,
+        created_at: schoolData.created_at
+      } satisfies School;
     },
   });
 

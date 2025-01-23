@@ -29,8 +29,20 @@ export const ClassmatesList = ({ schoolId }: { schoolId: string }) => {
       
       if (error) throw error;
       
-      // Properly extract and type the profiles data
-      return (data || []).map(item => (item.profiles as Profile)) as Profile[];
+      // Extract profiles from the nested structure and ensure proper typing
+      return data?.map(item => {
+        const profile = item.profiles as unknown as Profile;
+        return {
+          id: profile.id,
+          full_name: profile.full_name || '',
+          avatar_url: profile.avatar_url,
+          level: profile.level,
+          current_degree: profile.current_degree,
+          completed_degrees: profile.completed_degrees,
+          created_at: profile.created_at,
+          updated_at: profile.updated_at
+        } satisfies Profile;
+      }) || [];
     },
     enabled: !!schoolId,
   });
