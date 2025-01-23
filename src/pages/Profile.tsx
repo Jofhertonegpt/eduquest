@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { User, GraduationCap, Trophy, Settings } from "lucide-react";
+import CodeEditor from "@/components/CodeEditor";
 
 interface Grade {
   subject: string;
@@ -22,6 +23,7 @@ const Profile = () => {
   const [grades, setGrades] = useState<Grade[]>([
     { subject: "Mathematics", score: 85, date: "2024-02-20" },
     { subject: "Science", score: 92, date: "2024-02-19" },
+    { subject: "Programming", score: 88, date: "2024-02-18" },
   ]);
 
   const handleProfileUpdate = () => {
@@ -62,19 +64,22 @@ const Profile = () => {
                 <p className="text-muted-foreground">{profile.email}</p>
               </div>
             </div>
-            <Button
-              variant={editMode ? "default" : "outline"}
-              onClick={() => {
-                if (editMode) {
-                  handleProfileUpdate();
-                } else {
-                  setEditMode(true);
-                }
-              }}
-            >
-              <Settings className="h-4 w-4 mr-2" />
-              {editMode ? "Save Changes" : "Edit Profile"}
-            </Button>
+            <div className="flex gap-2">
+              <CodeEditor />
+              <Button
+                variant={editMode ? "default" : "outline"}
+                onClick={() => {
+                  if (editMode) {
+                    handleProfileUpdate();
+                  } else {
+                    setEditMode(true);
+                  }
+                }}
+              >
+                <Settings className="h-4 w-4 mr-2" />
+                {editMode ? "Save Changes" : "Edit Profile"}
+              </Button>
+            </div>
           </div>
         </div>
 
@@ -131,9 +136,9 @@ const Profile = () => {
                 icon: "⭐",
               },
               {
-                title: "Consistent",
-                description: "Logged in for 7 days straight",
-                icon: "🎯",
+                title: "Code Master",
+                description: "Completed 10 programming challenges",
+                icon: "💻",
               },
             ].map((achievement, index) => (
               <div
