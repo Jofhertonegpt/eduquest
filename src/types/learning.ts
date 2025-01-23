@@ -1,3 +1,5 @@
+import type { DifficultyLevel, LearningResource } from './curriculum';
+
 export interface LearningObjective {
   id: string;
   description: string;
@@ -22,6 +24,23 @@ export interface ModuleMetadata {
   prerequisites: string[];
   tags: string[];
   skills: string[];
+}
+
+export interface Assessment {
+  id: string;
+  title: string;
+  type: 'quiz' | 'coding' | 'project' | 'peer-review';
+  description: string;
+  difficultyLevel: DifficultyLevel;
+  points: number;
+  timeLimit?: number; // in minutes
+  rubric?: {
+    criteria: {
+      name: string;
+      description: string;
+      points: number;
+    }[];
+  };
 }
 
 export interface Module {

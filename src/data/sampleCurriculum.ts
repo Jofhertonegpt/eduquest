@@ -15,11 +15,13 @@ export const sampleCurriculum: Curriculum = {
           title: "React Mastery",
           description: "Advanced React development concepts",
           credits: 4,
+          level: "advanced",
           modules: [
             {
               id: "react-hooks",
               title: "Advanced React Hooks",
               description: "Master React Hooks and Custom Hooks",
+              credits: 1,
               metadata: {
                 estimatedTime: 180,
                 difficulty: "advanced",
@@ -27,17 +29,6 @@ export const sampleCurriculum: Curriculum = {
                 tags: ["react", "hooks", "frontend"],
                 skills: ["React", "TypeScript", "State Management"]
               },
-              learningObjectives: [
-                {
-                  id: "obj-1",
-                  description: "Understand and implement custom hooks",
-                  assessmentCriteria: [
-                    "Create a custom hook",
-                    "Implement proper dependency management",
-                    "Handle cleanup functions"
-                  ]
-                }
-              ],
               resources: [
                 {
                   id: "res-1",
@@ -49,51 +40,39 @@ export const sampleCurriculum: Curriculum = {
                   embedType: "youtube"
                 }
               ],
-              assessments: [
+              assignments: [
                 {
-                  id: "assess-1",
+                  id: "assign-1",
                   title: "Custom Hooks Implementation",
-                  type: "coding",
                   description: "Create a custom hook for managing form state",
-                  difficultyLevel: "advanced",
-                  points: 100,
-                  timeLimit: 60,
-                  codingExercise: {
-                    id: "code-1",
-                    title: "Form State Hook",
-                    description: "Implement a custom hook for form state management",
-                    initialCode: "export const useFormState = () => {\n  // Your code here\n}",
-                    solution: "// Hidden until submission",
-                    testCases: [
-                      {
-                        input: "{ initialValues: { name: '' } }",
-                        expectedOutput: "{ values: { name: '' }, setValues: Function }"
-                      }
-                    ],
-                    hints: [
-                      "Consider using useState",
-                      "Remember to handle form validation"
-                    ]
-                  }
+                  dueDate: "2024-12-31",
+                  points: 100
                 }
               ],
-              milestones: [
+              quizzes: [
                 {
-                  id: "milestone-1",
-                  title: "Custom Hooks Master",
-                  requiredAssessments: ["assess-1"],
-                  reward: {
-                    type: "badge",
-                    value: "hooks-master"
-                  }
+                  id: "quiz-1",
+                  title: "React Hooks Fundamentals",
+                  questions: [
+                    {
+                      id: "q1",
+                      question: "What is a custom hook?",
+                      options: [
+                        "A reusable function that contains stateful logic",
+                        "A React component",
+                        "A JavaScript class",
+                        "A CSS framework"
+                      ],
+                      correctAnswer: 0
+                    }
+                  ]
                 }
               ]
             }
           ]
         }
       ],
-      requiredCredits: 12,
-      estimatedDuration: "6 months"
+      requiredCredits: 12
     }
   ]
 };

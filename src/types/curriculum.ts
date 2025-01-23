@@ -1,9 +1,13 @@
+export type DegreeType = 'associates' | 'bachelors' | 'masters' | 'doctorate' | 'certificate';
+export type DifficultyLevel = 'beginner' | 'intermediate' | 'advanced' | 'expert';
+
 export interface Assignment {
   id: string;
   title: string;
   description: string;
   dueDate: string;
   points: number;
+  status?: 'pending' | 'submitted' | 'graded';
 }
 
 export interface Quiz {
@@ -27,19 +31,22 @@ export interface LearningResource {
   embedType?: 'youtube' | 'pdf' | 'epub';
 }
 
+export interface ModuleMetadata {
+  estimatedTime: number; // in minutes
+  difficulty: DifficultyLevel;
+  prerequisites: string[];
+  tags: string[];
+  skills: string[];
+}
+
 export interface Module {
   id: string;
   title: string;
   description: string;
+  metadata: ModuleMetadata;
   resources: LearningResource[];
   assignments: Assignment[];
   quizzes: Quiz[];
-  progress?: {
-    completed: boolean;
-    resourcesCompleted: string[];
-    assignmentsSubmitted: string[];
-    quizzesCompleted: string[];
-  };
   prerequisites?: string[];
   credits: number;
 }
@@ -57,7 +64,7 @@ export interface Course {
 export interface Degree {
   id: string;
   title: string;
-  type: 'associates' | 'bachelors' | 'masters' | 'doctorate';
+  type: DegreeType;
   description: string;
   courses: Course[];
   requiredCredits: number;
@@ -86,7 +93,7 @@ export interface User {
 }
 
 export interface Curriculum {
-  id: string;
+  id?: string;
   name: string;
   description: string;
   degrees: Degree[];
