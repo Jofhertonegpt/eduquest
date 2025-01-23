@@ -1,9 +1,9 @@
-import { Editor } from "@monaco-editor/react";
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
-import { Code2, FolderTree } from "lucide-react";
-import { useState } from "react";
-import { ScrollArea } from "./ui/scroll-area";
+import { Code2 } from "lucide-react";
+import { useState, useCallback } from "react";
+import FileList from "./code-editor/FileList";
+import EditorWrapper from "./code-editor/EditorWrapper";
 
 interface FileSystem {
   [key: string]: {
@@ -24,14 +24,6 @@ const defaultFiles: FileSystem = {
   "script.js": {
     content: "// JavaScript code here\nconsole.log('Hello from JavaScript!');",
     language: "javascript"
-  },
-  "program.cpp": {
-    content: "#include <iostream>\n\nint main() {\n    std::cout << \"Hello from C++!\" << std::endl;\n    return 0;\n}",
-    language: "cpp"
-  },
-  "program.cs": {
-    content: "using System;\n\nclass Program {\n    static void Main() {\n        Console.WriteLine(\"Hello from C#!\");\n    }\n}",
-    language: "csharp"
   }
 };
 
@@ -44,7 +36,7 @@ const CodeEditor = ({ initialFiles = defaultFiles }: CodeEditorProps) => {
   const [currentFile, setCurrentFile] = useState<string>(Object.keys(files)[0]);
   const [isOpen, setIsOpen] = useState(false);
 
-  const handleFileChange = (content: string | undefined) => {
+  const handleFileChange = useCallback((content: string | undefined) => {
     if (content !== undefined) {
       setFiles(prev => ({
         ...prev,
@@ -54,54 +46,32 @@ const CodeEditor = ({ initialFiles = defaultFiles }: CodeEditorProps) => {
         }
       }));
     }
-  };
+  }, [currentFile]);
+
+  const handleFileSelect = useCallback((filename: string) => {
+    setCurrentFile(filename);
+  }, []);
 
   return (
     <Drawer open={isOpen} onOpenChange={setIsOpen}>
       <DrawerTrigger asChild>
-        <Button variant="outline" className="gap-2">
+        <Button variant="outline" className="gap-2 hover:bg-accent">
           <Code2 className="h-4 w-4" />
           Open Editor
         </Button>
       </DrawerTrigger>
       <DrawerContent className="h-[80vh]">
-        <div className="h-full p-4 flex">
-          <div className="w-48 border-r pr-4">
-            <div className="flex items-center gap-2 mb-4">
-              <FolderTree className="h-4 w-4" />
-              <span className="font-semibold">Files</span>
-            </div>
-            <ScrollArea className="h-[calc(80vh-8rem)]">
-              <div className="space-y-2">
-                {Object.entries(files).map(([filename]) => (
-                  <Button
-                    key={filename}
-                    variant={currentFile === filename ? "secondary" : "ghost"}
-                    className="w-full justify-start text-sm"
-                    onClick={() => setCurrentFile(filename)}
-                  >
-                    {filename}
-                  </Button>
-                ))}
-              </div>
-            </ScrollArea>
-          </div>
-          <div className="flex-1 pl-4">
-            <Editor
-              height="calc(80vh - 2rem)"
-              language={files[currentFile].language}
-              value={files[currentFile].content}
-              onChange={handleFileChange}
-              theme="vs-dark"
-              options={{
-                minimap: { enabled: false },
-                fontSize: 14,
-                wordWrap: "on",
-                lineNumbers: "on",
-                automaticLayout: true,
-              }}
-            />
-          </div>
+        <div className="h-full p-4 flex glass-panel">
+          <FileList
+            files={files}
+            currentFile={currentFile}
+            onFileSelect={handleFileSelect}
+          />
+          <EditorWrapper
+            language={files[currentFile].language}
+            value={files[currentFile].content}
+            onChange={handleFileChange}
+          />
         </div>
       </DrawerContent>
     </Drawer>
