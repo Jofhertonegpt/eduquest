@@ -5,12 +5,14 @@ import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink } from "@/components/ui/breadcrumb";
 import CurriculumImport from "@/components/CurriculumImport";
+import { ModuleContent } from "@/components/learning/ModuleContent";
 import type { Curriculum, Module, Course } from "@/types/curriculum";
 import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/lib/supabase";
 
 // Lazy load components
-const ModuleList = lazy(() => import('@/components/learning/ModuleList').then(mod => ({ default: mod.default })));
-const ModuleContent = lazy(() => import('@/components/learning/ModuleContent').then(mod => ({ default: mod.default })));
+const ModuleList = lazy(() => import('@/components/learning/ModuleList'));
 
 const Learning = () => {
   const [curriculum, setCurriculum] = useState<Curriculum | null>(null);
@@ -37,7 +39,6 @@ const Learning = () => {
       }
 
       if (importedCurriculum) {
-        // Get the saved progress for this specific curriculum
         const { data: progress, error: progressError } = await supabase
           .from('curriculum_progress')
           .select('*')
@@ -57,8 +58,6 @@ const Learning = () => {
 
       return null;
     },
-    staleTime: 1000 * 60 * 5, // Cache for 5 minutes
-    refetchOnWindowFocus: false,
   });
 
   // Load saved curriculum and progress
@@ -92,8 +91,12 @@ const Learning = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <Breadcrumb className="mb-6">
+    <main 
+      className="container mx-auto px-4 py-8"
+      role="main"
+      aria-label="Learning content"
+    >
+      <Breadcrumb className="mb-6" aria-label="Page navigation">
         <BreadcrumbItem>
           <BreadcrumbLink href="/">Dashboard</BreadcrumbLink>
         </BreadcrumbItem>
@@ -118,7 +121,7 @@ const Learning = () => {
         transition={{ duration: 0.5 }}
       >
         {isLoading ? (
-          <div className="space-y-6">
+          <div className="space-y-6" aria-busy="true" aria-label="Loading content">
             <Skeleton className="h-8 w-64" />
             <Skeleton className="h-4 w-32" />
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
@@ -136,7 +139,11 @@ const Learning = () => {
           <>
             <div className="flex justify-between items-center mb-8">
               <h1 className="font-display text-4xl font-bold">{curriculum.name}</h1>
-              <Progress value={33} className="w-32" />
+              <Progress 
+                value={33} 
+                className="w-32" 
+                aria-label="Course progress"
+              />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
@@ -170,7 +177,7 @@ const Learning = () => {
           </>
         )}
       </motion.div>
-    </div>
+    </main>
   );
 };
 

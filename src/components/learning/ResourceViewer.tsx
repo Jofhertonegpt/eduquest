@@ -13,6 +13,8 @@ export const ResourceViewer = ({ resource }: { resource: LearningResource }) => 
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
           allowFullScreen
           className="rounded-lg"
+          title={resource.title}
+          aria-label={`YouTube video: ${resource.title}`}
         />
       </div>
     );
@@ -26,6 +28,8 @@ export const ResourceViewer = ({ resource }: { resource: LearningResource }) => 
           width="100%"
           height="100%"
           className="rounded-lg border"
+          title={resource.title}
+          aria-label={`${resource.type.toUpperCase()} document: ${resource.title}`}
         />
       </div>
     );
@@ -41,8 +45,13 @@ export const ResourceViewer = ({ resource }: { resource: LearningResource }) => 
               language: "javascript"
             }
           }}
+          aria-label={`Code editor for ${resource.title}`}
         />
-        <div className="text-sm text-muted-foreground">
+        <div 
+          className="text-sm text-muted-foreground"
+          role="complementary"
+          aria-label="Test cases"
+        >
           <h4 className="font-semibold mb-2">Test Cases:</h4>
           <ul className="list-disc list-inside">
             {resource.code.testCases.map((testCase, index) => (
@@ -57,7 +66,11 @@ export const ResourceViewer = ({ resource }: { resource: LearningResource }) => 
   }
 
   return (
-    <div className="p-4 rounded-lg border">
+    <div 
+      className="p-4 rounded-lg border"
+      role="article"
+      aria-label={resource.title}
+    >
       <p className="text-sm text-muted-foreground">{resource.content}</p>
     </div>
   );
