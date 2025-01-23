@@ -31,37 +31,38 @@ const CurriculumImport = ({ onImport }: Props) => {
 
       // Ensure required properties are present and add default values
       const curriculum: Curriculum = {
-        name: sanitizeInput(validationResult.data.name || ''),
-        description: sanitizeInput(validationResult.data.description || ''),
+        name: sanitizeInput(validationResult.data.name),
+        description: sanitizeInput(validationResult.data.description),
         degrees: validationResult.data.degrees.map((degree): Degree => ({
           id: degree.id || crypto.randomUUID(),
-          title: degree.title || '',
-          type: degree.type || 'bachelors',
-          description: degree.description || '',
-          requiredCredits: degree.requiredCredits || 0,
-          courses: degree.courses?.map(course => ({
+          title: degree.title,
+          type: degree.type,
+          description: degree.description,
+          requiredCredits: degree.requiredCredits,
+          courses: degree.courses.map(course => ({
             id: course.id || crypto.randomUUID(),
-            title: course.title || '',
-            description: course.description || '',
-            credits: course.credits || 0,
-            level: course.level || 'introductory',
-            modules: course.modules?.map(module => ({
+            title: course.title,
+            description: course.description,
+            credits: course.credits,
+            level: course.level,
+            modules: course.modules.map(module => ({
               id: module.id || crypto.randomUUID(),
-              title: module.title || '',
-              description: module.description || '',
+              title: module.title,
+              description: module.description,
+              credits: module.credits,
               metadata: {
-                estimatedTime: 0,
-                difficulty: 'beginner',
-                prerequisites: [],
-                tags: [],
-                skills: []
+                estimatedTime: module.metadata.estimatedTime,
+                difficulty: module.metadata.difficulty,
+                prerequisites: module.metadata.prerequisites,
+                tags: module.metadata.tags,
+                skills: module.metadata.skills
               },
-              learningObjectives: [],
-              resources: [],
-              assignments: [],
-              quizzes: []
-            })) || []
-          })) || []
+              learningObjectives: module.learningObjectives,
+              resources: module.resources,
+              assignments: module.assignments,
+              quizzes: module.quizzes
+            }))
+          }))
         }))
       };
 

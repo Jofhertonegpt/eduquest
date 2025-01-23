@@ -21,24 +21,43 @@ export const userSchema = z.object({
   level: z.enum(['beginner', 'intermediate', 'advanced']),
 });
 
+export const moduleSchema = z.object({
+  id: z.string().optional(),
+  title: z.string().min(3),
+  description: z.string(),
+  credits: z.number(),
+  metadata: z.object({
+    estimatedTime: z.number(),
+    difficulty: z.enum(['beginner', 'intermediate', 'advanced', 'expert']),
+    prerequisites: z.array(z.string()),
+    tags: z.array(z.string()),
+    skills: z.array(z.string())
+  }),
+  learningObjectives: z.array(z.any()),
+  resources: z.array(z.any()),
+  assignments: z.array(z.any()),
+  quizzes: z.array(z.any())
+});
+
+export const courseSchema = z.object({
+  id: z.string().optional(),
+  title: z.string().min(3),
+  description: z.string(),
+  credits: z.number(),
+  level: z.enum(['introductory', 'intermediate', 'advanced']),
+  modules: z.array(moduleSchema)
+});
+
 export const curriculumSchema = z.object({
   id: z.string().optional(),
   name: z.string().min(3).max(200),
   description: z.string(),
   degrees: z.array(z.object({
-    id: z.string(),
+    id: z.string().optional(),
     title: z.string().min(3),
     type: z.enum(['associates', 'bachelors', 'masters', 'doctorate', 'certificate']),
     description: z.string(),
-    courses: z.array(z.object({
-      id: z.string(),
-      title: z.string(),
-      description: z.string(),
-      modules: z.array(z.object({
-        id: z.string(),
-        title: z.string(),
-        description: z.string()
-      }))
-    }))
+    requiredCredits: z.number(),
+    courses: z.array(courseSchema)
   }))
 });
