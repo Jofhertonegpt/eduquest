@@ -6,7 +6,7 @@ import { ClassmatesList } from "@/components/school/ClassmatesList";
 import { SchoolPosts } from "@/components/school/SchoolPosts";
 import { NoSchool } from "@/components/school/NoSchool";
 import { Database } from "@/lib/database.types";
-import { DEFAULT_SCHOOL, DEFAULT_SCHOOL_POSTS } from "@/data/defaultSchool";
+import { DEFAULT_SCHOOL } from "@/data/defaultSchool";
 import { useToast } from "@/components/ui/use-toast";
 
 type School = Database['public']['Tables']['schools']['Row'];
@@ -15,7 +15,6 @@ const Dashboard = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  // Query to check if the default school exists
   const { data: defaultSchool } = useQuery({
     queryKey: ["default-school"],
     queryFn: async () => {
@@ -30,27 +29,17 @@ const Dashboard = () => {
     },
   });
 
-  // Create default school mutation
   const createDefaultSchool = useMutation({
     mutationFn: async () => {
-      // Create the school
       const { error: schoolError } = await supabase
         .from("schools")
         .insert([DEFAULT_SCHOOL]);
       
       if (schoolError) throw schoolError;
-
-      // Create the default posts
-      const { error: postsError } = await supabase
-        .from("school_posts")
-        .insert(DEFAULT_SCHOOL_POSTS);
-      
-      if (postsError) throw postsError;
-
-      return DEFAULT_SCHOOL;
+      return DEFAULT_SCHOOL as School;
     },
-    onSuccess: (newSchool) => {
-      queryClient.setQueryData(["default-school"], newSchool);
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["default-school"] });
       toast({
         title: "Welcome to the Learning Hub!",
         description: "We've created a default school to help you get started.",
@@ -58,7 +47,6 @@ const Dashboard = () => {
     },
   });
 
-  // Query user's active school
   const { data: activeSchool, isLoading } = useQuery({
     queryKey: ["active-school"],
     queryFn: async () => {
@@ -84,7 +72,7 @@ const Dashboard = () => {
       if (!memberData) return null;
       return memberData.schools as School;
     },
-    onSuccess: async (school) => {
+    onSettled: async (school) => {
       // If user has no school and default school exists, join it
       if (!school && defaultSchool) {
         const { data: { user } } = await supabase.auth.getUser();
@@ -110,7 +98,7 @@ const Dashboard = () => {
       else if (!school && !defaultSchool) {
         createDefaultSchool.mutate();
       }
-    }
+    },
   });
 
   if (isLoading) {

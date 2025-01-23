@@ -1,19 +1,13 @@
 import { GraduationCap, Award } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { degrees, certificates } from "@/data/degrees";
+import { degrees, certificates, type Certificate } from "@/data/degrees";
 
 interface Degree {
   id: string;
   title: string;
   level: string;
   estimatedDuration: string;
-}
-
-interface Certificate {
-  id: string;
-  title: string;
-  level: string;
 }
 
 interface AcademicProgressProps {
