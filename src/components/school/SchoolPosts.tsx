@@ -16,6 +16,9 @@ export const SchoolPosts = ({ schoolId }: { schoolId: string }) => {
     queryKey: ["school-posts", schoolId],
     queryFn: async () => {
       try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) throw new Error("Not authenticated");
+
         const { data, error } = await supabase
           .from("school_posts")
           .select(`
