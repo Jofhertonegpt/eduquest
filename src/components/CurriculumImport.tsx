@@ -27,11 +27,12 @@ const CurriculumImport = ({ onImport }: Props) => {
         throw new Error("Invalid curriculum format: " + validationResult.error.message);
       }
 
-      const curriculum = validationResult.data;
-
-      // Sanitize text content
-      curriculum.name = sanitizeInput(curriculum.name);
-      curriculum.description = sanitizeInput(curriculum.description);
+      // Ensure required properties are present
+      const curriculum: Curriculum = {
+        name: sanitizeInput(validationResult.data.name || ''),
+        description: sanitizeInput(validationResult.data.description || ''),
+        degrees: validationResult.data.degrees || [],
+      };
 
       // Get the current user
       const { data: { user }, error: userError } = await supabase.auth.getUser();

@@ -1,13 +1,16 @@
-import { useState, useEffect } from "react";
+import { Suspense, lazy, useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import CurriculumImport from "@/components/CurriculumImport";
 import type { Curriculum, Module, Course } from "@/types/curriculum";
-import { ModuleList } from "@/components/learning/ModuleList";
-import { ModuleContent } from "@/components/learning/ModuleContent";
 import { supabase } from "@/lib/supabase";
 import { useQuery } from "@tanstack/react-query";
+import { Skeleton } from "@/components/ui/skeleton";
+
+// Lazy load components
+const ModuleList = lazy(() => import('@/components/learning/ModuleList'));
+const ModuleContent = lazy(() => import('@/components/learning/ModuleContent'));
 
 const Learning = () => {
   const [curriculum, setCurriculum] = useState<Curriculum | null>(null);
@@ -101,10 +104,9 @@ const Learning = () => {
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
           </div>
         ) : !curriculum ? (
-          <>
-            <h1 className="font-display text-4xl font-bold mb-8">Learning</h1>
-            <CurriculumImport onImport={setCurriculum} />
-          </>
+          <Suspense fallback={<Skeleton className="h-[400px] w-full" />}>
+            <CurriculumImport onImport={handleImport} />
+          </Suspense>
         ) : (
           <>
             <div className="flex justify-between items-center mb-8">
@@ -113,15 +115,19 @@ const Learning = () => {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-              {activeCourse && (
-                <ModuleList
-                  modules={activeCourse.modules}
-                  activeModule={activeModule}
-                  onModuleSelect={setActiveModule}
-                />
-              )}
+              <Suspense fallback={<Skeleton className="h-[300px] w-full" />}>
+                {activeCourse && (
+                  <ModuleList
+                    modules={activeCourse.modules}
+                    activeModule={activeModule}
+                    onModuleSelect={setActiveModule}
+                  />
+                )}
+              </Suspense>
               <div className="md:col-span-3">
-                {activeModule && <ModuleContent module={activeModule} />}
+                <Suspense fallback={<Skeleton className="h-[600px] w-full" />}>
+                  {activeModule && <ModuleContent module={activeModule} />}
+                </Suspense>
               </div>
             </div>
           </>
