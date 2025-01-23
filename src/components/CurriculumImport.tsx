@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Upload } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
-import { Curriculum } from "@/types/curriculum";
+import { Curriculum, Degree } from "@/types/curriculum";
 import { supabase } from "@/lib/supabase";
 import { curriculumSchema, encryptData } from "@/lib/encryption";
 import { sanitizeInput } from "@/lib/supabase";
@@ -33,11 +33,36 @@ const CurriculumImport = ({ onImport }: Props) => {
       const curriculum: Curriculum = {
         name: sanitizeInput(validationResult.data.name || ''),
         description: sanitizeInput(validationResult.data.description || ''),
-        degrees: validationResult.data.degrees.map(degree => ({
-          ...degree,
+        degrees: validationResult.data.degrees.map((degree): Degree => ({
+          id: degree.id || crypto.randomUUID(),
+          title: degree.title || '',
+          type: degree.type || 'bachelors',
+          description: degree.description || '',
           requiredCredits: degree.requiredCredits || 0,
-          courses: degree.courses || []
-        })),
+          courses: degree.courses?.map(course => ({
+            id: course.id || crypto.randomUUID(),
+            title: course.title || '',
+            description: course.description || '',
+            credits: course.credits || 0,
+            level: course.level || 'introductory',
+            modules: course.modules?.map(module => ({
+              id: module.id || crypto.randomUUID(),
+              title: module.title || '',
+              description: module.description || '',
+              metadata: {
+                estimatedTime: 0,
+                difficulty: 'beginner',
+                prerequisites: [],
+                tags: [],
+                skills: []
+              },
+              learningObjectives: [],
+              resources: [],
+              assignments: [],
+              quizzes: []
+            })) || []
+          })) || []
+        }))
       };
 
       // Get the current user
