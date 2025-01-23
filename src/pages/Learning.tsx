@@ -4,6 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import { BookOpen, FileText, CheckCircle } from "lucide-react";
 import CurriculumImport from "@/components/CurriculumImport";
+import CodeEditor from "@/components/CodeEditor";
 import type { Curriculum, Module, LearningResource } from "@/types/curriculum";
 
 const ResourceViewer = ({ resource }: { resource: LearningResource }) => {
@@ -153,10 +154,11 @@ const Learning = () => {
                           <p className="text-sm text-muted-foreground mb-2">
                             {assignment.description}
                           </p>
-                          <div className="flex justify-between text-sm">
+                          <div className="flex justify-between text-sm mb-4">
                             <span>Due: {assignment.dueDate}</span>
                             <span>{assignment.points} points</span>
                           </div>
+                          <CodeEditor />
                         </div>
                       ))}
                     </div>
