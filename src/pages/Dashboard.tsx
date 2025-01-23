@@ -2,10 +2,13 @@ import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
-import { Plus, School, Users, BookOpen } from "lucide-react";
+import { Plus, School, Users, MessageSquare, Send, BookOpen } from "lucide-react";
 import { toast } from "sonner";
+import { Input } from "@/components/ui/input";
+import { useState } from "react";
 
 const Dashboard = () => {
+  const [message, setMessage] = useState("");
   const { data: schools, isLoading: loadingSchools } = useQuery({
     queryKey: ["schools"],
     queryFn: async () => {
@@ -22,8 +25,61 @@ const Dashboard = () => {
     },
   });
 
+  const { data: messages, isLoading: loadingMessages } = useQuery({
+    queryKey: ["messages"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("messages")
+        .select("*, profiles(full_name)")
+        .order("created_at", { ascending: false })
+        .limit(5);
+      
+      if (error) {
+        toast.error("Failed to load messages");
+        throw error;
+      }
+      return data;
+    },
+  });
+
   const handleJoinSchool = async () => {
     toast.info("Coming soon: Join a school!");
+  };
+
+  const handleSendMessage = async () => {
+    if (!message.trim()) return;
+    
+    const { error } = await supabase
+      .from("messages")
+      .insert([
+        {
+          content: message,
+          sender_id: (await supabase.auth.getUser()).data.user?.id,
+        },
+      ]);
+
+    if (error) {
+      toast.error("Failed to send message");
+      return;
+    }
+
+    setMessage("");
+    toast.success("Message sent!");
+  };
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0 },
   };
 
   return (
@@ -39,11 +95,14 @@ const Dashboard = () => {
         </p>
       </motion.div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+      >
         <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.1 }}
+          variants={itemVariants}
           className="glass-panel rounded-xl p-6 hover-scale"
         >
           <div className="flex items-center gap-4 mb-4">
@@ -53,7 +112,9 @@ const Dashboard = () => {
             <h2 className="text-xl font-bold">My Schools</h2>
           </div>
           {loadingSchools ? (
-            <p>Loading schools...</p>
+            <div className="flex items-center justify-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            </div>
           ) : schools?.length === 0 ? (
             <div className="text-center py-8">
               <p className="text-muted-foreground mb-4">
@@ -81,9 +142,7 @@ const Dashboard = () => {
         </motion.div>
 
         <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.2 }}
+          variants={itemVariants}
           className="glass-panel rounded-xl p-6 hover-scale"
         >
           <div className="flex items-center gap-4 mb-4">
@@ -100,22 +159,53 @@ const Dashboard = () => {
         </motion.div>
 
         <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.3 }}
+          variants={itemVariants}
           className="glass-panel rounded-xl p-6 hover-scale"
         >
           <div className="flex items-center gap-4 mb-4">
             <div className="p-3 bg-primary/10 rounded-lg">
-              <BookOpen className="h-6 w-6 text-primary" />
+              <MessageSquare className="h-6 w-6 text-primary" />
             </div>
-            <h2 className="text-xl font-bold">Recent Activity</h2>
+            <h2 className="text-xl font-bold">Messages</h2>
           </div>
-          <p className="text-muted-foreground">
-            Your learning activity will appear here
-          </p>
+          <div className="space-y-4">
+            {loadingMessages ? (
+              <div className="flex items-center justify-center py-4">
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+              </div>
+            ) : (
+              <>
+                <div className="space-y-3">
+                  {messages?.map((msg) => (
+                    <motion.div
+                      key={msg.id}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="p-3 bg-background rounded-lg border"
+                    >
+                      <p className="font-semibold text-sm text-primary">
+                        {msg.profiles?.full_name}
+                      </p>
+                      <p className="text-sm">{msg.content}</p>
+                    </motion.div>
+                  ))}
+                </div>
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="Type a message..."
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
+                  />
+                  <Button onClick={handleSendMessage} size="icon">
+                    <Send className="h-4 w-4" />
+                  </Button>
+                </div>
+              </>
+            )}
+          </div>
         </motion.div>
-      </div>
+      </motion.div>
     </div>
   );
 };
