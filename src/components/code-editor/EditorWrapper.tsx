@@ -72,7 +72,6 @@ const EditorWrapper = memo(({ height = "calc(80vh - 2rem)", ...props }: EditorWr
           autoClosingBrackets: "always",
           autoClosingQuotes: "always",
           autoIndent: "full",
-          formatOnSave: true,
           showUnused: true,
           showDeprecated: true,
           inlineSuggest: {
