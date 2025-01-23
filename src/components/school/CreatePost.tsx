@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
+import { DEFAULT_SCHOOL } from "@/data/defaultSchool";
 
 type Post = {
   id: string;
@@ -19,12 +20,51 @@ export const CreatePost = ({ schoolId }: { schoolId: string }) => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
+  // First ensure the school exists
+  const { data: schoolExists } = useQuery({
+    queryKey: ["school-exists", schoolId],
+    queryFn: async () => {
+      if (schoolId === DEFAULT_SCHOOL.id) {
+        // Check if default school exists, create if it doesn't
+        const { data: existingSchool } = await supabase
+          .from("schools")
+          .select("id")
+          .eq("id", DEFAULT_SCHOOL.id)
+          .single();
+
+        if (!existingSchool) {
+          const { error: createError } = await supabase
+            .from("schools")
+            .insert(DEFAULT_SCHOOL);
+          
+          if (createError) {
+            console.error("Error creating default school:", createError);
+            return false;
+          }
+        }
+        return true;
+      }
+
+      const { data } = await supabase
+        .from("schools")
+        .select("id")
+        .eq("id", schoolId)
+        .single();
+
+      return !!data;
+    },
+  });
+
   const createPostMutation = useMutation({
     mutationFn: async (content: string) => {
       try {
         const { data: { user }, error: userError } = await supabase.auth.getUser();
         if (userError) throw userError;
         if (!user) throw new Error("Not authenticated");
+
+        if (!schoolExists) {
+          throw new Error("School does not exist");
+        }
 
         const postData = {
           school_id: schoolId,
@@ -87,6 +127,8 @@ export const CreatePost = ({ schoolId }: { schoolId: string }) => {
         errorMessage = "You don't have permission to create posts in this school.";
       } else if (error.code === "23502") {
         errorMessage = "Missing required fields.";
+      } else if (error.code === "23503") {
+        errorMessage = "The school you're trying to post to doesn't exist.";
       } else if (error.code === "23505") {
         errorMessage = "This post already exists.";
       } else if (error.status === 409) {
@@ -129,7 +171,7 @@ export const CreatePost = ({ schoolId }: { schoolId: string }) => {
       />
       <Button 
         type="submit" 
-        disabled={!content.trim() || createPostMutation.isPending}
+        disabled={!content.trim() || createPostMutation.isPending || !schoolExists}
         className="w-full sm:w-auto"
       >
         {createPostMutation.isPending ? (
