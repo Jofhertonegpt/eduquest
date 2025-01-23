@@ -34,6 +34,31 @@ export interface Module {
   resources: LearningResource[];
   assignments: Assignment[];
   quizzes: Quiz[];
+  progress?: {
+    completed: boolean;
+    resourcesCompleted: string[];
+    assignmentsSubmitted: string[];
+    quizzesCompleted: string[];
+  };
+}
+
+export interface UserProgress {
+  userId: string;
+  moduleId: string;
+  completed: boolean;
+  resourcesCompleted: string[];
+  assignmentsSubmitted: string[];
+  quizzesCompleted: string[];
+  lastAccessed: string;
+}
+
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  role: 'student' | 'instructor' | 'admin';
+  progress: UserProgress[];
+  enrolledCourses: string[];
 }
 
 export interface Curriculum {
@@ -41,4 +66,8 @@ export interface Curriculum {
   name: string;
   description: string;
   modules: Module[];
+  enrolledUsers?: User[];
+  createdBy?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
