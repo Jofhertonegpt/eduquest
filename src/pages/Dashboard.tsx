@@ -23,7 +23,7 @@ const Dashboard = () => {
         .from("schools")
         .select("*")
         .eq("id", DEFAULT_SCHOOL.id)
-        .maybeSingle();
+        .single();
       
       if (error && error.code !== "PGRST116") throw error;
       return data as School | null;
@@ -65,7 +65,7 @@ const Dashboard = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("No user found");
 
-      const { data, error } = await supabase
+      const { data: memberData, error: memberError } = await supabase
         .from("school_members")
         .select(`
           schools (
@@ -79,12 +79,12 @@ const Dashboard = () => {
         .eq("student_id", user.id)
         .maybeSingle();
       
-      if (error && error.code !== 'PGRST116') throw error;
+      if (memberError) throw memberError;
       
-      // Transform the data to match the School type
-      return data?.schools as School | null;
+      if (!memberData) return null;
+      return memberData.schools as School;
     },
-    onSettled: async (school) => {
+    onSuccess: async (school) => {
       // If user has no school and default school exists, join it
       if (!school && defaultSchool) {
         const { data: { user } } = await supabase.auth.getUser();
@@ -110,7 +110,7 @@ const Dashboard = () => {
       else if (!school && !defaultSchool) {
         createDefaultSchool.mutate();
       }
-    },
+    }
   });
 
   if (isLoading) {
