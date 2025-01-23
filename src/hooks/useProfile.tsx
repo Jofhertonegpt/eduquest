@@ -40,7 +40,7 @@ export const useProfile = () => {
     retry: 1
   });
 
-  const updateProfile = async (updates: { name: string; level: string }) => {
+  const updateProfile = async (updates: { name: string; level: string; avatar_url?: string }) => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('No user found');
@@ -51,6 +51,7 @@ export const useProfile = () => {
           id: user.id,
           full_name: updates.name,
           level: updates.level,
+          avatar_url: updates.avatar_url,
           updated_at: new Date().toISOString(),
         });
 
