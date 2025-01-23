@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { motion } from "framer-motion";
-import { Heart, MessageSquare, Share2, Bookmark, MoreHorizontal, User } from "lucide-react";
+import { Heart, MessageSquare, Share2, Bookmark, MoreHorizontal, User, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import {
