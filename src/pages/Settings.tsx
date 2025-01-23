@@ -113,14 +113,17 @@ const Settings = () => {
                   </Button>
                   <Button
                     variant={theme === "dark" ? "default" : "outline"}
-                    className="h-24 bg-[#1A1F2C] hover:bg-[#1A1F2C]/90 text-white"
+                    className="h-24 bg-[#221F26] hover:bg-[#221F26]/90 text-[#1EAEDB]"
                     onClick={() => setTheme("dark")}
                   >
-                    Dark
+                    <div className="space-y-2">
+                      <span>Dark</span>
+                      <div className="w-12 h-1 bg-[#1EAEDB] rounded mx-auto" />
+                    </div>
                   </Button>
                   <Button
                     variant={theme === "rainbow" ? "default" : "outline"}
-                    className="h-24 bg-gradient-to-r from-[#ea384c] via-[#0EA5E9] to-[#9b87f5] text-white col-span-2"
+                    className="h-24 rainbow-gradient text-white col-span-2"
                     onClick={() => setTheme("rainbow")}
                   >
                     Rainbow
