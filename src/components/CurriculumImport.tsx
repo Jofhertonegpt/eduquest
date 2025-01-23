@@ -18,7 +18,7 @@ const CurriculumImport = ({ onImport }: Props) => {
       const curriculum = JSON.parse(text) as Curriculum;
       
       // Basic validation
-      if (!curriculum.modules || !Array.isArray(curriculum.modules)) {
+      if (!curriculum.degrees || !Array.isArray(curriculum.degrees)) {
         throw new Error("Invalid curriculum format");
       }
 
