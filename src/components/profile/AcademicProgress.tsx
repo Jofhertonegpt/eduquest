@@ -3,6 +3,19 @@ import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { degrees, certificates } from "@/data/degrees";
 
+interface Degree {
+  id: string;
+  title: string;
+  level: string;
+  estimatedDuration: string;
+}
+
+interface Certificate {
+  id: string;
+  title: string;
+  level: string;
+}
+
 interface AcademicProgressProps {
   currentDegree?: string | null;
   completedDegrees?: string[] | null;
@@ -12,19 +25,19 @@ interface AcademicProgressProps {
 export const AcademicProgress = ({ 
   currentDegree,
   completedDegrees = [],
-  certificates = []
+  certificates: certificateIds = []
 }: AcademicProgressProps) => {
   const currentDegreeData = currentDegree 
-    ? degrees.find(d => d.id === currentDegree)
+    ? degrees.find(d => d.id === currentDegree) as Degree | undefined
     : null;
 
   const completedDegreesData = degrees.filter(d => 
     completedDegrees?.includes(d.id)
-  );
+  ) as Degree[];
 
-  const certificatesData = certificates
+  const certificatesData = certificateIds
     .map(certId => certificates.find(c => c.id === certId))
-    .filter((cert): cert is typeof certificates[0] => cert !== undefined);
+    .filter((cert): cert is Certificate => cert !== undefined);
 
   return (
     <div className="glass-panel rounded-xl p-6">

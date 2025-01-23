@@ -29,8 +29,7 @@ export const ClassmatesList = ({ schoolId }: { schoolId: string }) => {
       
       if (error) throw error;
       
-      // Transform the data to match the Profile type
-      return data?.map(item => item.profiles as Profile) || [];
+      return data?.map(item => (item.profiles as Profile)) || [];
     },
     enabled: !!schoolId,
   });

@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { SchoolHeader } from "@/components/school/SchoolHeader";
 import { ClassmatesList } from "@/components/school/ClassmatesList";
@@ -13,6 +13,7 @@ type School = Database['public']['Tables']['schools']['Row'];
 
 const Dashboard = () => {
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   // Query to check if the default school exists
   const { data: defaultSchool } = useQuery({
@@ -22,14 +23,14 @@ const Dashboard = () => {
         .from("schools")
         .select("*")
         .eq("id", DEFAULT_SCHOOL.id)
-        .single();
+        .maybeSingle();
       
       if (error && error.code !== "PGRST116") throw error;
       return data as School | null;
     },
   });
 
-  // Create default school if it doesn't exist
+  // Create default school mutation
   const createDefaultSchool = useMutation({
     mutationFn: async () => {
       // Create the school
@@ -45,8 +46,11 @@ const Dashboard = () => {
         .insert(DEFAULT_SCHOOL_POSTS);
       
       if (postsError) throw postsError;
+
+      return DEFAULT_SCHOOL;
     },
-    onSuccess: () => {
+    onSuccess: (newSchool) => {
+      queryClient.setQueryData(["default-school"], newSchool);
       toast({
         title: "Welcome to the Learning Hub!",
         description: "We've created a default school to help you get started.",
@@ -76,9 +80,11 @@ const Dashboard = () => {
         .maybeSingle();
       
       if (error && error.code !== 'PGRST116') throw error;
+      
+      // Transform the data to match the School type
       return data?.schools as School | null;
     },
-    onSuccess: async (school) => {
+    onSettled: async (school) => {
       // If user has no school and default school exists, join it
       if (!school && defaultSchool) {
         const { data: { user } } = await supabase.auth.getUser();
@@ -96,6 +102,8 @@ const Dashboard = () => {
             title: "Welcome to the Learning Hub!",
             description: "You've been automatically joined to our learning community.",
           });
+          // Refetch the active school query
+          queryClient.invalidateQueries({ queryKey: ["active-school"] });
         }
       }
       // If default school doesn't exist, create it

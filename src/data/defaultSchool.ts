@@ -3,7 +3,7 @@ import { Database } from "@/lib/database.types";
 export type School = Database['public']['Tables']['schools']['Row'];
 
 export const DEFAULT_SCHOOL: School = {
-  id: "default-learning-hub",
+  id: "00000000-0000-0000-0000-000000000000", // Using a valid UUID format
   name: "Learning Hub",
   description: "Welcome to the Learning Hub! This is your starting point for understanding how to use the platform and access learning resources.",
   logo_url: null,
@@ -12,7 +12,7 @@ export const DEFAULT_SCHOOL: School = {
 
 export const DEFAULT_SCHOOL_POSTS = [
   {
-    id: "welcome-post",
+    id: "00000000-0000-0000-0000-000000000001",
     school_id: DEFAULT_SCHOOL.id,
     content: `Welcome to the Learning Hub! 🎓
 
@@ -29,7 +29,7 @@ Need help importing a curriculum? Check the example below!`,
     comments_count: 0
   },
   {
-    id: "curriculum-example",
+    id: "00000000-0000-0000-0000-000000000002",
     school_id: DEFAULT_SCHOOL.id,
     content: `Here's an example curriculum JSON format you can use:
 
