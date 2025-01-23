@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Database } from "@/lib/database.types";
+import { getMockSchoolMembersBySchoolId, getMockProfileById, mockDelay } from "@/data/mockData";
 
 type Profile = Database['public']['Tables']['profiles']['Row'];
 
@@ -11,38 +12,58 @@ export const ClassmatesList = ({ schoolId }: { schoolId: string }) => {
   const { data: classmates, isLoading } = useQuery({
     queryKey: ["classmates", schoolId],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("school_members")
-        .select(`
-          profiles!inner (
-            id,
-            full_name,
-            avatar_url,
-            level,
-            current_degree,
-            completed_degrees,
-            created_at,
-            updated_at
-          )
-        `)
-        .eq("school_id", schoolId);
-      
-      if (error) throw error;
-      
-      // Extract profiles from the nested structure and ensure proper typing
-      return data?.map(item => {
-        const profile = item.profiles as unknown as Profile;
-        return {
-          id: profile.id,
-          full_name: profile.full_name || '',
-          avatar_url: profile.avatar_url,
-          level: profile.level,
-          current_degree: profile.current_degree,
-          completed_degrees: profile.completed_degrees,
-          created_at: profile.created_at,
-          updated_at: profile.updated_at
-        } satisfies Profile;
-      }) || [];
+      try {
+        const { data, error } = await supabase
+          .from("school_members")
+          .select(`
+            profiles!inner (
+              id,
+              full_name,
+              avatar_url,
+              level,
+              current_degree,
+              completed_degrees,
+              created_at,
+              updated_at
+            )
+          `)
+          .eq("school_id", schoolId);
+        
+        if (error) throw error;
+        
+        if (!data?.length) {
+          // Use mock data if no real data is available
+          await mockDelay();
+          const mockMembers = getMockSchoolMembersBySchoolId(schoolId);
+          return mockMembers.map(member => {
+            const profile = getMockProfileById(member.student_id);
+            return profile as Profile;
+          }).filter(Boolean);
+        }
+        
+        return data?.map(item => {
+          const profile = item.profiles as unknown as Profile;
+          return {
+            id: profile.id,
+            full_name: profile.full_name || '',
+            avatar_url: profile.avatar_url,
+            level: profile.level,
+            current_degree: profile.current_degree,
+            completed_degrees: profile.completed_degrees,
+            created_at: profile.created_at,
+            updated_at: profile.updated_at
+          } satisfies Profile;
+        }) || [];
+      } catch (error) {
+        console.error("Error fetching classmates:", error);
+        // Fallback to mock data on error
+        await mockDelay();
+        const mockMembers = getMockSchoolMembersBySchoolId(schoolId);
+        return mockMembers.map(member => {
+          const profile = getMockProfileById(member.student_id);
+          return profile as Profile;
+        }).filter(Boolean);
+      }
     },
     enabled: !!schoolId,
   });

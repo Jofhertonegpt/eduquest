@@ -3,26 +3,49 @@ import { supabase } from "@/lib/supabase";
 import { motion } from "framer-motion";
 import { MessageSquare, ThumbsUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { getMockSchoolPostsBySchoolId, getMockProfileById, mockDelay } from "@/data/mockData";
 
 export const SchoolPosts = ({ schoolId }: { schoolId: string }) => {
   const { data: posts, isLoading } = useQuery({
     queryKey: ["school-posts", schoolId],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("school_posts")
-        .select(`
-          *,
-          profiles (
-            id,
-            full_name,
-            avatar_url
-          )
-        `)
-        .eq("school_id", schoolId)
-        .order("created_at", { ascending: false });
-      
-      if (error) throw error;
-      return data || [];
+      try {
+        const { data, error } = await supabase
+          .from("school_posts")
+          .select(`
+            *,
+            profiles (
+              id,
+              full_name,
+              avatar_url
+            )
+          `)
+          .eq("school_id", schoolId)
+          .order("created_at", { ascending: false });
+        
+        if (error) throw error;
+
+        if (!data?.length) {
+          // Use mock data if no real data is available
+          await mockDelay();
+          const mockPosts = getMockSchoolPostsBySchoolId(schoolId);
+          return mockPosts.map(post => ({
+            ...post,
+            profiles: getMockProfileById(post.created_by)
+          }));
+        }
+        
+        return data || [];
+      } catch (error) {
+        console.error("Error fetching posts:", error);
+        // Fallback to mock data on error
+        await mockDelay();
+        const mockPosts = getMockSchoolPostsBySchoolId(schoolId);
+        return mockPosts.map(post => ({
+          ...post,
+          profiles: getMockProfileById(post.created_by)
+        }));
+      }
     },
     enabled: !!schoolId,
   });
@@ -45,19 +68,19 @@ export const SchoolPosts = ({ schoolId }: { schoolId: string }) => {
           className="bg-card rounded-lg p-4 space-y-4 border"
         >
           <div className="flex items-center gap-2">
-            {post.profiles.avatar_url ? (
+            {post.profiles?.avatar_url ? (
               <img
                 src={post.profiles.avatar_url}
-                alt={post.profiles.full_name}
+                alt={post.profiles.full_name || ''}
                 className="h-8 w-8 rounded-full"
               />
             ) : (
               <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
-                {post.profiles.full_name?.charAt(0)}
+                {post.profiles?.full_name?.charAt(0)}
               </div>
             )}
             <div>
-              <p className="font-medium">{post.profiles.full_name}</p>
+              <p className="font-medium">{post.profiles?.full_name}</p>
               <p className="text-sm text-muted-foreground">
                 {new Date(post.created_at).toLocaleDateString()}
               </p>
