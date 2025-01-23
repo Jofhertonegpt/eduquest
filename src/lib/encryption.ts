@@ -2,7 +2,7 @@ import CryptoJS from 'crypto-js';
 import { z } from 'zod';
 
 // Encryption key should be stored in environment variables in production
-const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY || 'your-secret-key-32chars-minimum!!!';
+const ENCRYPTION_KEY = import.meta.env.VITE_ENCRYPTION_KEY || 'your-secret-key-32chars-minimum!!!';
 
 export const encryptData = (data: string): string => {
   return CryptoJS.AES.encrypt(data, ENCRYPTION_KEY).toString();

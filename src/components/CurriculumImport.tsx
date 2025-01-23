@@ -29,11 +29,13 @@ const CurriculumImport = ({ onImport }: Props) => {
         throw new Error("Invalid curriculum format: " + validationResult.error.message);
       }
 
-      // Ensure required properties are present and add default values
+      const { data } = validationResult;
+
+      // Create curriculum object with validated data
       const curriculum: Curriculum = {
-        name: sanitizeInput(validationResult.data.name),
-        description: sanitizeInput(validationResult.data.description),
-        degrees: validationResult.data.degrees.map((degree): Degree => ({
+        name: sanitizeInput(data.name),
+        description: sanitizeInput(data.description),
+        degrees: data.degrees.map((degree): Degree => ({
           id: degree.id || crypto.randomUUID(),
           title: degree.title,
           type: degree.type,
