@@ -1,19 +1,32 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { motion } from "framer-motion";
+import { DEFAULT_SCHOOL } from "@/data/defaultSchool";
 
 export const SchoolHeader = ({ schoolId }: { schoolId: string }) => {
   const { data: school } = useQuery({
     queryKey: ["school", schoolId],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("schools")
-        .select("*")
-        .eq("id", schoolId)
-        .single();
-      
-      if (error) throw error;
-      return data;
+      try {
+        const { data, error } = await supabase
+          .from("schools")
+          .select("*")
+          .eq("id", schoolId)
+          .maybeSingle();
+        
+        if (error) throw error;
+        
+        // If no school is found in the database, return the default school
+        if (!data) {
+          return DEFAULT_SCHOOL;
+        }
+        
+        return data;
+      } catch (error) {
+        console.error("Error fetching school:", error);
+        // Return default school as fallback
+        return DEFAULT_SCHOOL;
+      }
     },
     enabled: !!schoolId,
   });
