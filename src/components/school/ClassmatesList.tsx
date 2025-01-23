@@ -8,6 +8,7 @@ import { getMockSchoolMembersBySchoolId, getMockProfileById, mockDelay } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useState } from "react";
 import { MessageInput } from "@/components/messages/MessageInput";
+import { MessageList } from "@/components/messages/MessageList";
 
 type Profile = Database['public']['Tables']['profiles']['Row'];
 
