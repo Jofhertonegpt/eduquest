@@ -11,13 +11,14 @@ export const NoSchool = () => {
       animate={{ opacity: 1, y: 0 }}
       className="container mx-auto px-4 py-8 text-center max-w-2xl"
     >
-      <h1 className="text-2xl font-bold mb-4">Welcome to Your Dashboard</h1>
+      <h1 className="text-2xl font-bold mb-4">Welcome to Your Learning Journey</h1>
       <p className="text-muted-foreground mb-8">
-        To get started, you'll need to join a school. This will allow you to connect
-        with classmates and access school-specific resources.
+        You'll be automatically joined to our Learning Hub where you can find guides,
+        resources, and connect with other learners. You can also join additional schools
+        to access specific programs and communities.
       </p>
       <Button onClick={() => navigate("/join-school")}>
-        Find and Join a School
+        Browse More Schools
       </Button>
     </motion.div>
   );
