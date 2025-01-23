@@ -64,24 +64,24 @@ const Settings = () => {
         
         <Tabs defaultValue="appearance" className="space-y-6">
           <TabsList className="grid w-full grid-cols-2 lg:grid-cols-5 gap-2">
-            <TabsTrigger value="appearance">
-              <Palette className="h-4 w-4 mr-2" />
+            <TabsTrigger value="appearance" className="flex items-center gap-2">
+              <Palette className="h-4 w-4" />
               Appearance
             </TabsTrigger>
-            <TabsTrigger value="profile">
-              <User className="h-4 w-4 mr-2" />
+            <TabsTrigger value="profile" className="flex items-center gap-2">
+              <User className="h-4 w-4" />
               Profile
             </TabsTrigger>
-            <TabsTrigger value="notifications">
-              <Bell className="h-4 w-4 mr-2" />
+            <TabsTrigger value="notifications" className="flex items-center gap-2">
+              <Bell className="h-4 w-4" />
               Notifications
             </TabsTrigger>
-            <TabsTrigger value="privacy">
-              <Shield className="h-4 w-4 mr-2" />
+            <TabsTrigger value="privacy" className="flex items-center gap-2">
+              <Shield className="h-4 w-4" />
               Privacy
             </TabsTrigger>
-            <TabsTrigger value="language">
-              <Globe className="h-4 w-4 mr-2" />
+            <TabsTrigger value="language" className="flex items-center gap-2">
+              <Globe className="h-4 w-4" />
               Language
             </TabsTrigger>
           </TabsList>
@@ -105,18 +105,22 @@ const Settings = () => {
                 <Label>Color Scheme</Label>
                 <div className="grid grid-cols-2 gap-4">
                   <Button
+                    variant={theme === "light" ? "default" : "outline"}
+                    className="h-24 bg-background hover:bg-background/90"
+                    onClick={() => setTheme("light")}
+                  >
+                    Light
+                  </Button>
+                  <Button
                     variant={theme === "dark" ? "default" : "outline"}
-                    className="h-24 bg-[#1A1F2C] hover:bg-[#1A1F2C]/90"
+                    className="h-24 bg-[#1A1F2C] hover:bg-[#1A1F2C]/90 text-white"
                     onClick={() => setTheme("dark")}
                   >
-                    <div className="space-y-2">
-                      <div className="w-12 h-2 bg-[#1EAEDB] rounded" />
-                      <div className="w-8 h-2 bg-[#8B5CF6] rounded" />
-                    </div>
+                    Dark
                   </Button>
                   <Button
                     variant={theme === "rainbow" ? "default" : "outline"}
-                    className="h-24 bg-gradient-to-r from-[#ea384c] via-[#0EA5E9] to-[#9b87f5]"
+                    className="h-24 bg-gradient-to-r from-[#ea384c] via-[#0EA5E9] to-[#9b87f5] text-white col-span-2"
                     onClick={() => setTheme("rainbow")}
                   >
                     Rainbow
