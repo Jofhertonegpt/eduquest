@@ -131,17 +131,23 @@ export const CreatePost = () => {
         const fileName = `${uuidv4()}.${fileExt}`;
         const filePath = `uploads/${fileName}`;
 
-        const { error: uploadError } = await supabase.storage
-          .from('social-media')
-          .upload(filePath, file, {
-            onUploadProgress: (progress) => {
-              const percent = (progress.loaded / progress.total) * 100;
+        // Create a channel for upload progress
+        const channel = supabase.channel(`upload-${fileName}`);
+        
+        channel.subscribe((status) => {
+          if (status === 'SUBSCRIBED') {
+            channel.on('upload-progress', ({ progress }) => {
               setUploadProgress(prev => ({
                 ...prev,
-                [fileName]: percent
+                [fileName]: progress
               }));
-            }
-          });
+            });
+          }
+        });
+
+        const { error: uploadError } = await supabase.storage
+          .from('social-media')
+          .upload(filePath, file);
 
         if (uploadError) throw uploadError;
 
@@ -154,6 +160,9 @@ export const CreatePost = () => {
         } else {
           fileUrls.push(publicUrl);
         }
+        
+        // Clean up the channel
+        channel.unsubscribe();
       }
 
       await createPostMutation.mutateAsync({ content, mediaUrls, fileUrls, hashtags });
