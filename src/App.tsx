@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import Navigation from "./components/Navigation";
 import Dashboard from "./pages/Dashboard";
+import School from "./pages/School";
 import Learning from "./pages/Learning";
 import Profile from "./pages/Profile";
 import Login from "./pages/Login";
@@ -68,6 +69,17 @@ const App = () => (
                   <>
                     <Navigation />
                     <Dashboard />
+                  </>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/school"
+              element={
+                <ProtectedRoute>
+                  <>
+                    <Navigation />
+                    <School />
                   </>
                 </ProtectedRoute>
               }

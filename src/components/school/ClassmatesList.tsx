@@ -14,7 +14,8 @@ export const ClassmatesList = ({ schoolId }: { schoolId: string }) => {
       const { data, error } = await supabase
         .from("school_members")
         .select(`
-          profiles (
+          student_id,
+          profiles!inner (
             id,
             full_name,
             avatar_url,
@@ -29,7 +30,7 @@ export const ClassmatesList = ({ schoolId }: { schoolId: string }) => {
       
       if (error) throw error;
       
-      return data?.map(item => (item.profiles as Profile)) || [];
+      return data?.map(item => item.profiles) as Profile[] || [];
     },
     enabled: !!schoolId,
   });
