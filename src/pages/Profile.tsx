@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
+import { Progress } from "@/components/ui/progress";
 import { User, GraduationCap, Trophy, Settings } from "lucide-react";
 import CodeEditor from "@/components/CodeEditor";
 import { supabase } from "@/lib/supabase";
