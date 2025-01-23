@@ -35,19 +35,11 @@ export const SchoolPosts = ({ schoolId }: { schoolId: string }) => {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) throw new Error("Not authenticated");
 
-        if (schoolId === "00000000-0000-0000-0000-000000000000") {
-          const mockPosts = getMockSchoolPostsBySchoolId(schoolId);
-          return mockPosts.map(post => ({
-            ...post,
-            profiles: getMockProfileById(post.created_by)
-          }));
-        }
-
         const { data, error } = await supabase
           .from("school_posts")
           .select(`
             *,
-            profiles!school_posts_created_by_fkey (
+            profiles (
               id,
               full_name,
               avatar_url
@@ -56,10 +48,15 @@ export const SchoolPosts = ({ schoolId }: { schoolId: string }) => {
           .eq("school_id", schoolId)
           .order("created_at", { ascending: false });
         
-        if (error) throw error;
+        if (error) {
+          console.error("Error fetching posts:", error);
+          throw error;
+        }
+
+        console.log("Fetched posts:", data);
         return data as SchoolPost[];
       } catch (error) {
-        console.error("Error fetching posts:", error);
+        console.error("Error in query function:", error);
         throw error;
       }
     },
@@ -81,13 +78,9 @@ export const SchoolPosts = ({ schoolId }: { schoolId: string }) => {
       return data;
     },
     onMutate: async (postId) => {
-      // Cancel outgoing refetches
       await queryClient.cancelQueries({ queryKey: ["school-posts", schoolId] });
-
-      // Snapshot the previous value
       const previousPosts = queryClient.getQueryData<SchoolPost[]>(["school-posts", schoolId]);
 
-      // Optimistically update the posts
       queryClient.setQueryData<SchoolPost[]>(["school-posts", schoolId], (old) => 
         old?.map(post => 
           post.id === postId 
@@ -99,7 +92,6 @@ export const SchoolPosts = ({ schoolId }: { schoolId: string }) => {
       return { previousPosts };
     },
     onError: (err, postId, context) => {
-      // Revert to the previous value if there's an error
       queryClient.setQueryData(["school-posts", schoolId], context?.previousPosts);
       toast({
         title: "Error",
@@ -108,10 +100,18 @@ export const SchoolPosts = ({ schoolId }: { schoolId: string }) => {
       });
     },
     onSettled: () => {
-      // Refetch to ensure server state
       queryClient.invalidateQueries({ queryKey: ["school-posts", schoolId] });
     },
   });
+
+  if (error) {
+    console.error("Error loading posts:", error);
+    return (
+      <div className="p-4 text-center text-red-500">
+        Error loading posts. Please try again later.
+      </div>
+    );
+  }
 
   return (
     <motion.div
