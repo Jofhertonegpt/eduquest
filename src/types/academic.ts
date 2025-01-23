@@ -10,11 +10,11 @@ export interface Assignment {
 export interface CourseProgress {
   id: string;
   courseId: string;
-  completedModules: number;
-  totalModules: number;
-  currentGrade: number;
+  completedModules: number; // maps to completed_modules in DB
+  totalModules: number; // maps to total_modules in DB
+  currentGrade: number; // maps to current_grade in DB
   rank?: number;
-  totalStudents?: number;
+  totalStudents?: number; // maps to total_students in DB
 }
 
 export interface Notification {

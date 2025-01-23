@@ -12,11 +12,11 @@ export const CourseProgressCard = () => {
   const createDefaultProgress = async (userId: string) => {
     const defaultProgress = {
       user_id: userId,
-      completedModules: 0,
-      totalModules: 10, // Default value
-      currentGrade: 0,
+      completed_modules: 0,
+      total_modules: 10, // Default value
+      current_grade: 0,
       rank: null,
-      totalStudents: null
+      total_students: null
     };
 
     const { data, error } = await supabase
@@ -48,7 +48,14 @@ export const CourseProgressCard = () => {
         return createDefaultProgress(user.id);
       }
 
-      return data as CourseProgress;
+      // Transform snake_case to camelCase for frontend use
+      return {
+        ...data,
+        completedModules: data.completed_modules,
+        totalModules: data.total_modules,
+        currentGrade: data.current_grade,
+        totalStudents: data.total_students
+      } as CourseProgress;
     },
   });
 
