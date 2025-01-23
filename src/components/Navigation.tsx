@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { Home, BookOpen, User, School, MessageSquare } from "lucide-react";
+import { Home, BookOpen, User, School, MessageSquare, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const Navigation = () => {
@@ -21,6 +21,7 @@ const Navigation = () => {
       ariaLabel: "Go to Chatter",
     },
     { to: "/profile", icon: User, label: "Profile", ariaLabel: "Go to Profile" },
+    { to: "/settings", icon: Settings, label: "Settings", ariaLabel: "Go to Settings" },
   ];
 
   return (
