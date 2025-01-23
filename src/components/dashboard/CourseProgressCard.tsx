@@ -1,10 +1,34 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { BookOpen, Trophy } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
+import { useToast } from "@/components/ui/use-toast";
 import type { CourseProgress } from "@/types/academic";
 
 export const CourseProgressCard = () => {
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  const createDefaultProgress = async (userId: string) => {
+    const defaultProgress = {
+      user_id: userId,
+      completedModules: 0,
+      totalModules: 10, // Default value
+      currentGrade: 0,
+      rank: null,
+      totalStudents: null
+    };
+
+    const { data, error } = await supabase
+      .from("course_progress")
+      .insert([defaultProgress])
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  };
+
   const { data: progress, isLoading } = useQuery({
     queryKey: ["course-progress"],
     queryFn: async () => {
@@ -15,9 +39,15 @@ export const CourseProgressCard = () => {
         .from("course_progress")
         .select("*")
         .eq("user_id", user.id)
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
+
+      // If no progress exists, create a default one
+      if (!data) {
+        return createDefaultProgress(user.id);
+      }
+
       return data as CourseProgress;
     },
   });
