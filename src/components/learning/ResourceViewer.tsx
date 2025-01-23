@@ -1,4 +1,5 @@
 import type { LearningResource } from "@/types/curriculum";
+import CodeEditor from "@/components/CodeEditor";
 
 export const ResourceViewer = ({ resource }: { resource: LearningResource }) => {
   if (resource.type === 'video' && resource.embedType === 'youtube' && resource.url) {
@@ -34,9 +35,12 @@ export const ResourceViewer = ({ resource }: { resource: LearningResource }) => 
     return (
       <div className="space-y-4">
         <CodeEditor
-          value={resource.code.initialCode}
-          onChange={() => {}}
-          language="javascript"
+          initialFiles={{
+            "main.js": {
+              content: resource.code.initialCode,
+              language: "javascript"
+            }
+          }}
         />
         <div className="text-sm text-muted-foreground">
           <h4 className="font-semibold mb-2">Test Cases:</h4>
