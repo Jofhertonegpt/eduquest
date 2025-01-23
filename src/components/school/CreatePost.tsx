@@ -23,46 +23,21 @@ export const CreatePost = ({ schoolId }: { schoolId: string }) => {
     mutationFn: async (content: string) => {
       // First, verify user authentication
       const { data: { user }, error: userError } = await supabase.auth.getUser();
-      if (userError) {
-        console.error("Auth error:", userError);
-        throw userError;
-      }
-      if (!user) {
-        console.error("No user found");
-        throw new Error("Not authenticated");
-      }
+      if (userError) throw userError;
+      if (!user) throw new Error("Not authenticated");
 
-      // Check if user is a member of the school
-      const { data: membershipData, error: membershipError } = await supabase
-        .from("school_members")
-        .select("id")
-        .eq("school_id", schoolId)
-        .eq("student_id", user.id)
-        .maybeSingle();
-
-      if (membershipError) {
-        console.error("Membership check error:", membershipError);
-        throw new Error("Failed to verify school membership");
-      }
-
-      if (!membershipData && schoolId !== "00000000-0000-0000-0000-000000000000") {
-        console.error("User is not a member of this school");
-        throw new Error("You must be a member of this school to create posts");
-      }
-
-      console.log("Attempting to create post with:", {
+      // Create the post data object
+      const postData = {
         school_id: schoolId,
-        content,
+        content: content.trim(),
         created_by: user.id
-      });
+      };
+
+      console.log("Creating post with data:", postData);
 
       const { data, error } = await supabase
         .from("school_posts")
-        .insert({
-          school_id: schoolId,
-          content,
-          created_by: user.id,
-        })
+        .insert(postData)
         .select()
         .single();
 
@@ -103,9 +78,18 @@ export const CreatePost = ({ schoolId }: { schoolId: string }) => {
     onError: (error: any, variables, context) => {
       console.error("Error creating post:", error);
       queryClient.setQueryData(["school-posts", schoolId], context?.previousPosts);
+      
+      // Provide a more user-friendly error message
+      let errorMessage = "Failed to create post. Please try again.";
+      if (error.code === "42501") {
+        errorMessage = "You don't have permission to create posts in this school.";
+      } else if (error.code === "23502") {
+        errorMessage = "Missing required fields.";
+      }
+      
       toast({
         title: "Error",
-        description: error.message || "Failed to create post. Please try again.",
+        description: errorMessage,
         variant: "destructive",
       });
     },
