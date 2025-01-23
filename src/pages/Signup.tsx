@@ -5,22 +5,45 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
 import { UserPlus, Mail, Lock, User } from "lucide-react";
+import { supabase } from "@/lib/supabase";
 
 const Signup = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const handleSignup = (e: React.FormEvent) => {
+  const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Implement actual signup logic
-    toast({
-      title: "Account created",
-      description: "Welcome to our platform!",
+    setIsLoading(true);
+
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          full_name: name,
+        },
+      },
     });
-    navigate("/login");
+
+    if (error) {
+      toast({
+        variant: "destructive",
+        title: "Signup failed",
+        description: error.message,
+      });
+    } else if (data.user) {
+      toast({
+        title: "Account created",
+        description: "Welcome to our platform!",
+      });
+      navigate("/login");
+    }
+
+    setIsLoading(false);
   };
 
   return (
@@ -80,9 +103,9 @@ const Signup = () => {
             </div>
           </div>
 
-          <Button type="submit" className="w-full">
+          <Button type="submit" className="w-full" disabled={isLoading}>
             <UserPlus className="mr-2 h-4 w-4" />
-            Create account
+            {isLoading ? "Creating account..." : "Create account"}
           </Button>
         </form>
 
