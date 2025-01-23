@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { Progress } from "@/components/ui/progress";
 import { User, GraduationCap, Trophy, Settings } from "lucide-react";
 import CodeEditor from "@/components/CodeEditor";
@@ -24,7 +24,7 @@ const Profile = () => {
     level: "Intermediate",
   });
 
-  const { data: userData, isLoading } = useQuery({
+  const { data: userData, isLoading, error } = useQuery({
     queryKey: ['user-profile'],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -34,9 +34,26 @@ const Profile = () => {
         .from('profiles')
         .select('*')
         .eq('id', user.id)
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
+      
+      // If no profile exists, create one
+      if (!profile) {
+        const { data: newProfile, error: createError } = await supabase
+          .from('profiles')
+          .insert([{ 
+            id: user.id,
+            full_name: user.email?.split('@')[0] || '',
+            level: 'Intermediate'
+          }])
+          .select()
+          .single();
+
+        if (createError) throw createError;
+        return { user, profile: newProfile };
+      }
+
       return { user, profile };
     }
   });
