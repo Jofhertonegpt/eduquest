@@ -5,7 +5,6 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/hooks/use-toast";
 import { User, Loader2 } from "lucide-react";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 type Comment = {
@@ -40,7 +39,7 @@ export const PostComments = ({ postId }: { postId: string }) => {
         .from("post_comments")
         .select(`
           *,
-          author:created_by (
+          profiles!post_comments_created_by_fkey (
             id,
             full_name,
             avatar_url
@@ -49,11 +48,13 @@ export const PostComments = ({ postId }: { postId: string }) => {
         .eq("post_id", postId)
         .order("created_at", { ascending: true });
 
-      if (error) throw error;
-      return data.map(comment => ({
-        ...comment,
-        profiles: comment.author
-      }));
+      if (error) {
+        console.error("Error fetching comments:", error);
+        throw error;
+      }
+
+      console.log("Fetched comments:", data);
+      return data as Comment[];
     },
   });
 
@@ -69,7 +70,14 @@ export const PostComments = ({ postId }: { postId: string }) => {
           content,
           created_by: user.id,
         })
-        .select()
+        .select(`
+          *,
+          profiles!post_comments_created_by_fkey (
+            id,
+            full_name,
+            avatar_url
+          )
+        `)
         .single();
 
       if (error) throw error;
@@ -80,7 +88,6 @@ export const PostComments = ({ postId }: { postId: string }) => {
       
       const previousComments = queryClient.getQueryData(["post-comments", postId]);
       
-      // Optimistically add the new comment
       queryClient.setQueryData(["post-comments", postId], (old: any[]) => {
         const optimisticComment = {
           id: 'temp-' + Date.now(),
@@ -124,6 +131,10 @@ export const PostComments = ({ postId }: { postId: string }) => {
     if (!comment.trim()) return;
     createCommentMutation.mutate(comment);
   };
+
+  if (isLoading) {
+    return <div>Loading comments...</div>;
+  }
 
   return (
     <div className="space-y-4 mt-4">
