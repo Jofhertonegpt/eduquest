@@ -6,6 +6,7 @@ import { supabase } from "@/lib/supabase";
 import { useToast } from "@/hooks/use-toast";
 import { User, Loader2 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 type Comment = {
   id: string;
@@ -31,11 +32,15 @@ export const PostComments = ({ postId }: { postId: string }) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
+      if (postId.startsWith('temp-')) {
+        return [];
+      }
+
       const { data, error } = await supabase
         .from("post_comments")
         .select(`
           *,
-          profiles (
+          author:created_by (
             id,
             full_name,
             avatar_url
@@ -45,7 +50,10 @@ export const PostComments = ({ postId }: { postId: string }) => {
         .order("created_at", { ascending: true });
 
       if (error) throw error;
-      return data as Comment[];
+      return data.map(comment => ({
+        ...comment,
+        profiles: comment.author
+      }));
     },
   });
 
@@ -117,37 +125,18 @@ export const PostComments = ({ postId }: { postId: string }) => {
     createCommentMutation.mutate(comment);
   };
 
-  if (isLoading) {
-    return (
-      <div className="space-y-4 mt-4">
-        {[1, 2].map((n) => (
-          <div key={n} className="flex items-start gap-2">
-            <Skeleton className="h-6 w-6 rounded-full" />
-            <div className="flex-1 space-y-1">
-              <Skeleton className="h-4 w-24" />
-              <Skeleton className="h-3 w-full" />
-            </div>
-          </div>
-        ))}
-      </div>
-    );
-  }
-
   return (
     <div className="space-y-4 mt-4">
       {comments?.map((comment) => (
         <div key={comment.id} className="flex items-start gap-2">
-          {comment.profiles.avatar_url ? (
-            <img
-              src={comment.profiles.avatar_url}
-              alt={comment.profiles.full_name || ""}
-              className="h-6 w-6 rounded-full object-cover"
-            />
-          ) : (
-            <User className="h-6 w-6" />
-          )}
+          <Avatar className="h-6 w-6">
+            <AvatarImage src={comment.profiles?.avatar_url || undefined} />
+            <AvatarFallback>
+              <User className="h-4 w-4" />
+            </AvatarFallback>
+          </Avatar>
           <div className="flex-1">
-            <p className="text-sm font-medium">{comment.profiles.full_name}</p>
+            <p className="text-sm font-medium">{comment.profiles?.full_name || 'Anonymous'}</p>
             <p className="text-sm break-words whitespace-pre-wrap">{comment.content}</p>
           </div>
         </div>

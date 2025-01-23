@@ -23,6 +23,20 @@ export const ClassmatesList = ({ schoolId }: { schoolId: string }) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
+      if (schoolId === "00000000-0000-0000-0000-000000000000") {
+        await mockDelay();
+        return getMockSchoolMembersBySchoolId(schoolId).map(member => ({
+          id: member.student_id,
+          full_name: getMockProfileById(member.student_id).full_name,
+          avatar_url: null,
+          level: 'Beginner',
+          current_degree: null,
+          completed_degrees: [],
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        }));
+      }
+
       const { data, error } = await supabase
         .from("school_members")
         .select(`
