@@ -4,6 +4,8 @@ import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Curriculum } from "@/types/curriculum";
 import { supabase } from "@/lib/supabase";
+import { curriculumSchema, encryptData } from "@/lib/encryption";
+import { sanitizeInput } from "@/lib/supabase";
 
 interface Props {
   onImport: (curriculum: Curriculum) => void;
@@ -16,38 +18,60 @@ const CurriculumImport = ({ onImport }: Props) => {
   const handleFileImport = async (file: File) => {
     try {
       const text = await file.text();
-      const curriculum = JSON.parse(text) as Curriculum;
+      const rawCurriculum = JSON.parse(text);
       
-      // Basic validation
-      if (!curriculum.degrees || !Array.isArray(curriculum.degrees)) {
-        throw new Error("Invalid curriculum format");
+      // Validate curriculum structure
+      const validationResult = curriculumSchema.safeParse(rawCurriculum);
+      
+      if (!validationResult.success) {
+        throw new Error("Invalid curriculum format: " + validationResult.error.message);
       }
+
+      const curriculum = validationResult.data;
+
+      // Sanitize text content
+      curriculum.name = sanitizeInput(curriculum.name);
+      curriculum.description = sanitizeInput(curriculum.description);
 
       // Get the current user
       const { data: { user }, error: userError } = await supabase.auth.getUser();
       if (userError) throw userError;
       if (!user) throw new Error("Not authenticated");
 
-      // Save to Supabase
+      // Encrypt sensitive data before saving
+      const encryptedData = encryptData(JSON.stringify(curriculum));
+
+      // Save to Supabase with encrypted data
       const { error: saveError } = await supabase
         .from('imported_curricula')
         .insert({
           user_id: user.id,
-          curriculum,
+          curriculum: encryptedData,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
         });
 
       if (saveError) throw saveError;
 
+      // Create backup
+      await supabase
+        .from('curriculum_backups')
+        .insert({
+          user_id: user.id,
+          curriculum: encryptedData,
+          created_at: new Date().toISOString()
+        });
+
       onImport(curriculum);
       toast({
         title: "Success",
-        description: "Curriculum imported and saved successfully",
+        description: "Curriculum imported, encrypted, and backed up successfully",
       });
     } catch (error) {
       console.error("Import error:", error);
       toast({
         title: "Error",
-        description: "Failed to import curriculum. Please check the file format.",
+        description: error instanceof Error ? error.message : "Failed to import curriculum",
         variant: "destructive",
       });
     }
