@@ -1,44 +1,32 @@
+import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
-import { motion } from "framer-motion";
-import { Heart, MessageSquare, Share2, Bookmark, MoreHorizontal, User } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
-import { PostComments } from "@/components/school/PostComments";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { PostComments } from "@/components/school/PostComments";
+import { PostCard } from "./PostCard";
+import { PostSkeleton } from "./PostSkeleton";
+import { PostPagination } from "./PostPagination";
+import { Post } from "@/types/social";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 
-type Post = {
-  id: string;
-  content: string;
-  user_id: string;
-  created_at: string;
-  profiles?: {
-    full_name: string | null;
-    avatar_url: string | null;
-  };
-  is_liked?: boolean;
-  is_bookmarked?: boolean;
-  likes_count: number;
-  comments_count: number;
-};
+const POSTS_PER_PAGE = 10;
 
-export const PostList = ({ userId, type = "feed" }: { userId?: string; type?: "feed" | "trending" | "profile" | "likes" | "bookmarks" }) => {
+interface PostListProps {
+  userId?: string;
+  type?: "feed" | "trending" | "profile" | "likes" | "bookmarks";
+}
+
+export const PostList = ({ userId, type = "feed" }: PostListProps) => {
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
-  const { data: posts, isLoading } = useQuery({
-    queryKey: ["social-posts", type, userId],
+  const { data: postsData, isLoading } = useQuery({
+    queryKey: ["social-posts", type, userId, currentPage],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
@@ -81,7 +69,12 @@ export const PostList = ({ userId, type = "feed" }: { userId?: string; type?: "f
         query = query.order('created_at', { ascending: false });
       }
 
-      const { data: postsData, error } = await query;
+      // Add pagination
+      const from = (currentPage - 1) * POSTS_PER_PAGE;
+      const to = from + POSTS_PER_PAGE - 1;
+      query = query.range(from, to);
+
+      const { data: postsData, error, count } = await query.count();
       if (error) throw error;
 
       // Get likes and bookmarks for the current user
@@ -98,11 +91,16 @@ export const PostList = ({ userId, type = "feed" }: { userId?: string; type?: "f
       const likedPostIds = new Set(likes?.map(like => like.post_id) || []);
       const bookmarkedPostIds = new Set(bookmarks?.map(bookmark => bookmark.post_id) || []);
 
-      return postsData?.map(post => ({
+      const posts = postsData?.map(post => ({
         ...post,
         is_liked: likedPostIds.has(post.id),
         is_bookmarked: bookmarkedPostIds.has(post.id)
       })) as Post[];
+
+      return {
+        posts,
+        totalPages: Math.ceil((count || 0) / POSTS_PER_PAGE)
+      };
     },
   });
 
@@ -187,89 +185,35 @@ export const PostList = ({ userId, type = "feed" }: { userId?: string; type?: "f
     return (
       <div className="space-y-4">
         {[1, 2, 3].map((n) => (
-          <div key={n} className="p-4 border rounded-lg space-y-4 animate-pulse">
-            <div className="flex items-center gap-2">
-              <div className="w-10 h-10 rounded-full bg-muted" />
-              <div className="flex-1">
-                <div className="h-4 w-24 bg-muted rounded" />
-                <div className="h-3 w-16 bg-muted rounded mt-1" />
-              </div>
-            </div>
-            <div className="h-24 bg-muted rounded" />
-          </div>
+          <PostSkeleton key={n} />
         ))}
       </div>
     );
   }
 
   return (
-    <>
+    <ErrorBoundary>
       <div className="space-y-4">
-        {posts?.map((post) => (
-          <motion.div
+        {postsData?.posts.map((post) => (
+          <PostCard
             key={post.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="p-4 border rounded-lg space-y-4"
-          >
-            <div className="flex items-center justify-between">
-              <div 
-                className="flex items-center gap-2 cursor-pointer"
-                onClick={() => handleProfileClick(post.user_id)}
-              >
-                <Avatar>
-                  <AvatarImage src={post.profiles?.avatar_url || undefined} />
-                  <AvatarFallback>
-                    <User className="h-4 w-4" />
-                  </AvatarFallback>
-                </Avatar>
-                <div>
-                  <p className="font-medium">{post.profiles?.full_name || 'Anonymous'}</p>
-                  <p className="text-sm text-muted-foreground">
-                    {new Date(post.created_at).toLocaleDateString()}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <p className="whitespace-pre-wrap">{post.content}</p>
-
-            <div className="flex items-center gap-4">
-              <Button
-                variant="ghost"
-                size="sm"
-                className={`text-muted-foreground ${post.is_liked ? 'text-red-500' : ''}`}
-                onClick={() => likeMutation.mutate({
-                  postId: post.id,
-                  action: post.is_liked ? 'unlike' : 'like'
-                })}
-              >
-                <Heart className={`h-4 w-4 mr-2 ${post.is_liked ? 'fill-current' : ''}`} />
-                {post.likes_count || 0}
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-muted-foreground"
-                onClick={() => setSelectedPost(post)}
-              >
-                <MessageSquare className="h-4 w-4 mr-2" />
-                {post.comments_count || 0}
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                className={`text-muted-foreground ml-auto ${post.is_bookmarked ? 'text-primary' : ''}`}
-                onClick={() => bookmarkMutation.mutate({
-                  postId: post.id,
-                  action: post.is_bookmarked ? 'unbookmark' : 'bookmark'
-                })}
-              >
-                <Bookmark className={`h-4 w-4 ${post.is_bookmarked ? 'fill-current' : ''}`} />
-              </Button>
-            </div>
-          </motion.div>
+            post={post}
+            onLike={(postId, action) => likeMutation.mutate({ postId, action })}
+            onBookmark={(postId, action) => bookmarkMutation.mutate({ postId, action })}
+            onCommentClick={setSelectedPost}
+            onProfileClick={handleProfileClick}
+            isLikeLoading={likeMutation.isPending}
+            isBookmarkLoading={bookmarkMutation.isPending}
+          />
         ))}
+
+        {postsData?.totalPages > 1 && (
+          <PostPagination
+            currentPage={currentPage}
+            totalPages={postsData.totalPages}
+            onPageChange={setCurrentPage}
+          />
+        )}
       </div>
 
       <Dialog open={!!selectedPost} onOpenChange={() => setSelectedPost(null)}>
@@ -282,28 +226,20 @@ export const PostList = ({ userId, type = "feed" }: { userId?: string; type?: "f
           </DialogHeader>
           {selectedPost && (
             <div className="space-y-4">
-              <div className="flex items-center gap-2">
-                <Avatar>
-                  <AvatarImage src={selectedPost.profiles?.avatar_url || undefined} />
-                  <AvatarFallback>
-                    <User className="h-4 w-4" />
-                  </AvatarFallback>
-                </Avatar>
-                <div>
-                  <p className="font-medium">
-                    {selectedPost.profiles?.full_name || 'Anonymous'}
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    {new Date(selectedPost.created_at).toLocaleDateString()}
-                  </p>
-                </div>
-              </div>
-              <p className="whitespace-pre-wrap">{selectedPost.content}</p>
+              <PostCard
+                post={selectedPost}
+                onLike={(postId, action) => likeMutation.mutate({ postId, action })}
+                onBookmark={(postId, action) => bookmarkMutation.mutate({ postId, action })}
+                onCommentClick={() => {}}
+                onProfileClick={handleProfileClick}
+                isLikeLoading={likeMutation.isPending}
+                isBookmarkLoading={bookmarkMutation.isPending}
+              />
               <PostComments postId={selectedPost.id} />
             </div>
           )}
         </DialogContent>
       </Dialog>
-    </>
+    </ErrorBoundary>
   );
 };
