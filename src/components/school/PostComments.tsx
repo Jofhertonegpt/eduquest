@@ -11,7 +11,7 @@ type Comment = {
   id: string;
   content: string;
   created_at: string;
-  created_by: string;
+  user_id: string;
   post_id: string;
   profiles: {
     id: string;
@@ -68,7 +68,7 @@ export const PostComments = ({ postId }: { postId: string }) => {
         .insert({
           post_id: postId,
           content,
-          created_by: user.id,
+          user_id: user.id,
         })
         .select(`
           *,
