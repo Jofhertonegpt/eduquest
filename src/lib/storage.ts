@@ -6,9 +6,10 @@ export const initializeStorageBucket = async () => {
     if (!user) throw new Error('Authentication required');
 
     // First check if bucket exists
-    let { data: bucket, error: getBucketError } = await supabase.storage.getBucket('social-media');
+    const { data: buckets } = await supabase.storage.listBuckets();
+    const bucketExists = buckets?.some(bucket => bucket.name === 'social-media');
     
-    if (getBucketError && getBucketError.message.includes('Bucket not found')) {
+    if (!bucketExists) {
       console.log('Creating new storage bucket...');
       const { data, error: createError } = await supabase.storage.createBucket('social-media', {
         public: false,
@@ -29,9 +30,16 @@ export const initializeStorageBucket = async () => {
         throw createError;
       }
       console.log('Storage bucket created successfully:', data);
-    } else if (getBucketError) {
-      console.error('Error checking bucket:', getBucketError);
-      throw getBucketError;
+    }
+
+    // Update bucket public access
+    const { error: updateError } = await supabase.storage.updateBucket('social-media', {
+      public: true
+    });
+
+    if (updateError) {
+      console.error('Error updating bucket:', updateError);
+      throw updateError;
     }
 
     // Ensure the user's upload directory exists
