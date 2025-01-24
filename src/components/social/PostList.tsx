@@ -50,23 +50,29 @@ export const PostList = ({ userId, type = "feed" }: { userId?: string; type?: "f
           profiles (
             full_name,
             avatar_url
-          ),
-          social_likes (id),
-          social_bookmarks (id)
+          )
         `);
 
       if (type === "profile" && userId) {
         query = query.eq('user_id', userId);
       } else if (type === "likes" && user) {
-        query = query.in('id', supabase
+        const { data: likedPosts } = await supabase
           .from('social_likes')
           .select('post_id')
-          .eq('user_id', user.id));
+          .eq('user_id', user.id);
+        
+        if (likedPosts) {
+          query = query.in('id', likedPosts.map(like => like.post_id));
+        }
       } else if (type === "bookmarks" && user) {
-        query = query.in('id', supabase
+        const { data: bookmarkedPosts } = await supabase
           .from('social_bookmarks')
           .select('post_id')
-          .eq('user_id', user.id));
+          .eq('user_id', user.id);
+        
+        if (bookmarkedPosts) {
+          query = query.in('id', bookmarkedPosts.map(bookmark => bookmark.post_id));
+        }
       }
 
       if (type === "trending") {
@@ -75,13 +81,27 @@ export const PostList = ({ userId, type = "feed" }: { userId?: string; type?: "f
         query = query.order('created_at', { ascending: false });
       }
 
-      const { data, error } = await query;
+      const { data: postsData, error } = await query;
       if (error) throw error;
 
-      return data.map(post => ({
+      // Get likes and bookmarks for the current user
+      const { data: likes } = await supabase
+        .from('social_likes')
+        .select('post_id')
+        .eq('user_id', user.id);
+
+      const { data: bookmarks } = await supabase
+        .from('social_bookmarks')
+        .select('post_id')
+        .eq('user_id', user.id);
+
+      const likedPostIds = new Set(likes?.map(like => like.post_id) || []);
+      const bookmarkedPostIds = new Set(bookmarks?.map(bookmark => bookmark.post_id) || []);
+
+      return postsData.map(post => ({
         ...post,
-        is_liked: post.social_likes?.length > 0,
-        is_bookmarked: post.social_bookmarks?.length > 0
+        is_liked: likedPostIds.has(post.id),
+        is_bookmarked: bookmarkedPostIds.has(post.id)
       })) as Post[];
     },
   });
@@ -184,7 +204,12 @@ export const PostList = ({ userId, type = "feed" }: { userId?: string; type?: "f
             <div className="flex items-center justify-between">
               <div 
                 className="flex items-center gap-2 cursor-pointer"
-                onClick={() => navigate(`/profile/${post.user_id}`)}
+                onClick={() => {
+                  const currentUser = supabase.auth.getUser();
+                  if (currentUser) {
+                    navigate(`/profile/${post.user_id}`);
+                  }
+                }}
               >
                 <Avatar>
                   <AvatarImage src={post.profiles?.avatar_url || undefined} />
