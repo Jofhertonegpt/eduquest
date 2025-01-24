@@ -5,11 +5,13 @@ export const initializeStorageBucket = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error('Authentication required');
 
-    const { data: bucketExists } = await supabase.storage.getBucket('social-media');
+    // First check if bucket exists
+    let { data: bucket, error: getBucketError } = await supabase.storage.getBucket('social-media');
     
-    if (!bucketExists) {
-      const { data, error } = await supabase.storage.createBucket('social-media', {
-        public: false, // Changed to false for better security
+    if (getBucketError && getBucketError.message.includes('Bucket not found')) {
+      console.log('Creating new storage bucket...');
+      const { data, error: createError } = await supabase.storage.createBucket('social-media', {
+        public: false,
         allowedMimeTypes: [
           'image/jpeg',
           'image/png',
@@ -22,9 +24,19 @@ export const initializeStorageBucket = async () => {
         fileSizeLimit: 10485760 // 10MB
       });
       
-      if (error) throw error;
+      if (createError) {
+        console.error('Error creating bucket:', createError);
+        throw createError;
+      }
       console.log('Storage bucket created successfully:', data);
+    } else if (getBucketError) {
+      console.error('Error checking bucket:', getBucketError);
+      throw getBucketError;
     }
+
+    // Ensure the user's upload directory exists
+    const userUploadPath = `${user.id}/uploads`;
+    await supabase.storage.from('social-media').list(userUploadPath);
   } catch (error) {
     console.error('Error initializing storage:', error);
     throw error;
@@ -34,6 +46,9 @@ export const initializeStorageBucket = async () => {
 export const uploadFile = async (file: File, onProgress?: (progress: number) => void) => {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error('Authentication required');
+
+  // Ensure bucket exists before upload
+  await initializeStorageBucket();
 
   const fileExt = file.name.split('.').pop();
   const fileName = `${crypto.randomUUID()}.${fileExt}`;
