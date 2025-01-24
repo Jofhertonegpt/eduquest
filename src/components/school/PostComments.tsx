@@ -115,14 +115,13 @@ export const PostComments = ({ postId }: { postId: string }) => {
     },
     onSuccess: () => {
       setComment("");
+      // Invalidate both the comments and the post to update comment count
+      queryClient.invalidateQueries({ queryKey: ["post-comments", postId] });
       queryClient.invalidateQueries({ queryKey: ["social-posts"] });
       toast({
         title: "Success",
         description: "Comment added successfully!",
       });
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["post-comments", postId] });
     },
   });
 

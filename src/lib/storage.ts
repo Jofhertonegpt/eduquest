@@ -36,19 +36,6 @@ export const initializeStorageBucket = async () => {
       }
     }
 
-    // Create user's upload directory
-    const userUploadPath = `${user.id}/uploads`;
-    const { error: uploadError } = await supabase.storage
-      .from('social-media')
-      .upload(`${userUploadPath}/.keep`, new Blob([''], { type: 'text/plain' }), {
-        upsert: true
-      });
-
-    if (uploadError && uploadError.message !== 'The resource already exists') {
-      console.error('Error creating user directory:', uploadError);
-      throw uploadError;
-    }
-
     return true;
   } catch (error) {
     console.error('Error initializing storage:', error);
@@ -57,33 +44,40 @@ export const initializeStorageBucket = async () => {
 };
 
 export const uploadFile = async (file: File, onProgress?: (progress: number) => void) => {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error('Authentication required');
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('Authentication required');
 
-  const fileExt = file.name.split('.').pop();
-  const fileName = `${crypto.randomUUID()}.${fileExt}`;
-  const filePath = `${user.id}/uploads/${fileName}`;
+    await initializeStorageBucket();
 
-  const { error: uploadError, data } = await supabase.storage
-    .from('social-media')
-    .upload(filePath, file, {
-      cacheControl: '3600',
-      upsert: false
-    });
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${crypto.randomUUID()}.${fileExt}`;
+    const filePath = `${user.id}/uploads/${fileName}`;
 
-  if (uploadError) throw uploadError;
+    const { error: uploadError, data } = await supabase.storage
+      .from('social-media')
+      .upload(filePath, file, {
+        cacheControl: '3600',
+        upsert: false
+      });
 
-  // Simulate progress since onUploadProgress is no longer available
-  if (onProgress) {
-    onProgress(100);
+    if (uploadError) throw uploadError;
+
+    // Simulate progress since onUploadProgress is no longer available
+    if (onProgress) {
+      onProgress(100);
+    }
+
+    const { data: { publicUrl } } = supabase.storage
+      .from('social-media')
+      .getPublicUrl(filePath);
+
+    return { 
+      publicUrl, 
+      isMedia: file.type.startsWith('image/') || file.type.startsWith('video/') 
+    };
+  } catch (error) {
+    console.error('Error uploading file:', error);
+    throw error;
   }
-
-  const { data: { publicUrl } } = supabase.storage
-    .from('social-media')
-    .getPublicUrl(filePath);
-
-  return { 
-    publicUrl, 
-    isMedia: file.type.startsWith('image/') || file.type.startsWith('video/') 
-  };
 };
