@@ -36,7 +36,7 @@ export const PostComments = ({ postId }: { postId: string }) => {
       }
 
       const { data, error } = await supabase
-        .from("post_comments")
+        .from("social_comments")
         .select(`
           *,
           profiles (
@@ -64,7 +64,7 @@ export const PostComments = ({ postId }: { postId: string }) => {
       if (!user) throw new Error("Not authenticated");
 
       const { data, error } = await supabase
-        .from("post_comments")
+        .from("social_comments")
         .insert({
           post_id: postId,
           content,
@@ -115,7 +115,7 @@ export const PostComments = ({ postId }: { postId: string }) => {
     },
     onSuccess: () => {
       setComment("");
-      queryClient.invalidateQueries({ queryKey: ["school-posts"] });
+      queryClient.invalidateQueries({ queryKey: ["social-posts"] });
       toast({
         title: "Success",
         description: "Comment added successfully!",
