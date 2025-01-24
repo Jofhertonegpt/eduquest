@@ -1,13 +1,13 @@
 import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Input } from "@/components/ui/input";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/hooks/use-toast";
-import { Upload, Image, FileText, Video, X, Loader2 } from "lucide-react";
-import { v4 as uuidv4 } from "uuid";
-import { Progress } from "@/components/ui/progress";
+import { Upload, Loader2 } from "lucide-react";
+import { FilePreview } from "./FilePreview";
+import { HashtagInput } from "./HashtagInput";
+import { initializeStorageBucket, uploadFile } from "@/lib/storage";
 
 export const CreatePost = () => {
   const [content, setContent] = useState("");
@@ -123,62 +123,24 @@ export const CreatePost = () => {
     
     setIsUploading(true);
     try {
+      await initializeStorageBucket();
+
       const mediaUrls: string[] = [];
       const fileUrls: string[] = [];
 
       for (const file of files) {
-        const fileExt = file.name.split('.').pop();
-        const fileName = `${uuidv4()}.${fileExt}`;
-        const filePath = `uploads/${fileName}`;
-
-        const channel = supabase.channel(`upload-${fileName}`);
-        
-        channel.subscribe((status) => {
-          if (status === 'SUBSCRIBED') {
-            channel.on('upload-progress', ({ progress }) => {
-              setUploadProgress(prev => ({
-                ...prev,
-                [fileName]: progress
-              }));
-            });
-          }
+        const { publicUrl, isMedia } = await uploadFile(file, (progress) => {
+          setUploadProgress(prev => ({
+            ...prev,
+            [file.name]: progress
+          }));
         });
 
-        // Check if bucket exists and create if it doesn't
-        const { data: bucketExists } = await supabase.storage.getBucket('social-media');
-        if (!bucketExists) {
-          await supabase.storage.createBucket('social-media', {
-            public: true,
-            allowedMimeTypes: [
-              'image/jpeg',
-              'image/png',
-              'image/gif',
-              'video/mp4',
-              'application/pdf',
-              'application/msword',
-              'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-            ],
-            fileSizeLimit: 10485760 // 10MB
-          });
-        }
-
-        const { error: uploadError } = await supabase.storage
-          .from('social-media')
-          .upload(filePath, file);
-
-        if (uploadError) throw uploadError;
-
-        const { data: { publicUrl } } = supabase.storage
-          .from('social-media')
-          .getPublicUrl(filePath);
-
-        if (file.type.startsWith('image/') || file.type.startsWith('video/')) {
+        if (isMedia) {
           mediaUrls.push(publicUrl);
         } else {
           fileUrls.push(publicUrl);
         }
-        
-        channel.unsubscribe();
       }
 
       await createPostMutation.mutateAsync({ content, mediaUrls, fileUrls, hashtags });
@@ -194,42 +156,6 @@ export const CreatePost = () => {
     }
   };
 
-  const renderFilePreview = (file: File) => {
-    const progress = uploadProgress[file.name] || 0;
-
-    return (
-      <div key={file.name} className="flex items-center gap-2 bg-muted p-2 rounded relative">
-        {file.type.startsWith('image/') && (
-          <div className="relative w-12 h-12">
-            <img
-              src={URL.createObjectURL(file)}
-              alt={file.name}
-              className="w-12 h-12 object-cover rounded"
-            />
-          </div>
-        )}
-        {file.type.startsWith('video/') && <Video className="h-4 w-4" />}
-        {!file.type.startsWith('image/') && !file.type.startsWith('video/') && (
-          <FileText className="h-4 w-4" />
-        )}
-        <div className="flex-1">
-          <p className="text-sm truncate max-w-[150px]">{file.name}</p>
-          {isUploading && (
-            <Progress value={progress} className="h-1 mt-1" />
-          )}
-        </div>
-        <button
-          type="button"
-          onClick={() => setFiles(files.filter(f => f !== file))}
-          className="hover:text-destructive"
-          disabled={isUploading}
-        >
-          <X className="h-4 w-4" />
-        </button>
-      </div>
-    );
-  };
-
   return (
     <form onSubmit={handleSubmit} className="space-y-4 p-4 border rounded-lg bg-card">
       <Textarea
@@ -240,29 +166,14 @@ export const CreatePost = () => {
         disabled={isUploading}
       />
       
-      <div className="flex flex-wrap gap-2">
-        {hashtags.map((tag, index) => (
-          <div key={index} className="flex items-center gap-1 bg-primary/10 px-2 py-1 rounded">
-            <span>{tag}</span>
-            <button
-              type="button"
-              onClick={() => setHashtags(hashtags.filter((_, i) => i !== index))}
-              className="hover:text-destructive"
-              disabled={isUploading}
-            >
-              <X className="h-4 w-4" />
-            </button>
-          </div>
-        ))}
-        <Input
-          value={hashtagInput}
-          onChange={(e) => setHashtagInput(e.target.value.replace(/\s/g, ''))}
-          onKeyDown={handleHashtagAdd}
-          placeholder="Add hashtags..."
-          className="w-32"
-          disabled={isUploading}
-        />
-      </div>
+      <HashtagInput
+        hashtags={hashtags}
+        hashtagInput={hashtagInput}
+        isUploading={isUploading}
+        onHashtagInputChange={setHashtagInput}
+        onHashtagAdd={handleHashtagAdd}
+        onHashtagRemove={(index) => setHashtags(hashtags.filter((_, i) => i !== index))}
+      />
 
       <input
         type="file"
@@ -275,7 +186,15 @@ export const CreatePost = () => {
       />
 
       <div className="flex flex-wrap gap-2">
-        {files.map(renderFilePreview)}
+        {files.map((file) => (
+          <FilePreview
+            key={file.name}
+            file={file}
+            progress={uploadProgress[file.name] || 0}
+            isUploading={isUploading}
+            onRemove={(fileToRemove) => setFiles(files.filter(f => f !== fileToRemove))}
+          />
+        ))}
       </div>
 
       <div className="flex justify-between items-center">
