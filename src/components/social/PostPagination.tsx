@@ -1,10 +1,9 @@
+import { Button } from "@/components/ui/button";
 import {
   Pagination,
   PaginationContent,
   PaginationItem,
   PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
 } from "@/components/ui/pagination";
 
 interface PostPaginationProps {
@@ -22,11 +21,15 @@ export const PostPagination = ({
     <Pagination className="mt-4">
       <PaginationContent>
         <PaginationItem>
-          <PaginationPrevious
+          <Button
+            variant="outline"
+            size="sm"
             onClick={() => onPageChange(currentPage - 1)}
             disabled={currentPage === 1}
             aria-label="Go to previous page"
-          />
+          >
+            Previous
+          </Button>
         </PaginationItem>
         {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
           <PaginationItem key={page}>
@@ -41,11 +44,15 @@ export const PostPagination = ({
           </PaginationItem>
         ))}
         <PaginationItem>
-          <PaginationNext
+          <Button
+            variant="outline"
+            size="sm"
             onClick={() => onPageChange(currentPage + 1)}
             disabled={currentPage === totalPages}
             aria-label="Go to next page"
-          />
+          >
+            Next
+          </Button>
         </PaginationItem>
       </PaginationContent>
     </Pagination>
