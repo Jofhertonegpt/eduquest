@@ -1,6 +1,6 @@
 import { supabase } from "./supabase";
 
-interface UploadResult {
+export interface UploadResult {
   text?: string;
   publicUrl?: string;
   isMedia?: boolean;
@@ -17,9 +17,7 @@ export const uploadFile = async (file: File, onProgress?: (progress: number) => 
         const reader = new FileReader();
         reader.onload = async (e) => {
           if (e.target?.result) {
-            if (onProgress) {
-              onProgress(100);
-            }
+            if (onProgress) onProgress(100);
             resolve({ text: e.target.result as string });
           } else {
             reject(new Error('Failed to read file'));
@@ -30,32 +28,9 @@ export const uploadFile = async (file: File, onProgress?: (progress: number) => 
       });
     }
 
-    // For social media posts, handle as regular file upload
-    const fileExt = file.name.split('.').pop();
-    const fileName = `${crypto.randomUUID()}.${fileExt}`;
-    const filePath = `${user.id}/uploads/${fileName}`;
-
-    const { error: uploadError } = await supabase.storage
-      .from('uploads')
-      .upload(filePath, file, {
-        cacheControl: '3600',
-        upsert: false
-      });
-
-    if (uploadError) throw uploadError;
-
-    if (onProgress) {
-      onProgress(100);
-    }
-
-    const { data: { publicUrl } } = supabase.storage
-      .from('uploads')
-      .getPublicUrl(filePath);
-
-    return { 
-      publicUrl, 
-      isMedia: file.type.startsWith('image/') || file.type.startsWith('video/') 
-    };
+    // For other files, return empty object as we're focusing on curriculum imports
+    if (onProgress) onProgress(100);
+    return {};
   } catch (error) {
     console.error('Error handling file:', error);
     throw error;
