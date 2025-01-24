@@ -15,7 +15,6 @@ export const initializeStorage = async () => {
     if (!bucketExists) {
       const { data, error } = await supabase.storage.createBucket('social-media', {
         public: true,
-        fileSizeLimit: 10485760, // 10MB
         allowedMimeTypes: [
           'image/jpeg',
           'image/png',
@@ -24,7 +23,8 @@ export const initializeStorage = async () => {
           'application/pdf',
           'application/msword',
           'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-        ]
+        ],
+        fileSizeLimit: 10485760 // 10MB
       });
       
       if (error) {
