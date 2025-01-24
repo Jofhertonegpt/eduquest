@@ -15,8 +15,6 @@ interface PostPage {
   nextPage: number | null;
 }
 
-const POSTS_PER_PAGE = 10;
-
 interface PostListProps {
   userId?: string;
   type?: "feed" | "trending" | "profile" | "likes" | "bookmarks";
@@ -38,7 +36,7 @@ export const PostList = ({ userId, type = "feed" }: PostListProps) => {
     error
   } = useInfiniteQuery<PostPage>({
     queryKey: ["social-posts", type, userId],
-    queryFn: async ({ pageParam }: { pageParam: number }) => {
+    queryFn: async ({ pageParam = 0 }) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
@@ -51,7 +49,7 @@ export const PostList = ({ userId, type = "feed" }: PostListProps) => {
             avatar_url
           )
         `)
-        .range(pageParam * POSTS_PER_PAGE, (pageParam + 1) * POSTS_PER_PAGE - 1);
+        .range(pageParam * 10, (pageParam + 1) * 10 - 1);
 
       if (type === "profile" && userId) {
         query = query.eq('user_id', userId);
@@ -105,11 +103,11 @@ export const PostList = ({ userId, type = "feed" }: PostListProps) => {
 
       return {
         posts: postsWithMeta,
-        nextPage: posts?.length === POSTS_PER_PAGE ? pageParam + 1 : null
+        nextPage: posts?.length === 10 ? pageParam + 1 : null
       };
     },
+    initialPageParam: 0,
     getNextPageParam: (lastPage) => lastPage.nextPage,
-    initialPageParam: 0
   });
 
   useEffect(() => {
