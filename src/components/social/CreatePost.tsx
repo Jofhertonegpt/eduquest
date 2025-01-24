@@ -7,7 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Upload, Loader2 } from "lucide-react";
 import { FilePreview } from "./FilePreview";
 import { HashtagInput } from "./HashtagInput";
-import { initializeStorageBucket, uploadFile } from "@/lib/storage";
+import { uploadFile } from "@/lib/storage";
 
 export const CreatePost = () => {
   const [content, setContent] = useState("");
@@ -123,23 +123,23 @@ export const CreatePost = () => {
     
     setIsUploading(true);
     try {
-      await initializeStorageBucket();
-
       const mediaUrls: string[] = [];
       const fileUrls: string[] = [];
 
       for (const file of files) {
-        const { publicUrl, isMedia } = await uploadFile(file, (progress) => {
+        const result = await uploadFile(file, (progress) => {
           setUploadProgress(prev => ({
             ...prev,
             [file.name]: progress
           }));
         });
 
-        if (isMedia) {
-          mediaUrls.push(publicUrl);
-        } else {
-          fileUrls.push(publicUrl);
+        if (result.publicUrl) {
+          if (result.isMedia) {
+            mediaUrls.push(result.publicUrl);
+          } else {
+            fileUrls.push(result.publicUrl);
+          }
         }
       }
 
