@@ -1,15 +1,14 @@
-import { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useState, useEffect, useRef } from "react";
+import { useInfiniteQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { PostComments } from "@/components/school/PostComments";
+import ErrorBoundary from "@/components/ErrorBoundary";
 import { PostCard } from "./PostCard";
 import { PostSkeleton } from "./PostSkeleton";
-import { PostPagination } from "./PostPagination";
 import { Post } from "@/types/social";
-import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 const POSTS_PER_PAGE = 10;
 
@@ -20,14 +19,21 @@ interface PostListProps {
 
 export const PostList = ({ userId, type = "feed" }: PostListProps) => {
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
-  const [currentPage, setCurrentPage] = useState(1);
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+  const observerTarget = useRef<HTMLDivElement>(null);
 
-  const { data: postsData, isLoading } = useQuery({
-    queryKey: ["social-posts", type, userId, currentPage],
-    queryFn: async () => {
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading,
+    error
+  } = useInfiniteQuery({
+    queryKey: ["social-posts", type, userId],
+    queryFn: async ({ pageParam = 0 }) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
@@ -39,7 +45,8 @@ export const PostList = ({ userId, type = "feed" }: PostListProps) => {
             full_name,
             avatar_url
           )
-        `);
+        `)
+        .range(pageParam * POSTS_PER_PAGE, (pageParam + 1) * POSTS_PER_PAGE - 1);
 
       if (type === "profile" && userId) {
         query = query.eq('user_id', userId);
@@ -69,15 +76,9 @@ export const PostList = ({ userId, type = "feed" }: PostListProps) => {
         query = query.order('created_at', { ascending: false });
       }
 
-      // Add pagination
-      const from = (currentPage - 1) * POSTS_PER_PAGE;
-      const to = from + POSTS_PER_PAGE - 1;
-      query = query.range(from, to);
-
-      const { data: postsData, error, count } = await query.count();
+      const { data: posts, error } = await query;
       if (error) throw error;
 
-      // Get likes and bookmarks for the current user
       const { data: likes } = await supabase
         .from('social_likes')
         .select('post_id')
@@ -91,18 +92,34 @@ export const PostList = ({ userId, type = "feed" }: PostListProps) => {
       const likedPostIds = new Set(likes?.map(like => like.post_id) || []);
       const bookmarkedPostIds = new Set(bookmarks?.map(bookmark => bookmark.post_id) || []);
 
-      const posts = postsData?.map(post => ({
-        ...post,
-        is_liked: likedPostIds.has(post.id),
-        is_bookmarked: bookmarkedPostIds.has(post.id)
-      })) as Post[];
-
       return {
-        posts,
-        totalPages: Math.ceil((count || 0) / POSTS_PER_PAGE)
+        posts: posts?.map(post => ({
+          ...post,
+          is_liked: likedPostIds.has(post.id),
+          is_bookmarked: bookmarkedPostIds.has(post.id)
+        })) as Post[],
+        nextPage: posts?.length === POSTS_PER_PAGE ? pageParam + 1 : undefined
       };
     },
+    getNextPageParam: (lastPage) => lastPage.nextPage,
   });
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
+          fetchNextPage();
+        }
+      },
+      { threshold: 0.5 }
+    );
+
+    if (observerTarget.current) {
+      observer.observe(observerTarget.current);
+    }
+
+    return () => observer.disconnect();
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   const likeMutation = useMutation({
     mutationFn: async ({ postId, action }: { postId: string; action: 'like' | 'unlike' }) => {
@@ -174,19 +191,10 @@ export const PostList = ({ userId, type = "feed" }: PostListProps) => {
     },
   });
 
-  const handleProfileClick = async (userId: string) => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (user) {
-      navigate(`/profile/${userId}`);
-    }
-  };
-
-  if (isLoading) {
+  if (error) {
     return (
-      <div className="space-y-4">
-        {[1, 2, 3].map((n) => (
-          <PostSkeleton key={n} />
-        ))}
+      <div className="p-4 text-center text-red-500">
+        Error loading posts. Please try again later.
       </div>
     );
   }
@@ -194,25 +202,29 @@ export const PostList = ({ userId, type = "feed" }: PostListProps) => {
   return (
     <ErrorBoundary>
       <div className="space-y-4">
-        {postsData?.posts.map((post) => (
-          <PostCard
-            key={post.id}
-            post={post}
-            onLike={(postId, action) => likeMutation.mutate({ postId, action })}
-            onBookmark={(postId, action) => bookmarkMutation.mutate({ postId, action })}
-            onCommentClick={setSelectedPost}
-            onProfileClick={handleProfileClick}
-            isLikeLoading={likeMutation.isPending}
-            isBookmarkLoading={bookmarkMutation.isPending}
-          />
-        ))}
-
-        {postsData?.totalPages > 1 && (
-          <PostPagination
-            currentPage={currentPage}
-            totalPages={postsData.totalPages}
-            onPageChange={setCurrentPage}
-          />
+        {isLoading ? (
+          Array.from({ length: 3 }).map((_, i) => <PostSkeleton key={i} />)
+        ) : (
+          <>
+            {data?.pages.map((page, i) => (
+              <div key={i} className="space-y-4">
+                {page.posts.map((post) => (
+                  <PostCard
+                    key={post.id}
+                    post={post}
+                    onLike={(postId, action) => likeMutation.mutate({ postId, action })}
+                    onBookmark={(postId, action) => bookmarkMutation.mutate({ postId, action })}
+                    onCommentClick={setSelectedPost}
+                    onProfileClick={(userId) => navigate(`/profile/${userId}`)}
+                    isLikeLoading={likeMutation.isPending}
+                    isBookmarkLoading={bookmarkMutation.isPending}
+                  />
+                ))}
+              </div>
+            ))}
+            <div ref={observerTarget} className="h-10" />
+            {isFetchingNextPage && <PostSkeleton />}
+          </>
         )}
       </div>
 
@@ -231,7 +243,7 @@ export const PostList = ({ userId, type = "feed" }: PostListProps) => {
                 onLike={(postId, action) => likeMutation.mutate({ postId, action })}
                 onBookmark={(postId, action) => bookmarkMutation.mutate({ postId, action })}
                 onCommentClick={() => {}}
-                onProfileClick={handleProfileClick}
+                onProfileClick={(userId) => navigate(`/profile/${userId}`)}
                 isLikeLoading={likeMutation.isPending}
                 isBookmarkLoading={bookmarkMutation.isPending}
               />
