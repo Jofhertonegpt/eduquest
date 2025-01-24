@@ -8,7 +8,12 @@ import { PostComments } from "@/components/school/PostComments";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { PostCard } from "./PostCard";
 import { PostSkeleton } from "./PostSkeleton";
-import { Post } from "@/types/social";
+import type { Post } from "@/types/social";
+
+interface PostPage {
+  posts: Post[];
+  nextPage: number | null;
+}
 
 const POSTS_PER_PAGE = 10;
 
@@ -31,7 +36,7 @@ export const PostList = ({ userId, type = "feed" }: PostListProps) => {
     isFetchingNextPage,
     isLoading,
     error
-  } = useInfiniteQuery({
+  } = useInfiniteQuery<PostPage>({
     queryKey: ["social-posts", type, userId],
     queryFn: async ({ pageParam = 0 }) => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -92,16 +97,19 @@ export const PostList = ({ userId, type = "feed" }: PostListProps) => {
       const likedPostIds = new Set(likes?.map(like => like.post_id) || []);
       const bookmarkedPostIds = new Set(bookmarks?.map(bookmark => bookmark.post_id) || []);
 
+      const postsWithMeta = posts?.map(post => ({
+        ...post,
+        is_liked: likedPostIds.has(post.id),
+        is_bookmarked: bookmarkedPostIds.has(post.id)
+      })) as Post[];
+
       return {
-        posts: posts?.map(post => ({
-          ...post,
-          is_liked: likedPostIds.has(post.id),
-          is_bookmarked: bookmarkedPostIds.has(post.id)
-        })) as Post[],
-        nextPage: posts?.length === POSTS_PER_PAGE ? pageParam + 1 : undefined
+        posts: postsWithMeta,
+        nextPage: posts?.length === POSTS_PER_PAGE ? pageParam + 1 : null
       };
     },
     getNextPageParam: (lastPage) => lastPage.nextPage,
+    initialPageParam: 0
   });
 
   useEffect(() => {
