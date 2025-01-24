@@ -4,8 +4,12 @@ import { useProfile } from "@/hooks/useProfile";
 import { ProfileHeader } from "@/components/profile/ProfileHeader";
 import { AcademicProgress } from "@/components/profile/AcademicProgress";
 import { Achievements } from "@/components/profile/Achievements";
+import { PostList } from "@/components/social/PostList";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useParams } from "react-router-dom";
 
 const Profile = () => {
+  const { id } = useParams();
   const { userData, isLoading, updateProfile } = useProfile();
   const [editMode, setEditMode] = useState(false);
   const [profile, setProfile] = useState({
@@ -13,6 +17,8 @@ const Profile = () => {
     email: "",
     level: "Intermediate",
   });
+
+  const isOwnProfile = !id || (userData?.user && id === userData.user.id);
 
   useEffect(() => {
     if (userData) {
@@ -44,7 +50,7 @@ const Profile = () => {
           <ProfileHeader
             name={profile.name}
             email={profile.email}
-            editMode={editMode}
+            editMode={editMode && isOwnProfile}
             onNameChange={(name) => setProfile({ ...profile, name })}
             onEditToggle={() => setEditMode(true)}
             onSave={() => {
@@ -57,11 +63,39 @@ const Profile = () => {
           />
         </div>
 
-        <AcademicProgress
-          currentDegree={userData?.profile?.current_degree}
-        />
+        {isOwnProfile && (
+          <>
+            <AcademicProgress
+              currentDegree={userData?.profile?.current_degree}
+            />
+            <Achievements />
+          </>
+        )}
 
-        <Achievements />
+        <Tabs defaultValue="posts" className="w-full">
+          <TabsList className="w-full">
+            <TabsTrigger value="posts" className="flex-1">Posts</TabsTrigger>
+            {isOwnProfile && (
+              <>
+                <TabsTrigger value="likes" className="flex-1">Likes</TabsTrigger>
+                <TabsTrigger value="bookmarks" className="flex-1">Bookmarks</TabsTrigger>
+              </>
+            )}
+          </TabsList>
+          <TabsContent value="posts">
+            <PostList userId={id || userData?.user?.id} type="profile" />
+          </TabsContent>
+          {isOwnProfile && (
+            <>
+              <TabsContent value="likes">
+                <PostList type="likes" />
+              </TabsContent>
+              <TabsContent value="bookmarks">
+                <PostList type="bookmarks" />
+              </TabsContent>
+            </>
+          )}
+        </Tabs>
       </div>
     </motion.div>
   );

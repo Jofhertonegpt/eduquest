@@ -1,43 +1,44 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { motion } from "framer-motion";
-import { Heart, MessageSquare, Share2, Bookmark, MoreHorizontal, User, FileText } from "lucide-react";
+import { Heart, MessageSquare, Share2, Bookmark, MoreHorizontal, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { PostComments } from "@/components/school/PostComments";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useState } from "react";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { useNavigate } from "react-router-dom";
 
 type Post = {
   id: string;
   content: string;
   user_id: string;
-  media_urls: string[];
-  file_urls: string[];
   created_at: string;
-  hashtags: string[];
-  likes_count: number;
-  comments_count: number;
-  shares_count: number;
   profiles?: {
     full_name: string | null;
     avatar_url: string | null;
   };
+  is_liked?: boolean;
+  is_bookmarked?: boolean;
+  likes_count: number;
+  comments_count: number;
 };
 
-export const PostList = ({ type = "feed" }: { type?: "feed" | "trending" }) => {
+export const PostList = ({ userId, type = "feed" }: { userId?: string; type?: "feed" | "trending" | "profile" | "likes" | "bookmarks" }) => {
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   const { data: posts, isLoading } = useQuery({
-    queryKey: ["social-posts", type],
+    queryKey: ["social-posts", type, userId],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
@@ -49,37 +50,60 @@ export const PostList = ({ type = "feed" }: { type?: "feed" | "trending" }) => {
           profiles (
             full_name,
             avatar_url
-          )
+          ),
+          social_likes (id),
+          social_bookmarks (id)
         `);
 
+      if (type === "profile" && userId) {
+        query = query.eq('user_id', userId);
+      } else if (type === "likes" && user) {
+        query = query.in('id', supabase
+          .from('social_likes')
+          .select('post_id')
+          .eq('user_id', user.id));
+      } else if (type === "bookmarks" && user) {
+        query = query.in('id', supabase
+          .from('social_bookmarks')
+          .select('post_id')
+          .eq('user_id', user.id));
+      }
+
       if (type === "trending") {
-        query = query
-          .order('likes_count', { ascending: false })
-          .order('comments_count', { ascending: false })
-          .limit(10);
+        query = query.order('likes_count', { ascending: false });
       } else {
         query = query.order('created_at', { ascending: false });
       }
 
       const { data, error } = await query;
       if (error) throw error;
-      return data as Post[];
+
+      return data.map(post => ({
+        ...post,
+        is_liked: post.social_likes?.length > 0,
+        is_bookmarked: post.social_bookmarks?.length > 0
+      })) as Post[];
     },
   });
 
   const likeMutation = useMutation({
-    mutationFn: async (postId: string) => {
+    mutationFn: async ({ postId, action }: { postId: string; action: 'like' | 'unlike' }) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
-      const { data, error } = await supabase
-        .from("social_likes")
-        .insert({ post_id: postId, user_id: user.id })
-        .select()
-        .single();
-
-      if (error) throw error;
-      return data;
+      if (action === 'like') {
+        const { error } = await supabase
+          .from("social_likes")
+          .insert({ post_id: postId, user_id: user.id });
+        if (error) throw error;
+      } else {
+        const { error } = await supabase
+          .from("social_likes")
+          .delete()
+          .eq('post_id', postId)
+          .eq('user_id', user.id);
+        if (error) throw error;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["social-posts"] });
@@ -87,28 +111,43 @@ export const PostList = ({ type = "feed" }: { type?: "feed" | "trending" }) => {
     onError: () => {
       toast({
         title: "Error",
-        description: "Failed to like post. Please try again.",
+        description: "Failed to update like. Please try again.",
         variant: "destructive",
       });
     },
   });
 
-  const shareMutation = useMutation({
-    mutationFn: async (postId: string) => {
-      // In a real app, this would create a new post referencing the original
+  const bookmarkMutation = useMutation({
+    mutationFn: async ({ postId, action }: { postId: string; action: 'bookmark' | 'unbookmark' }) => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not authenticated");
+
+      if (action === 'bookmark') {
+        const { error } = await supabase
+          .from("social_bookmarks")
+          .insert({ post_id: postId, user_id: user.id });
+        if (error) throw error;
+      } else {
+        const { error } = await supabase
+          .from("social_bookmarks")
+          .delete()
+          .eq('post_id', postId)
+          .eq('user_id', user.id);
+        if (error) throw error;
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["social-posts"] });
       toast({
-        title: "Shared!",
-        description: "Post has been shared to your profile.",
+        title: "Success",
+        description: "Bookmark updated successfully!",
       });
     },
-  });
-
-  const bookmarkMutation = useMutation({
-    mutationFn: async (postId: string) => {
-      // In a real app, this would save the post to user's bookmarks
+    onError: () => {
       toast({
-        title: "Bookmarked!",
-        description: "Post has been saved to your bookmarks.",
+        title: "Error",
+        description: "Failed to update bookmark. Please try again.",
+        variant: "destructive",
       });
     },
   });
@@ -143,7 +182,10 @@ export const PostList = ({ type = "feed" }: { type?: "feed" | "trending" }) => {
             className="p-4 border rounded-lg space-y-4"
           >
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
+              <div 
+                className="flex items-center gap-2 cursor-pointer"
+                onClick={() => navigate(`/profile/${post.user_id}`)}
+              >
                 <Avatar>
                   <AvatarImage src={post.profiles?.avatar_url || undefined} />
                   <AvatarFallback>
@@ -157,87 +199,21 @@ export const PostList = ({ type = "feed" }: { type?: "feed" | "trending" }) => {
                   </p>
                 </div>
               </div>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon">
-                    <MoreHorizontal className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={() => setSelectedPost(post)}>
-                    View Details
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => navigator.clipboard.writeText(post.content)}>
-                    Copy Text
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
             </div>
 
             <p className="whitespace-pre-wrap">{post.content}</p>
-
-            {post.hashtags?.length > 0 && (
-              <div className="flex flex-wrap gap-2">
-                {post.hashtags.map((tag, index) => (
-                  <span key={index} className="text-primary text-sm">
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            )}
-
-            {post.media_urls?.length > 0 && (
-              <div className="grid grid-cols-2 gap-2">
-                {post.media_urls.map((url, index) => {
-                  if (url.match(/\.(jpg|jpeg|png|gif)$/i)) {
-                    return (
-                      <img
-                        key={index}
-                        src={url}
-                        alt={`Media ${index + 1}`}
-                        className="rounded-lg object-cover w-full h-48"
-                      />
-                    );
-                  } else if (url.match(/\.(mp4|webm)$/i)) {
-                    return (
-                      <video
-                        key={index}
-                        src={url}
-                        controls
-                        className="rounded-lg w-full h-48"
-                      />
-                    );
-                  }
-                  return null;
-                })}
-              </div>
-            )}
-
-            {post.file_urls?.length > 0 && (
-              <div className="flex flex-wrap gap-2">
-                {post.file_urls.map((url, index) => (
-                  <a
-                    key={index}
-                    href={url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 bg-muted p-2 rounded hover:bg-muted/80"
-                  >
-                    <FileText className="h-4 w-4" />
-                    <span className="text-sm">Attachment {index + 1}</span>
-                  </a>
-                ))}
-              </div>
-            )}
 
             <div className="flex items-center gap-4">
               <Button
                 variant="ghost"
                 size="sm"
-                className="text-muted-foreground"
-                onClick={() => likeMutation.mutate(post.id)}
+                className={`text-muted-foreground ${post.is_liked ? 'text-red-500' : ''}`}
+                onClick={() => likeMutation.mutate({
+                  postId: post.id,
+                  action: post.is_liked ? 'unlike' : 'like'
+                })}
               >
-                <Heart className="h-4 w-4 mr-2" />
+                <Heart className={`h-4 w-4 mr-2 ${post.is_liked ? 'fill-current' : ''}`} />
                 {post.likes_count || 0}
               </Button>
               <Button
@@ -252,19 +228,13 @@ export const PostList = ({ type = "feed" }: { type?: "feed" | "trending" }) => {
               <Button
                 variant="ghost"
                 size="sm"
-                className="text-muted-foreground"
-                onClick={() => shareMutation.mutate(post.id)}
+                className={`text-muted-foreground ml-auto ${post.is_bookmarked ? 'text-primary' : ''}`}
+                onClick={() => bookmarkMutation.mutate({
+                  postId: post.id,
+                  action: post.is_bookmarked ? 'unbookmark' : 'bookmark'
+                })}
               >
-                <Share2 className="h-4 w-4 mr-2" />
-                {post.shares_count || 0}
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-muted-foreground ml-auto"
-                onClick={() => bookmarkMutation.mutate(post.id)}
-              >
-                <Bookmark className="h-4 w-4" />
+                <Bookmark className={`h-4 w-4 ${post.is_bookmarked ? 'fill-current' : ''}`} />
               </Button>
             </div>
           </motion.div>
@@ -273,6 +243,12 @@ export const PostList = ({ type = "feed" }: { type?: "feed" | "trending" }) => {
 
       <Dialog open={!!selectedPost} onOpenChange={() => setSelectedPost(null)}>
         <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Comments</DialogTitle>
+            <DialogDescription>
+              Join the conversation and share your thoughts
+            </DialogDescription>
+          </DialogHeader>
           {selectedPost && (
             <div className="space-y-4">
               <div className="flex items-center gap-2">
@@ -292,7 +268,7 @@ export const PostList = ({ type = "feed" }: { type?: "feed" | "trending" }) => {
                 </div>
               </div>
               <p className="whitespace-pre-wrap">{selectedPost.content}</p>
-              {/* Add comments section here */}
+              <PostComments postId={selectedPost.id} />
             </div>
           )}
         </DialogContent>
