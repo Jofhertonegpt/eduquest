@@ -25,15 +25,19 @@ export const uploadFile = async (file: File, onProgress?: (progress: number) => 
   const fileName = `${crypto.randomUUID()}.${fileExt}`;
   const filePath = `uploads/${fileName}`;
 
-  const { error: uploadError } = await supabase.storage
+  const { error: uploadError, data } = await supabase.storage
     .from('social-media')
     .upload(filePath, file, {
-      onUploadProgress: ({ progress }) => {
-        onProgress?.(progress);
-      }
+      cacheControl: '3600',
+      upsert: false
     });
 
   if (uploadError) throw uploadError;
+
+  // Simulate progress since onUploadProgress is no longer available
+  if (onProgress) {
+    onProgress(100);
+  }
 
   const { data: { publicUrl } } = supabase.storage
     .from('social-media')
