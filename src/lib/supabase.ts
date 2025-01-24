@@ -25,8 +25,6 @@ export const initializeStorage = async () => {
           'application/msword',
           'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
         ]
-      }, {
-        public: true // This is the third required argument
       });
       
       if (error) {
