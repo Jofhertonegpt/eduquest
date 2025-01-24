@@ -131,7 +131,6 @@ export const CreatePost = () => {
         const fileName = `${uuidv4()}.${fileExt}`;
         const filePath = `uploads/${fileName}`;
 
-        // Create a channel for upload progress
         const channel = supabase.channel(`upload-${fileName}`);
         
         channel.subscribe((status) => {
@@ -144,6 +143,24 @@ export const CreatePost = () => {
             });
           }
         });
+
+        // Updated bucket creation with correct parameters
+        const { data: bucketExists } = await supabase.storage.getBucket('social-media');
+        if (!bucketExists) {
+          await supabase.storage.createBucket('social-media', {
+            public: true,
+            allowedMimeTypes: [
+              'image/jpeg',
+              'image/png',
+              'image/gif',
+              'video/mp4',
+              'application/pdf',
+              'application/msword',
+              'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+            ],
+            fileSizeLimit: 10485760
+          });
+        }
 
         const { error: uploadError } = await supabase.storage
           .from('social-media')
@@ -161,7 +178,6 @@ export const CreatePost = () => {
           fileUrls.push(publicUrl);
         }
         
-        // Clean up the channel
         channel.unsubscribe();
       }
 
