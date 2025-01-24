@@ -98,7 +98,7 @@ export const PostList = ({ userId, type = "feed" }: { userId?: string; type?: "f
       const likedPostIds = new Set(likes?.map(like => like.post_id) || []);
       const bookmarkedPostIds = new Set(bookmarks?.map(bookmark => bookmark.post_id) || []);
 
-      return postsData.map(post => ({
+      return postsData?.map(post => ({
         ...post,
         is_liked: likedPostIds.has(post.id),
         is_bookmarked: bookmarkedPostIds.has(post.id)
@@ -127,11 +127,15 @@ export const PostList = ({ userId, type = "feed" }: { userId?: string; type?: "f
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["social-posts"] });
+      toast({
+        title: "Success",
+        description: "Post interaction updated successfully!",
+      });
     },
     onError: () => {
       toast({
         title: "Error",
-        description: "Failed to update like. Please try again.",
+        description: "Failed to update post interaction. Please try again.",
         variant: "destructive",
       });
     },
@@ -172,6 +176,13 @@ export const PostList = ({ userId, type = "feed" }: { userId?: string; type?: "f
     },
   });
 
+  const handleProfileClick = async (userId: string) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      navigate(`/profile/${userId}`);
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="space-y-4">
@@ -204,12 +215,7 @@ export const PostList = ({ userId, type = "feed" }: { userId?: string; type?: "f
             <div className="flex items-center justify-between">
               <div 
                 className="flex items-center gap-2 cursor-pointer"
-                onClick={() => {
-                  const currentUser = supabase.auth.getUser();
-                  if (currentUser) {
-                    navigate(`/profile/${post.user_id}`);
-                  }
-                }}
+                onClick={() => handleProfileClick(post.user_id)}
               >
                 <Avatar>
                   <AvatarImage src={post.profiles?.avatar_url || undefined} />

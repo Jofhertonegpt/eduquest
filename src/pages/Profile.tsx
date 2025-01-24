@@ -6,10 +6,12 @@ import { AcademicProgress } from "@/components/profile/AcademicProgress";
 import { Achievements } from "@/components/profile/Achievements";
 import { PostList } from "@/components/social/PostList";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
+import { supabase } from "@/lib/supabase";
 
 const Profile = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const { userData, isLoading, updateProfile } = useProfile();
   const [editMode, setEditMode] = useState(false);
   const [profile, setProfile] = useState({
@@ -17,6 +19,16 @@ const Profile = () => {
     email: "",
     level: "Intermediate",
   });
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        navigate('/login');
+      }
+    };
+    checkAuth();
+  }, [navigate]);
 
   const isOwnProfile = !id || (userData?.user && id === userData.user.id);
 
