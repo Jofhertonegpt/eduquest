@@ -43,5 +43,8 @@ export const uploadFile = async (file: File, onProgress?: (progress: number) => 
     .from('social-media')
     .getPublicUrl(filePath);
 
-  return { publicUrl, isMedia: file.type.startsWith('image/') || file.type.startsWith('video/') };
+  return { 
+    publicUrl, 
+    isMedia: file.type.startsWith('image/') || file.type.startsWith('video/') 
+  };
 };
