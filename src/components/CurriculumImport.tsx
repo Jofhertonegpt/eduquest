@@ -6,6 +6,7 @@ import { Curriculum, Degree } from "@/types/curriculum";
 import { supabase } from "@/lib/supabase";
 import { curriculumSchema, encryptData } from "@/lib/encryption";
 import { sanitizeInput } from "@/lib/supabase";
+import { uploadFile } from "@/lib/storage";
 
 interface Props {
   onImport: (curriculum: Curriculum) => void;
@@ -19,8 +20,8 @@ const CurriculumImport = ({ onImport }: Props) => {
   const handleFileImport = async (file: File) => {
     try {
       setIsValidating(true);
-      const text = await file.text();
-      const rawCurriculum = JSON.parse(text);
+      const { text } = await uploadFile(file);
+      const rawCurriculum = JSON.parse(text as string);
       
       // Validate curriculum structure
       const validationResult = curriculumSchema.safeParse(rawCurriculum);
@@ -102,7 +103,7 @@ const CurriculumImport = ({ onImport }: Props) => {
       onImport(curriculum);
       toast({
         title: "Success",
-        description: "Curriculum imported, encrypted, and backed up successfully",
+        description: "Curriculum imported and encrypted successfully",
       });
     } catch (error) {
       console.error("Import error:", error);
