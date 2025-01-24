@@ -36,7 +36,7 @@ export const PostList = ({ userId, type = "feed" }: PostListProps) => {
     error
   } = useInfiniteQuery<PostPage>({
     queryKey: ["social-posts", type, userId],
-    queryFn: async ({ pageParam = 0 }) => {
+    queryFn: async ({ pageParam }: { pageParam: number }) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
@@ -107,7 +107,7 @@ export const PostList = ({ userId, type = "feed" }: PostListProps) => {
       };
     },
     initialPageParam: 0,
-    getNextPageParam: (lastPage) => lastPage.nextPage,
+    getNextPageParam: (lastPage: PostPage) => lastPage.nextPage,
   });
 
   useEffect(() => {
