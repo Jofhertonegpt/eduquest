@@ -4,12 +4,14 @@ import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink } from "@/components/ui/breadcrumb";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import CurriculumImport from "@/components/CurriculumImport";
 import { ModuleContent } from "@/components/learning/ModuleContent";
 import type { Curriculum, Module, Course } from "@/types/curriculum";
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
+import { decryptData } from "@/lib/encryption";
 
 // Lazy load components
 const ModuleList = lazy(() => import('@/components/learning/ModuleList'));
@@ -20,67 +22,37 @@ const Learning = () => {
   const [activeCourse, setActiveCourse] = useState<Course | null>(null);
   const { toast } = useToast();
 
-  const { data: savedCurriculum, isLoading } = useQuery({
-    queryKey: ['saved-curriculum'],
+  const { data: curricula, isLoading } = useQuery({
+    queryKey: ['saved-curricula'],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      const { data: importedCurriculum, error: importError } = await supabase
+      const { data: importedCurricula, error: importError } = await supabase
         .from('imported_curricula')
         .select('*')
         .eq('user_id', user.id)
-        .order('created_at', { ascending: false })
-        .limit(1)
-        .single();
+        .order('created_at', { ascending: false });
 
-      if (importError && importError.code !== 'PGRST116') {
-        throw importError;
-      }
+      if (importError) throw importError;
 
-      if (importedCurriculum) {
-        const { data: progress, error: progressError } = await supabase
-          .from('curriculum_progress')
-          .select('*')
-          .eq('user_id', user.id)
-          .eq('curriculum_id', importedCurriculum.id)
-          .single();
-
-        if (progressError && progressError.code !== 'PGRST116') {
-          throw progressError;
-        }
-
-        return {
-          curriculum: importedCurriculum.curriculum,
-          progress: progress || null
-        };
-      }
-
-      return null;
+      return importedCurricula.map(curr => ({
+        ...curr,
+        curriculum: JSON.parse(decryptData(curr.curriculum))
+      }));
     },
   });
 
-  // Load saved curriculum and progress
-  useEffect(() => {
-    if (savedCurriculum?.curriculum && !curriculum) {
-      setCurriculum(savedCurriculum.curriculum);
-      
-      if (savedCurriculum.progress) {
-        const course = savedCurriculum.curriculum.degrees[0]?.courses.find(
-          c => c.id === savedCurriculum.progress.active_course_id
-        );
-        const module = course?.modules.find(
-          m => m.id === savedCurriculum.progress.active_module_id
-        );
-        
-        if (course) setActiveCourse(course);
-        if (module) setActiveModule(module);
-      } else if (savedCurriculum.curriculum.degrees[0]?.courses[0]?.modules[0]) {
-        setActiveCourse(savedCurriculum.curriculum.degrees[0].courses[0]);
-        setActiveModule(savedCurriculum.curriculum.degrees[0].courses[0].modules[0]);
+  const handleCurriculumChange = (curriculumId: string) => {
+    const selectedCurriculum = curricula?.find(c => c.id === curriculumId)?.curriculum;
+    if (selectedCurriculum) {
+      setCurriculum(selectedCurriculum);
+      if (selectedCurriculum.degrees[0]?.courses[0]) {
+        setActiveCourse(selectedCurriculum.degrees[0].courses[0]);
+        setActiveModule(selectedCurriculum.degrees[0].courses[0].modules[0] || null);
       }
     }
-  }, [savedCurriculum, curriculum]);
+  };
 
   const handleImport = (imported: Curriculum) => {
     setCurriculum(imported);
@@ -131,19 +103,36 @@ const Learning = () => {
               </div>
             </div>
           </div>
-        ) : !curriculum ? (
+        ) : !curriculum && curricula?.length === 0 ? (
           <Suspense fallback={<Skeleton className="h-[400px] w-full" />}>
-            <CurriculumImport onImport={setCurriculum} />
+            <CurriculumImport onImport={handleImport} />
           </Suspense>
         ) : (
           <>
             <div className="flex justify-between items-center mb-8">
-              <h1 className="font-display text-4xl font-bold">{curriculum.name}</h1>
-              <Progress 
-                value={33} 
-                className="w-32" 
-                aria-label="Course progress"
-              />
+              <h1 className="font-display text-4xl font-bold">{curriculum?.name}</h1>
+              <div className="flex items-center gap-4">
+                <Select
+                  value={curricula?.find(c => c.curriculum.name === curriculum?.name)?.id}
+                  onValueChange={handleCurriculumChange}
+                >
+                  <SelectTrigger className="w-[250px]">
+                    <SelectValue placeholder="Select curriculum" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {curricula?.map((curr) => (
+                      <SelectItem key={curr.id} value={curr.id}>
+                        {curr.curriculum.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Progress 
+                  value={33} 
+                  className="w-32" 
+                  aria-label="Course progress"
+                />
+              </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">

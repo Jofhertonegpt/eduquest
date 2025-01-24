@@ -77,14 +77,16 @@ const CurriculumImport = ({ onImport }: Props) => {
       const encryptedData = encryptData(JSON.stringify(curriculum));
 
       // Save to Supabase with encrypted data
-      const { error: saveError } = await supabase
+      const { data: savedCurriculum, error: saveError } = await supabase
         .from('imported_curricula')
         .insert({
           user_id: user.id,
           curriculum: encryptedData,
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString()
-        });
+        })
+        .select()
+        .single();
 
       if (saveError) throw saveError;
 
