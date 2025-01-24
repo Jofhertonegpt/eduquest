@@ -1,29 +1,43 @@
 import { supabase } from "./supabase";
 
 export const initializeStorageBucket = async () => {
-  const { data: bucketExists } = await supabase.storage.getBucket('social-media');
-  
-  if (!bucketExists) {
-    await supabase.storage.createBucket('social-media', {
-      public: true,
-      allowedMimeTypes: [
-        'image/jpeg',
-        'image/png',
-        'image/gif',
-        'video/mp4',
-        'application/pdf',
-        'application/msword',
-        'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-      ],
-      fileSizeLimit: 10485760 // 10MB
-    });
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('Authentication required');
+
+    const { data: bucketExists } = await supabase.storage.getBucket('social-media');
+    
+    if (!bucketExists) {
+      const { data, error } = await supabase.storage.createBucket('social-media', {
+        public: false, // Changed to false for better security
+        allowedMimeTypes: [
+          'image/jpeg',
+          'image/png',
+          'image/gif',
+          'video/mp4',
+          'application/pdf',
+          'application/msword',
+          'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+        ],
+        fileSizeLimit: 10485760 // 10MB
+      });
+      
+      if (error) throw error;
+      console.log('Storage bucket created successfully:', data);
+    }
+  } catch (error) {
+    console.error('Error initializing storage:', error);
+    throw error;
   }
 };
 
 export const uploadFile = async (file: File, onProgress?: (progress: number) => void) => {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error('Authentication required');
+
   const fileExt = file.name.split('.').pop();
   const fileName = `${crypto.randomUUID()}.${fileExt}`;
-  const filePath = `uploads/${fileName}`;
+  const filePath = `${user.id}/uploads/${fileName}`;
 
   const { error: uploadError, data } = await supabase.storage
     .from('social-media')
