@@ -1,92 +1,63 @@
 {
-  "name": "Advanced Web Development",
-  "description": "Comprehensive web development curriculum with interactive assessments",
+  "name": "Web Development Fundamentals",
+  "description": "Learn the basics of web development",
   "degrees": [
     {
-      "id": "advanced-web-dev",
-      "title": "Advanced Web Development",
+      "id": "web-dev-101",
+      "title": "Web Development Fundamentals",
       "type": "certificate",
-      "description": "Master modern web development",
+      "description": "Introduction to web development concepts",
+      "requiredCredits": 12,
       "courses": [
         {
-          "id": "react-mastery",
-          "title": "React Mastery",
-          "description": "Advanced React development concepts",
-          "credits": 4,
-          "level": "advanced",
+          "id": "html-css-basics",
+          "title": "HTML and CSS Fundamentals",
+          "description": "Learn the building blocks of the web",
+          "credits": 3,
+          "level": "introductory",
           "modules": [
             {
-              "id": "react-hooks",
-              "title": "Advanced React Hooks",
-              "description": "Master React Hooks and Custom Hooks",
+              "id": "html-basics",
+              "title": "HTML Basics",
+              "description": "Understanding HTML structure",
               "credits": 1,
+              "metadata": {
+                "estimatedTime": 120,
+                "difficulty": "beginner",
+                "prerequisites": [],
+                "tags": ["html", "web"],
+                "skills": ["HTML5", "Semantic Markup"]
+              },
               "learningObjectives": [
                 {
                   "id": "obj-1",
-                  "description": "Understand and implement custom React hooks",
-                  "assessmentCriteria": [
-                    "Create a custom hook that manages form state",
-                    "Implement data fetching with custom hooks"
-                  ]
+                  "description": "Understand HTML document structure",
+                  "assessmentCriteria": ["Create a valid HTML document"]
                 }
               ],
-              "metadata": {
-                "estimatedTime": 180,
-                "difficulty": "advanced",
-                "prerequisites": ["react-basics"],
-                "tags": ["react", "hooks", "frontend"],
-                "skills": ["React", "TypeScript", "State Management"]
-              },
               "resources": [
                 {
                   "id": "res-1",
-                  "title": "Custom Hooks Deep Dive",
+                  "title": "Introduction to HTML",
                   "type": "video",
-                  "content": "Learn how to create and use custom hooks",
-                  "duration": "45 minutes",
-                  "url": "https://www.youtube.com/watch?v=example",
-                  "embedType": "youtube"
-                },
-                {
-                  "id": "res-2",
-                  "title": "Hooks Practice",
-                  "type": "code",
-                  "content": "Practice implementing custom hooks",
-                  "code": {
-                    "initialCode": "function useCounter() {\n  // Implement counter hook\n}",
-                    "solution": "function useCounter() {\n  const [count, setCount] = useState(0);\n  return [count, setCount];\n}",
-                    "testCases": [
-                      {
-                        "input": "increment()",
-                        "expectedOutput": "count === 1"
-                      }
-                    ]
-                  }
+                  "content": "Learn HTML basics",
+                  "duration": "30 minutes",
+                  "url": "https://example.com/intro-html"
                 }
               ],
               "assignments": [
                 {
                   "id": "assign-1",
-                  "title": "Custom Hooks Implementation",
-                  "description": "Create a custom hook for managing form state",
+                  "title": "Create a Simple Webpage",
+                  "description": "Build your first HTML page",
                   "dueDate": "2024-12-31",
                   "points": 100,
                   "rubric": {
                     "criteria": [
                       {
-                        "name": "Functionality",
-                        "description": "Hook works as expected",
-                        "points": 40
-                      },
-                      {
-                        "name": "Code Quality",
-                        "description": "Clean and maintainable code",
-                        "points": 30
-                      },
-                      {
-                        "name": "Documentation",
-                        "description": "Clear documentation and examples",
-                        "points": 30
+                        "name": "Structure",
+                        "description": "Proper HTML structure",
+                        "points": 50
                       }
                     ]
                   }
@@ -95,16 +66,16 @@
               "quizzes": [
                 {
                   "id": "quiz-1",
-                  "title": "React Hooks Fundamentals",
+                  "title": "HTML Basics Quiz",
                   "questions": [
                     {
                       "id": "q1",
-                      "question": "What is a custom hook?",
+                      "question": "What does HTML stand for?",
                       "options": [
-                        "A reusable function that contains stateful logic",
-                        "A React component",
-                        "A JavaScript class",
-                        "A CSS framework"
+                        "HyperText Markup Language",
+                        "HighText Markup Language",
+                        "HyperText Markdown Language",
+                        "HighText Markdown Language"
                       ],
                       "correctAnswer": 0
                     }
@@ -114,8 +85,7 @@
             }
           ]
         }
-      ],
-      "requiredCredits": 12
+      ]
     }
   ]
 }
