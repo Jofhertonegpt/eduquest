@@ -39,12 +39,7 @@ export const ResourceViewer = ({ resource }: { resource: Resource }) => {
     return (
       <div className="space-y-4">
         <CodeEditor
-          initialFiles={{
-            "main.js": {
-              content: resource.code.initialCode,
-              language: "javascript"
-            }
-          }}
+          initialValue={resource.code.initialCode}
           aria-label={`Code editor for ${resource.title}`}
         />
         <div 

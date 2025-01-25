@@ -1,13 +1,20 @@
 import { useState } from 'react';
 import Editor from '@monaco-editor/react';
 
-interface CodeEditorProps {
-  initialValue?: string;
-  onChange?: (value: string) => void;
+interface FileContent {
+  content: string;
+  language: string;
 }
 
-const CodeEditor = ({ initialValue = '', onChange }: CodeEditorProps) => {
-  const [value, setValue] = useState(initialValue);
+interface CodeEditorProps {
+  initialValue?: string;
+  initialFiles?: Record<string, FileContent>;
+  onChange?: (value: string) => void;
+  'aria-label'?: string;
+}
+
+const CodeEditor = ({ initialValue = '', initialFiles, onChange, 'aria-label': ariaLabel }: CodeEditorProps) => {
+  const [value, setValue] = useState(initialValue || (initialFiles && Object.values(initialFiles)[0]?.content) || '');
 
   const handleChange = (newValue: string | undefined) => {
     if (newValue) {
@@ -16,11 +23,13 @@ const CodeEditor = ({ initialValue = '', onChange }: CodeEditorProps) => {
     }
   };
 
+  const language = initialFiles ? Object.values(initialFiles)[0]?.language : 'javascript';
+
   return (
     <div className="h-[300px] border rounded-md overflow-hidden">
       <Editor
         height="100%"
-        defaultLanguage="javascript"
+        defaultLanguage={language}
         value={value}
         onChange={handleChange}
         theme="vs-dark"
@@ -31,6 +40,7 @@ const CodeEditor = ({ initialValue = '', onChange }: CodeEditorProps) => {
           lineNumbers: 'on',
           automaticLayout: true,
         }}
+        aria-label={ariaLabel}
       />
     </div>
   );

@@ -32,7 +32,7 @@ const CurriculumImport = ({ onImport }: Props) => {
 
       const { data } = validationResult;
 
-      // Create curriculum object with validated data
+      // Create curriculum object with validated data and ensure all required fields
       const curriculum: Curriculum = {
         name: sanitizeInput(data.name),
         description: sanitizeInput(data.description),
@@ -60,7 +60,11 @@ const CurriculumImport = ({ onImport }: Props) => {
                 tags: module.metadata.tags,
                 skills: module.metadata.skills
               },
-              learningObjectives: module.learningObjectives,
+              learningObjectives: module.learningObjectives.map(obj => ({
+                id: obj.id || crypto.randomUUID(),
+                description: obj.description || '',
+                assessmentCriteria: obj.assessmentCriteria || []
+              })),
               resources: module.resources,
               assignments: module.assignments,
               quizzes: module.quizzes
