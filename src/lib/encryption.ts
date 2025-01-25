@@ -14,50 +14,103 @@ export const decryptData = (encryptedData: string): string => {
 };
 
 // Data validation schemas
-export const userSchema = z.object({
-  id: z.string().uuid(),
-  email: z.string().email(),
-  full_name: z.string().min(2).max(100),
-  level: z.enum(['beginner', 'intermediate', 'advanced']),
+const questionBaseSchema = z.object({
+  id: z.string().optional(),
+  question: z.string(),
+  type: z.enum(['multiple-choice', 'essay', 'coding', 'true-false', 'short-answer', 'matching']),
+  points: z.number(),
+  explanation: z.string().optional(),
 });
 
-export const moduleSchema = z.object({
-  id: z.string().optional(),
-  title: z.string().min(3),
-  description: z.string(),
-  credits: z.number(),
-  metadata: z.object({
-    estimatedTime: z.number(),
-    difficulty: z.enum(['beginner', 'intermediate', 'advanced', 'expert']),
-    prerequisites: z.array(z.string()),
-    tags: z.array(z.string()),
-    skills: z.array(z.string())
-  }),
-  learningObjectives: z.array(z.any()),
-  resources: z.array(z.any()),
-  assignments: z.array(z.any()),
-  quizzes: z.array(z.any())
+const multipleChoiceQuestionSchema = questionBaseSchema.extend({
+  type: z.literal('multiple-choice'),
+  options: z.array(z.string()),
+  correctAnswer: z.number(),
+  allowMultiple: z.boolean().optional(),
 });
 
-export const courseSchema = z.object({
-  id: z.string().optional(),
-  title: z.string().min(3),
-  description: z.string(),
-  credits: z.number(),
-  level: z.enum(['introductory', 'intermediate', 'advanced']),
-  modules: z.array(moduleSchema)
+const essayQuestionSchema = questionBaseSchema.extend({
+  type: z.literal('essay'),
+  minWords: z.number().optional(),
+  maxWords: z.number().optional(),
+  rubric: z.object({
+    criteria: z.array(z.object({
+      name: z.string(),
+      points: z.number(),
+      description: z.string(),
+    })),
+  }).optional(),
 });
 
-export const curriculumSchema = z.object({
+const codingQuestionSchema = questionBaseSchema.extend({
+  type: z.literal('coding'),
+  initialCode: z.string().optional(),
+  testCases: z.array(z.object({
+    input: z.string(),
+    expectedOutput: z.string(),
+  })),
+});
+
+const trueFalseQuestionSchema = questionBaseSchema.extend({
+  type: z.literal('true-false'),
+  correctAnswer: z.boolean(),
+});
+
+const shortAnswerQuestionSchema = questionBaseSchema.extend({
+  type: z.literal('short-answer'),
+  sampleAnswer: z.string(),
+  keywords: z.array(z.string()).optional(),
+});
+
+const matchingQuestionSchema = questionBaseSchema.extend({
+  type: z.literal('matching'),
+  pairs: z.array(z.object({
+    left: z.string(),
+    right: z.string(),
+  })),
+});
+
+const questionSchema = z.discriminatedUnion('type', [
+  multipleChoiceQuestionSchema,
+  essayQuestionSchema,
+  codingQuestionSchema,
+  trueFalseQuestionSchema,
+  shortAnswerQuestionSchema,
+  matchingQuestionSchema,
+]);
+
+export const quizSchema = z.object({
   id: z.string().optional(),
-  name: z.string().min(3).max(200),
+  title: z.string(),
   description: z.string(),
-  degrees: z.array(z.object({
-    id: z.string().optional(),
-    title: z.string().min(3),
-    type: z.enum(['associates', 'bachelors', 'masters', 'doctorate', 'certificate']),
-    description: z.string(),
-    requiredCredits: z.number(),
-    courses: z.array(courseSchema)
-  }))
+  timeLimit: z.number().optional(),
+  passingScore: z.number().optional(),
+  questions: z.array(questionSchema),
+  instructions: z.string().optional(),
+  attempts: z.number().optional(),
+  randomizeQuestions: z.boolean().optional(),
+});
+
+export const assignmentSchema = z.object({
+  id: z.string().optional(),
+  title: z.string(),
+  description: z.string(),
+  dueDate: z.string(),
+  points: z.number(),
+  status: z.enum(['pending', 'submitted', 'graded']).optional(),
+  questions: z.array(questionSchema).optional(),
+  timeLimit: z.number().optional(),
+  instructions: z.string().optional(),
+  rubric: z.object({
+    criteria: z.array(z.object({
+      name: z.string(),
+      description: z.string(),
+      points: z.number(),
+    })),
+  }).optional(),
+  resources: z.array(z.object({
+    title: z.string(),
+    url: z.string(),
+    type: z.enum(['document', 'video', 'link']),
+  })).optional(),
 });

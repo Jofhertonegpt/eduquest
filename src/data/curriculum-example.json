@@ -1,25 +1,25 @@
 {
   "name": "Web Development Fundamentals",
-  "description": "Learn the basics of web development",
+  "description": "Learn the basics of web development with comprehensive assessments",
   "degrees": [
     {
       "id": "web-dev-101",
       "title": "Web Development Fundamentals",
       "type": "certificate",
-      "description": "Introduction to web development concepts",
+      "description": "Introduction to web development concepts with diverse assessment types",
       "requiredCredits": 12,
       "courses": [
         {
           "id": "html-css-basics",
           "title": "HTML and CSS Fundamentals",
-          "description": "Learn the building blocks of the web",
+          "description": "Learn the building blocks of the web through varied assessments",
           "credits": 3,
           "level": "introductory",
           "modules": [
             {
               "id": "html-basics",
               "title": "HTML Basics",
-              "description": "Understanding HTML structure",
+              "description": "Understanding HTML structure through multiple assessment types",
               "credits": 1,
               "metadata": {
                 "estimatedTime": 120,
@@ -42,35 +42,89 @@
                   "type": "video",
                   "content": "Learn HTML basics",
                   "duration": "30 minutes",
-                  "url": "https://example.com/intro-html"
+                  "url": "https://example.com/intro-html",
+                  "embedType": "youtube"
                 }
               ],
               "assignments": [
                 {
                   "id": "assign-1",
-                  "title": "Create a Simple Webpage",
-                  "description": "Build your first HTML page",
+                  "title": "HTML Structure Mastery",
+                  "description": "Demonstrate your understanding of HTML through multiple question types",
                   "dueDate": "2024-12-31",
                   "points": 100,
-                  "rubric": {
-                    "criteria": [
-                      {
-                        "name": "Structure",
-                        "description": "Proper HTML structure",
-                        "points": 50
+                  "instructions": "Complete all questions. Take your time to provide detailed answers.",
+                  "questions": [
+                    {
+                      "id": "q1",
+                      "type": "multiple-choice",
+                      "question": "Which tag is used to define the main content of an HTML document?",
+                      "points": 10,
+                      "options": ["<main>", "<body>", "<content>", "<article>"],
+                      "correctAnswer": 1,
+                      "explanation": "The <body> tag defines the document's body and contains all visible content"
+                    },
+                    {
+                      "id": "q2",
+                      "type": "essay",
+                      "question": "Explain the importance of semantic HTML and provide three examples of semantic elements.",
+                      "points": 30,
+                      "minWords": 200,
+                      "maxWords": 500,
+                      "rubric": {
+                        "criteria": [
+                          {
+                            "name": "Understanding",
+                            "points": 10,
+                            "description": "Shows clear understanding of semantic HTML"
+                          },
+                          {
+                            "name": "Examples",
+                            "points": 15,
+                            "description": "Provides relevant and well-explained examples"
+                          },
+                          {
+                            "name": "Writing",
+                            "points": 5,
+                            "description": "Clear and concise writing"
+                          }
+                        ]
                       }
-                    ]
-                  }
+                    },
+                    {
+                      "id": "q3",
+                      "type": "coding",
+                      "question": "Create a simple HTML structure with a header, main content, and footer.",
+                      "points": 20,
+                      "initialCode": "<!DOCTYPE html>\n<html>\n  <!-- Add your code here -->\n</html>",
+                      "testCases": [
+                        {
+                          "input": "Check for header tag",
+                          "expectedOutput": "<header>"
+                        },
+                        {
+                          "input": "Check for main tag",
+                          "expectedOutput": "<main>"
+                        }
+                      ]
+                    }
+                  ]
                 }
               ],
               "quizzes": [
                 {
                   "id": "quiz-1",
-                  "title": "HTML Basics Quiz",
+                  "title": "HTML Fundamentals Quiz",
+                  "description": "Test your knowledge of HTML basics",
+                  "timeLimit": 30,
+                  "passingScore": 70,
+                  "instructions": "Answer all questions. You have 30 minutes to complete this quiz.",
                   "questions": [
                     {
                       "id": "q1",
+                      "type": "multiple-choice",
                       "question": "What does HTML stand for?",
+                      "points": 5,
                       "options": [
                         "HyperText Markup Language",
                         "HighText Markup Language",
@@ -78,6 +132,34 @@
                         "HighText Markdown Language"
                       ],
                       "correctAnswer": 0
+                    },
+                    {
+                      "id": "q2",
+                      "type": "true-false",
+                      "question": "The <head> tag contains visible content.",
+                      "points": 5,
+                      "correctAnswer": false,
+                      "explanation": "The <head> tag contains metadata and is not visible on the page"
+                    },
+                    {
+                      "id": "q3",
+                      "type": "matching",
+                      "question": "Match the HTML elements with their purposes",
+                      "points": 10,
+                      "pairs": [
+                        {
+                          "left": "<nav>",
+                          "right": "Navigation menu"
+                        },
+                        {
+                          "left": "<footer>",
+                          "right": "Page footer content"
+                        },
+                        {
+                          "left": "<article>",
+                          "right": "Independent content"
+                        }
+                      ]
                     }
                   ]
                 }
