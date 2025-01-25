@@ -29,9 +29,9 @@ export interface LearningObjective {
 export interface BaseQuestion {
   id: string;
   type: QuestionType;
-  points: number;
   title: string;
   description: string;
+  points: number;
   explanation?: string;
 }
 
@@ -123,6 +123,7 @@ export interface Module {
   id: string;
   title: string;
   description: string;
+  credits: number;
   metadata: {
     estimatedTime: number;
     difficulty: DifficultyLevel;
@@ -134,16 +135,15 @@ export interface Module {
   resources: Resource[];
   assignments: Assignment[];
   quizzes: Quiz[];
-  credits: number;
 }
 
 export interface Course {
   id: string;
   title: string;
   description: string;
-  modules: Module[];
   credits: number;
   level: 'introductory' | 'intermediate' | 'advanced';
+  modules: Module[];
 }
 
 export interface Degree {
@@ -151,8 +151,8 @@ export interface Degree {
   title: string;
   type: DegreeType;
   description: string;
-  courses: Course[];
   requiredCredits: number;
+  courses: Course[];
 }
 
 export interface Curriculum {
