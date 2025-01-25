@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import Navigation from "./components/Navigation";
+import Landing from "./pages/Landing";
 import Dashboard from "./pages/Dashboard";
 import School from "./pages/School";
 import Learning from "./pages/Learning";
@@ -64,25 +65,26 @@ const App = () => (
         <BrowserRouter>
           <div className="min-h-screen pb-16 md:pb-0 md:pt-16">
             <Routes>
+              <Route path="/" element={<Landing />} />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
               <Route
-                path="/join-school"
-                element={
-                  <ProtectedRoute>
-                    <Navigation />
-                    <JoinSchool />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/"
+                path="/dashboard"
                 element={
                   <ProtectedRoute>
                     <>
                       <Navigation />
                       <Dashboard />
                     </>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/join-school"
+                element={
+                  <ProtectedRoute>
+                    <Navigation />
+                    <JoinSchool />
                   </ProtectedRoute>
                 }
               />
@@ -141,7 +143,7 @@ const App = () => (
                   </ProtectedRoute>
                 }
               />
-              <Route path="*" element={<Navigate to="/login" replace />} />
+              <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </div>
         </BrowserRouter>
