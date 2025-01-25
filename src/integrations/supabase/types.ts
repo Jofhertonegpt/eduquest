@@ -132,24 +132,71 @@ export type Database = {
           },
         ]
       }
+      curriculum_versions: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          curriculum: Json
+          curriculum_id: string | null
+          id: string
+          metadata: Json | null
+          version: number
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          curriculum: Json
+          curriculum_id?: string | null
+          id?: string
+          metadata?: Json | null
+          version: number
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          curriculum?: Json
+          curriculum_id?: string | null
+          id?: string
+          metadata?: Json | null
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "curriculum_versions_curriculum_id_fkey"
+            columns: ["curriculum_id"]
+            isOneToOne: false
+            referencedRelation: "imported_curricula"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       imported_curricula: {
         Row: {
           created_at: string
           curriculum: Json
           id: string
+          last_modified_at: string | null
+          metadata: Json | null
           user_id: string
+          version: number | null
         }
         Insert: {
           created_at?: string
           curriculum: Json
           id?: string
+          last_modified_at?: string | null
+          metadata?: Json | null
           user_id: string
+          version?: number | null
         }
         Update: {
           created_at?: string
           curriculum?: Json
           id?: string
+          last_modified_at?: string | null
+          metadata?: Json | null
           user_id?: string
+          version?: number | null
         }
         Relationships: []
       }

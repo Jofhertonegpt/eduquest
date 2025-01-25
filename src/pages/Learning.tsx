@@ -1,24 +1,20 @@
-import { Suspense, lazy } from "react";
+import { Suspense, lazy, useState } from "react";
 import { motion } from "framer-motion";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink } from "@/components/ui/breadcrumb";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Info, Copy, Plus } from "lucide-react";
-import CurriculumImport from "@/components/CurriculumImport";
-import { ModuleContent } from "@/components/learning/ModuleContent";
-import type { Curriculum, Module, Course } from "@/types/curriculum";
-import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { decryptData } from "@/lib/encryption";
-import { sampleCurriculum } from "@/data/sampleCurriculum";
+import type { Curriculum, Module, Course } from "@/types/curriculum";
+import { CurriculumFormatInfo } from "@/components/learning/CurriculumFormatInfo";
+import { CurriculumSelector } from "@/components/learning/CurriculumSelector";
 
+// Lazy load components
 const ModuleList = lazy(() => import('@/components/learning/ModuleList'));
+const ModuleContent = lazy(() => import('@/components/learning/ModuleContent').then(m => ({ default: m.ModuleContent })));
+const CurriculumImport = lazy(() => import('@/components/CurriculumImport'));
 
 const Learning = () => {
   const [curriculum, setCurriculum] = useState<Curriculum | null>(null);
@@ -72,28 +68,8 @@ const Learning = () => {
     setShowImport(false);
   };
 
-  const copyFormatToClipboard = async () => {
-    try {
-      await navigator.clipboard.writeText(JSON.stringify(sampleCurriculum, null, 2));
-      toast({
-        title: "Format copied!",
-        description: "The curriculum format has been copied to your clipboard.",
-      });
-    } catch (err) {
-      toast({
-        title: "Failed to copy",
-        description: "Please try copying manually.",
-        variant: "destructive",
-      });
-    }
-  };
-
   return (
-    <main 
-      className="container mx-auto px-4 py-8"
-      role="main"
-      aria-label="Learning content"
-    >
+    <main className="container mx-auto px-4 py-8" role="main" aria-label="Learning content">
       <Breadcrumb className="mb-6" aria-label="Page navigation">
         <BreadcrumbItem>
           <BreadcrumbLink href="/">Dashboard</BreadcrumbLink>
@@ -136,28 +112,7 @@ const Learning = () => {
               Get started by importing your curriculum. Need help with the format?
             </p>
             <div className="flex justify-center gap-4 mb-8">
-              <Dialog>
-                <DialogTrigger asChild>
-                  <Button variant="outline">
-                    <Info className="mr-2 h-4 w-4" />
-                    View Format
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="max-w-3xl">
-                  <DialogHeader>
-                    <DialogTitle>Curriculum Format</DialogTitle>
-                  </DialogHeader>
-                  <ScrollArea className="h-[500px] mt-4">
-                    <pre className="p-4 bg-muted rounded-lg text-sm">
-                      {JSON.stringify(sampleCurriculum, null, 2)}
-                    </pre>
-                  </ScrollArea>
-                  <Button onClick={copyFormatToClipboard} className="mt-4">
-                    <Copy className="mr-2 h-4 w-4" />
-                    Copy Format
-                  </Button>
-                </DialogContent>
-              </Dialog>
+              <CurriculumFormatInfo />
             </div>
             <Suspense fallback={<Skeleton className="h-[400px] w-full" />}>
               <CurriculumImport onImport={handleImport} />
@@ -168,59 +123,21 @@ const Learning = () => {
             <div className="flex justify-between items-center mb-8">
               <h1 className="font-display text-4xl font-bold">{curriculum?.name}</h1>
               <div className="flex items-center gap-4">
-                <Select
-                  value={curricula?.find(c => c.curriculum.name === curriculum?.name)?.id}
-                  onValueChange={handleCurriculumChange}
-                >
-                  <SelectTrigger className="w-[250px]">
-                    <SelectValue placeholder="Select curriculum" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {curricula?.map((curr) => (
-                      <SelectItem key={curr.id} value={curr.id}>
-                        {curr.curriculum.name}
-                      </SelectItem>
-                    ))}
-                    <SelectItem value="new">
-                      <span className="flex items-center">
-                        <Plus className="mr-2 h-4 w-4" />
-                        New Import
-                      </span>
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-                <Progress 
-                  value={33} 
-                  className="w-32" 
-                  aria-label="Course progress"
+                <CurriculumSelector
+                  curricula={curricula}
+                  currentCurriculumId={curricula?.find(c => c.curriculum.name === curriculum?.name)?.id}
+                  onCurriculumChange={handleCurriculumChange}
                 />
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <Button variant="outline" size="icon">
-                      <Info className="h-4 w-4" />
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="max-w-3xl">
-                    <DialogHeader>
-                      <DialogTitle>Curriculum Format</DialogTitle>
-                    </DialogHeader>
-                    <ScrollArea className="h-[500px] mt-4">
-                      <pre className="p-4 bg-muted rounded-lg text-sm">
-                        {JSON.stringify(sampleCurriculum, null, 2)}
-                      </pre>
-                    </ScrollArea>
-                    <Button onClick={copyFormatToClipboard} className="mt-4">
-                      <Copy className="mr-2 h-4 w-4" />
-                      Copy Format
-                    </Button>
-                  </DialogContent>
-                </Dialog>
+                <Progress value={33} className="w-32" aria-label="Course progress" />
+                <CurriculumFormatInfo />
               </div>
             </div>
 
             {showImport ? (
               <div className="max-w-2xl mx-auto">
-                <CurriculumImport onImport={handleImport} />
+                <Suspense fallback={<Skeleton className="h-[400px] w-full" />}>
+                  <CurriculumImport onImport={handleImport} />
+                </Suspense>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
