@@ -65,9 +65,41 @@ const CurriculumImport = ({ onImport }: Props) => {
                 description: obj.description || '',
                 assessmentCriteria: obj.assessmentCriteria || []
               })),
-              resources: module.resources,
-              assignments: module.assignments,
-              quizzes: module.quizzes
+              resources: module.resources.map(resource => ({
+                id: resource.id || crypto.randomUUID(),
+                title: resource.title || '',
+                type: resource.type || 'document',
+                content: resource.content || '',
+                duration: resource.duration,
+                url: resource.url,
+                embedType: resource.embedType,
+                code: resource.code ? {
+                  initialCode: resource.code.initialCode || '',
+                  solution: resource.code.solution || '',
+                  testCases: (resource.code.testCases || []).map(testCase => ({
+                    input: testCase.input || '',
+                    expectedOutput: testCase.expectedOutput || ''
+                  }))
+                } : undefined
+              })),
+              assignments: module.assignments.map(assignment => ({
+                id: assignment.id || crypto.randomUUID(),
+                title: assignment.title,
+                description: assignment.description,
+                dueDate: assignment.dueDate,
+                points: assignment.points,
+                questions: assignment.questions || [],
+                rubric: assignment.rubric
+              })),
+              quizzes: module.quizzes.map(quiz => ({
+                id: quiz.id || crypto.randomUUID(),
+                title: quiz.title,
+                description: quiz.description,
+                questions: quiz.questions,
+                timeLimit: quiz.timeLimit,
+                passingScore: quiz.passingScore,
+                instructions: quiz.instructions
+              }))
             }))
           }))
         }))
