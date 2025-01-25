@@ -2,11 +2,12 @@ import { useState } from "react";
 import { Upload } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
-import { Curriculum, Degree, Question } from "@/types/curriculum";
 import { supabase } from "@/lib/supabase";
-import { curriculumSchema, encryptData } from "@/lib/encryption";
+import { encryptData } from "@/lib/encryption";
 import { sanitizeInput } from "@/lib/supabase";
 import { uploadFile } from "@/lib/storage";
+import { validateAndTransformCurriculum } from "@/lib/curriculumValidation";
+import type { Curriculum } from "@/types/curriculum";
 
 interface Props {
   onImport: (curriculum: Curriculum) => void;
@@ -23,160 +24,8 @@ const CurriculumImport = ({ onImport }: Props) => {
       const { text } = await uploadFile(file);
       const rawCurriculum = JSON.parse(text as string);
       
-      // Validate curriculum structure
-      const validationResult = curriculumSchema.safeParse(rawCurriculum);
-      
-      if (!validationResult.success) {
-        throw new Error("Invalid curriculum format: " + validationResult.error.message);
-      }
-
-      const { data } = validationResult;
-
-      // Create curriculum object with validated data and ensure all required fields
-      const curriculum: Curriculum = {
-        name: sanitizeInput(data.name),
-        description: sanitizeInput(data.description),
-        degrees: data.degrees.map((degree): Degree => ({
-          id: degree.id || crypto.randomUUID(),
-          title: degree.title,
-          type: degree.type,
-          description: degree.description,
-          requiredCredits: degree.requiredCredits,
-          courses: degree.courses.map(course => ({
-            id: course.id || crypto.randomUUID(),
-            title: course.title,
-            description: course.description,
-            credits: course.credits,
-            level: course.level,
-            modules: course.modules.map(module => ({
-              id: module.id || crypto.randomUUID(),
-              title: module.title,
-              description: module.description,
-              credits: module.credits,
-              metadata: {
-                estimatedTime: module.metadata.estimatedTime,
-                difficulty: module.metadata.difficulty,
-                prerequisites: module.metadata.prerequisites,
-                tags: module.metadata.tags,
-                skills: module.metadata.skills
-              },
-              learningObjectives: module.learningObjectives.map(obj => ({
-                id: obj.id || crypto.randomUUID(),
-                description: obj.description || '',
-                assessmentCriteria: obj.assessmentCriteria || []
-              })),
-              resources: module.resources.map(resource => ({
-                id: resource.id || crypto.randomUUID(),
-                title: resource.title || '',
-                type: resource.type || 'document',
-                content: resource.content || '',
-                duration: resource.duration,
-                url: resource.url,
-                embedType: resource.embedType,
-                code: resource.code ? {
-                  initialCode: resource.code.initialCode || '',
-                  solution: resource.code.solution || '',
-                  testCases: (resource.code.testCases || []).map(testCase => ({
-                    input: testCase.input || '',
-                    expectedOutput: testCase.expectedOutput || ''
-                  }))
-                } : undefined
-              })),
-              assignments: module.assignments.map(assignment => ({
-                id: assignment.id || crypto.randomUUID(),
-                title: assignment.title,
-                description: assignment.description,
-                dueDate: assignment.dueDate,
-                points: assignment.points,
-                questions: (assignment.questions || []).map((q): Question => {
-                  const baseQuestion = {
-                    id: q.id || crypto.randomUUID(),
-                    title: q.question || '',
-                    description: q.explanation || '',
-                    points: q.points || 0,
-                    type: q.type,
-                  };
-
-                  switch (q.type) {
-                    case 'multiple-choice':
-                      return {
-                        ...baseQuestion,
-                        type: 'multiple-choice',
-                        options: q.options || [],
-                        correctAnswer: q.correctAnswer || 0,
-                        allowMultiple: q.allowMultiple || false,
-                      };
-                    case 'essay':
-                      return {
-                        ...baseQuestion,
-                        type: 'essay',
-                        minWords: q.minWords || 0,
-                        maxWords: q.maxWords || 1000,
-                        rubric: q.rubric ? {
-                          criteria: (q.rubric.criteria || []).map(c => ({
-                            name: c.name || 'Unnamed Criterion',
-                            description: c.description || 'No description provided',
-                            points: c.points || 0
-                          }))
-                        } : { criteria: [] }
-                      };
-                    case 'coding':
-                      return {
-                        ...baseQuestion,
-                        type: 'coding',
-                        initialCode: q.initialCode || '',
-                        testCases: (q.testCases || []).map(tc => ({
-                          input: tc.input || '',
-                          expectedOutput: tc.expectedOutput || ''
-                        }))
-                      };
-                    case 'true-false':
-                      return {
-                        ...baseQuestion,
-                        type: 'true-false',
-                        correctAnswer: q.correctAnswer || false,
-                      };
-                    case 'short-answer':
-                      return {
-                        ...baseQuestion,
-                        type: 'short-answer',
-                        sampleAnswer: q.sampleAnswer || '',
-                        keywords: q.keywords || [],
-                      };
-                    case 'matching':
-                      return {
-                        ...baseQuestion,
-                        type: 'matching',
-                        pairs: (q.pairs || []).map(p => ({
-                          left: p.left || '',
-                          right: p.right || ''
-                        }))
-                      };
-                    default:
-                      throw new Error(`Unsupported question type: ${q.type}`);
-                  }
-                }),
-                rubric: assignment.rubric ? {
-                  criteria: (assignment.rubric.criteria || []).map(c => ({
-                    name: c.name || 'Unnamed Criterion',
-                    description: c.description || 'No description provided',
-                    points: c.points || 0
-                  }))
-                } : { criteria: [] }
-              })),
-              quizzes: module.quizzes.map(quiz => ({
-                id: quiz.id || crypto.randomUUID(),
-                title: quiz.title,
-                description: quiz.description,
-                questions: quiz.questions,
-                timeLimit: quiz.timeLimit,
-                passingScore: quiz.passingScore,
-                instructions: quiz.instructions
-              }))
-            }))
-          }))
-        }))
-      };
+      // Validate and transform curriculum data
+      const curriculum = validateAndTransformCurriculum(rawCurriculum);
 
       // Get the current user
       const { data: { user }, error: userError } = await supabase.auth.getUser();
