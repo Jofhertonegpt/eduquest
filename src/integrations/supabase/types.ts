@@ -335,33 +335,48 @@ export type Database = {
       }
       profiles: {
         Row: {
+          accessibility_settings: Json | null
           avatar_url: string | null
           completed_degrees: string[] | null
           created_at: string
           current_degree: string | null
           full_name: string | null
           id: string
+          language_preference: string | null
           level: string | null
+          notification_preferences: Json | null
+          privacy_settings: Json | null
+          theme_preference: string | null
           updated_at: string
         }
         Insert: {
+          accessibility_settings?: Json | null
           avatar_url?: string | null
           completed_degrees?: string[] | null
           created_at?: string
           current_degree?: string | null
           full_name?: string | null
           id: string
+          language_preference?: string | null
           level?: string | null
+          notification_preferences?: Json | null
+          privacy_settings?: Json | null
+          theme_preference?: string | null
           updated_at?: string
         }
         Update: {
+          accessibility_settings?: Json | null
           avatar_url?: string | null
           completed_degrees?: string[] | null
           created_at?: string
           current_degree?: string | null
           full_name?: string | null
           id?: string
+          language_preference?: string | null
           level?: string | null
+          notification_preferences?: Json | null
+          privacy_settings?: Json | null
+          theme_preference?: string | null
           updated_at?: string
         }
         Relationships: []
