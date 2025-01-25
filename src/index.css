@@ -75,10 +75,24 @@
   * {
     @apply border-border;
   }
+  
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    touch-action: manipulation;
+  }
+  
   body {
     @apply bg-background text-foreground transition-colors duration-300;
     background: var(--background);
     background-color: hsl(var(--background));
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  input, textarea, select, button {
+    @apply text-base;
+    font-size: 16px; /* Prevents zoom on focus in iOS */
   }
 }
 
@@ -102,5 +116,28 @@
       #4b0082,
       #8f00ff
     );
+  }
+
+  .mobile-safe-area {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+/* Mobile-first responsive breakpoints */
+@screen sm {
+  .container {
+    @apply px-4;
+  }
+}
+
+@screen md {
+  .container {
+    @apply px-6;
+  }
+}
+
+@screen lg {
+  .container {
+    @apply px-8;
   }
 }

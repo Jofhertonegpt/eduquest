@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
+import { useIsMobile } from "@/hooks/use-mobile";
 import Navigation from "./components/Navigation";
 import Dashboard from "./pages/Dashboard";
 import School from "./pages/School";
@@ -22,6 +23,7 @@ const queryClient = new QueryClient();
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const [session, setSession] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -39,14 +41,22 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
   }
 
   if (!session) {
     return <Navigate to="/login" replace />;
   }
 
-  return <>{children}</>;
+  return (
+    <div className={cn("min-h-screen", isMobile ? "pb-16" : "pt-16")}>
+      {children}
+    </div>
+  );
 };
 
 const App = () => (
@@ -62,30 +72,31 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <div className="min-h-screen pb-16 md:pb-0 md:pt-16">
-            <Routes>
-              <Route path="/login" element={<Login />} />
-              <Route path="/signup" element={<Signup />} />
-              <Route
-                path="/join-school"
-                element={
-                  <ProtectedRoute>
-                    <Navigation />
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route
+              path="/join-school"
+              element={
+                <ProtectedRoute>
+                  <Navigation />
+                  <div className="container mx-auto px-4 py-4 md:py-8">
                     <JoinSchool />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/"
-                element={
-                  <ProtectedRoute>
-                    <>
-                      <Navigation />
-                      <Dashboard />
-                    </>
-                  </ProtectedRoute>
-                }
-              />
+                  </div>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/"
+              element={
+                <ProtectedRoute>
+                  <Navigation />
+                  <div className="container mx-auto px-4 py-4 md:py-8">
+                    <Dashboard />
+                  </div>
+                </ProtectedRoute>
+              }
+            />
               <Route
                 path="/school"
                 element={
@@ -141,9 +152,8 @@ const App = () => (
                   </ProtectedRoute>
                 }
               />
-              <Route path="*" element={<Navigate to="/login" replace />} />
-            </Routes>
-          </div>
+            <Route path="*" element={<Navigate to="/login" replace />} />
+          </Routes>
         </BrowserRouter>
       </TooltipProvider>
     </ThemeProvider>
