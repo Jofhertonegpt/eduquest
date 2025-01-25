@@ -1,34 +1,72 @@
 import { useState } from "react";
-import { Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/lib/supabase";
 
-interface MessageInputProps {
-  onSend: (message: string) => void;
-  disabled?: boolean;
+export interface MessageInputProps {
+  recipientId?: string | null;
+  onSend?: (content: string) => void;
 }
 
-export const MessageInput = ({ onSend, disabled }: MessageInputProps) => {
-  const [message, setMessage] = useState("");
+export const MessageInput = ({ recipientId, onSend }: MessageInputProps) => {
+  const [content, setContent] = useState("");
+  const { toast } = useToast();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!message.trim()) return;
-    onSend(message);
-    setMessage("");
+    
+    if (!content.trim()) return;
+    
+    if (!recipientId) {
+      toast({
+        title: "Error",
+        description: "No recipient selected",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not authenticated");
+
+      const { error } = await supabase
+        .from("messages")
+        .insert({
+          content: content.trim(),
+          recipient_id: recipientId,
+          sender_id: user.id,
+        });
+
+      if (error) throw error;
+
+      setContent("");
+      if (onSend) onSend(content);
+      
+      toast({
+        title: "Success",
+        description: "Message sent successfully",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to send message",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="border-t p-4 flex gap-2">
-      <Input
-        value={message}
-        onChange={(e) => setMessage(e.target.value)}
+    <form onSubmit={handleSubmit} className="flex gap-2 p-4 border-t">
+      <Textarea
+        value={content}
+        onChange={(e) => setContent(e.target.value)}
         placeholder="Type your message..."
-        className="flex-1"
-        disabled={disabled}
+        className="flex-1 min-h-[40px] max-h-[120px]"
       />
-      <Button type="submit" disabled={!message.trim() || disabled}>
-        <Send className="h-4 w-4" />
+      <Button type="submit" disabled={!content.trim()}>
+        Send
       </Button>
     </form>
   );
