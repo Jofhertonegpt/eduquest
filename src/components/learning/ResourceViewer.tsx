@@ -1,7 +1,7 @@
-import type { LearningResource } from "@/types/curriculum";
+import type { Resource } from "@/types/curriculum";
 import CodeEditor from "@/components/CodeEditor";
 
-export const ResourceViewer = ({ resource }: { resource: LearningResource }) => {
+export const ResourceViewer = ({ resource }: { resource: Resource }) => {
   if (resource.type === 'video' && resource.embedType === 'youtube' && resource.url) {
     const videoId = resource.url.split('v=')[1];
     return (

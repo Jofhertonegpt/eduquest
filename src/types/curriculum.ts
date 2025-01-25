@@ -2,31 +2,23 @@ export type DegreeType = 'associates' | 'bachelors' | 'masters' | 'doctorate' | 
 export type DifficultyLevel = 'beginner' | 'intermediate' | 'advanced' | 'expert';
 export type ResourceType = 'video' | 'pdf' | 'epub' | 'article' | 'document' | 'code';
 
-export interface Assignment {
+export interface Resource {
   id: string;
   title: string;
-  description: string;
-  dueDate: string;
-  points: number;
-  status?: 'pending' | 'submitted' | 'graded';
-  questions?: Question[];
-  timeLimit?: number;
-  instructions?: string;
-  rubric?: {
-    criteria: {
-      name: string;
-      description: string;
-      points: number;
+  type: ResourceType;
+  content: string;
+  duration?: string;
+  url?: string;
+  embedType?: 'youtube';
+  code?: {
+    initialCode: string;
+    solution: string;
+    testCases: {
+      input: string;
+      expectedOutput: string;
     }[];
   };
-  resources?: {
-    title: string;
-    url: string;
-    type: 'document' | 'video' | 'link';
-  }[];
 }
-
-export type QuestionType = 'multiple-choice' | 'essay' | 'coding' | 'true-false' | 'short-answer' | 'matching';
 
 export interface BaseQuestion {
   id: string;
@@ -35,6 +27,8 @@ export interface BaseQuestion {
   points: number;
   explanation?: string;
 }
+
+export type QuestionType = 'multiple-choice' | 'essay' | 'coding' | 'true-false' | 'short-answer' | 'matching';
 
 export interface MultipleChoiceQuestion extends BaseQuestion {
   type: 'multiple-choice';
@@ -96,38 +90,47 @@ export interface Quiz {
   id: string;
   title: string;
   description: string;
-  timeLimit?: number; // in minutes
+  timeLimit?: number;
   passingScore?: number;
   questions: Question[];
   instructions?: string;
-  attempts?: number;
-  randomizeQuestions?: boolean;
 }
 
-export interface ModuleMetadata {
-  estimatedTime: number;
-  difficulty: DifficultyLevel;
-  prerequisites: string[];
-  tags: string[];
-  skills: string[];
-}
-
-export interface LearningObjective {
+export interface Assignment {
   id: string;
+  title: string;
   description: string;
-  assessmentCriteria: string[];
+  dueDate: string;
+  points: number;
+  questions?: Question[];
+  rubric?: {
+    criteria: {
+      name: string;
+      description: string;
+      points: number;
+    }[];
+  };
 }
 
 export interface Module {
   id: string;
   title: string;
   description: string;
-  metadata: ModuleMetadata;
-  learningObjectives: LearningObjective[];
-  resources: LearningResource[];
+  metadata: {
+    estimatedTime: number;
+    difficulty: DifficultyLevel;
+    prerequisites: string[];
+    tags: string[];
+    skills: string[];
+  };
+  learningObjectives: {
+    id: string;
+    description: string;
+    assessmentCriteria: string[];
+  }[];
+  resources: Resource[];
   assignments: Assignment[];
   quizzes: Quiz[];
-  prerequisites?: string[];
   credits: number;
 }
 
@@ -138,7 +141,6 @@ export interface Course {
   modules: Module[];
   credits: number;
   level: 'introductory' | 'intermediate' | 'advanced';
-  prerequisites?: string[];
 }
 
 export interface Degree {
@@ -148,7 +150,6 @@ export interface Degree {
   description: string;
   courses: Course[];
   requiredCredits: number;
-  specialization?: string;
 }
 
 export interface Curriculum {
