@@ -59,7 +59,8 @@ export const sampleCurriculum: Curriculum = {
                     {
                       id: "q1",
                       type: "coding",
-                      question: "Implement a useLocalStorage hook",
+                      title: "Implement useLocalStorage",
+                      description: "Create a custom hook for local storage",
                       points: 20,
                       initialCode: "export const useLocalStorage = () => {\n  // Implement here\n}",
                       testCases: [
@@ -81,7 +82,8 @@ export const sampleCurriculum: Curriculum = {
                     {
                       id: "q1",
                       type: "multiple-choice",
-                      question: "What is a custom hook?",
+                      title: "Understanding Custom Hooks",
+                      description: "What is a custom hook?",
                       points: 10,
                       options: [
                         "A reusable function that contains stateful logic",

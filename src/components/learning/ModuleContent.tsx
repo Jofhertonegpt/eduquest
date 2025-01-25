@@ -7,8 +7,18 @@ import type { Module } from "@/types/curriculum";
 import { ResourceViewer } from "./ResourceViewer";
 import { QuizPlayer } from "./QuizPlayer";
 import CodeEditor from "@/components/CodeEditor";
+import { useToast } from "@/hooks/use-toast";
 
 export const ModuleContent = ({ module }: { module: Module }) => {
+  const { toast } = useToast();
+
+  const handleQuizComplete = (score: number) => {
+    toast({
+      title: "Quiz completed",
+      description: `You scored ${score} points!`,
+    });
+  };
+
   return (
     <div className="glass-panel rounded-xl p-6">
       <div className="mb-6">
@@ -123,7 +133,7 @@ export const ModuleContent = ({ module }: { module: Module }) => {
             {module.quizzes.map((quiz) => (
               <Card key={quiz.id}>
                 <CardContent className="pt-6">
-                  <QuizPlayer quiz={quiz} />
+                  <QuizPlayer quiz={quiz} onComplete={handleQuizComplete} />
                 </CardContent>
               </Card>
             ))}

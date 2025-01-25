@@ -17,11 +17,6 @@ export const QuizPlayer = ({ quiz, onComplete }: { quiz: Quiz; onComplete: (scor
     }
   };
 
-  const handleCodeChange = (files: any) => {
-    // Handle code changes here
-    console.log('Code changed:', files);
-  };
-
   const calculateScore = () => {
     return userAnswers.reduce((total, answer, index) => {
       const question = quiz.questions[index];
