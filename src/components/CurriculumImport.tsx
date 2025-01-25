@@ -110,16 +110,25 @@ const CurriculumImport = ({ onImport }: Props) => {
                       return {
                         ...baseQuestion,
                         type: 'essay',
-                        minWords: q.minWords,
-                        maxWords: q.maxWords,
-                        rubric: q.rubric,
+                        minWords: q.minWords || 0,
+                        maxWords: q.maxWords || 1000,
+                        rubric: q.rubric ? {
+                          criteria: (q.rubric.criteria || []).map(c => ({
+                            name: c.name || 'Unnamed Criterion',
+                            description: c.description || 'No description provided',
+                            points: c.points || 0
+                          }))
+                        } : { criteria: [] }
                       };
                     case 'coding':
                       return {
                         ...baseQuestion,
                         type: 'coding',
                         initialCode: q.initialCode || '',
-                        testCases: q.testCases || [],
+                        testCases: (q.testCases || []).map(tc => ({
+                          input: tc.input || '',
+                          expectedOutput: tc.expectedOutput || ''
+                        }))
                       };
                     case 'true-false':
                       return {
@@ -138,13 +147,22 @@ const CurriculumImport = ({ onImport }: Props) => {
                       return {
                         ...baseQuestion,
                         type: 'matching',
-                        pairs: q.pairs || [],
+                        pairs: (q.pairs || []).map(p => ({
+                          left: p.left || '',
+                          right: p.right || ''
+                        }))
                       };
                     default:
                       throw new Error(`Unsupported question type: ${q.type}`);
                   }
                 }),
-                rubric: assignment.rubric
+                rubric: assignment.rubric ? {
+                  criteria: (assignment.rubric.criteria || []).map(c => ({
+                    name: c.name || 'Unnamed Criterion',
+                    description: c.description || 'No description provided',
+                    points: c.points || 0
+                  }))
+                } : { criteria: [] }
               })),
               quizzes: module.quizzes.map(quiz => ({
                 id: quiz.id || crypto.randomUUID(),
