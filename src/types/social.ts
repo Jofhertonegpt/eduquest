@@ -3,7 +3,8 @@ export interface Post {
   content: string;
   user_id: string;
   created_at: string;
-  media_url?: string;
+  media_urls?: string[];
+  file_urls?: string[];
   profiles?: {
     full_name: string | null;
     avatar_url: string | null;
