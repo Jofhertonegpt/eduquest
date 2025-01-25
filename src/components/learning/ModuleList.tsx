@@ -1,5 +1,6 @@
 import type { Module } from "@/types/curriculum";
 import { cn } from "@/lib/utils";
+import { GlassPanel } from "@/components/ui/glass-panel";
 
 interface ModuleListProps {
   modules: Module[];
@@ -9,8 +10,8 @@ interface ModuleListProps {
 
 const ModuleList = ({ modules, activeModule, onModuleSelect }: ModuleListProps) => {
   return (
-    <div 
-      className="glass-panel rounded-xl p-4"
+    <GlassPanel 
+      className="rounded-xl p-4"
       role="navigation"
       aria-label="Module navigation"
     >
@@ -32,7 +33,7 @@ const ModuleList = ({ modules, activeModule, onModuleSelect }: ModuleListProps) 
           </button>
         ))}
       </nav>
-    </div>
+    </GlassPanel>
   );
 };
 
