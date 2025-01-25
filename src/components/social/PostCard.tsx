@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Heart, MessageSquare, Bookmark, User, Share2, ExternalLink } from "lucide-react";
+import { Heart, MessageSquare, Bookmark, User, Share2, ExternalLink, FileText, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "@/hooks/use-toast";
@@ -11,6 +11,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useNavigate } from "react-router-dom";
 
 interface PostCardProps {
   post: Post;
@@ -32,6 +33,7 @@ export const PostCard = ({
   isBookmarkLoading
 }: PostCardProps) => {
   const [isSharing, setIsSharing] = useState(false);
+  const navigate = useNavigate();
 
   const handleShare = async () => {
     setIsSharing(true);
@@ -61,6 +63,58 @@ export const PostCard = ({
     }
   };
 
+  const handleProfileClick = () => {
+    navigate(`/profile/${post.user_id}`);
+  };
+
+  const renderMedia = (url: string) => {
+    const fileType = url.split('.').pop()?.toLowerCase();
+    const isImage = ['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(fileType || '');
+    const isVideo = ['mp4', 'webm', 'ogg'].includes(fileType || '');
+    const isPDF = fileType === 'pdf';
+
+    if (isImage) {
+      return (
+        <img 
+          src={url} 
+          alt="Post attachment" 
+          className="rounded-lg max-h-96 object-cover w-full"
+          loading="lazy"
+        />
+      );
+    }
+
+    if (isVideo) {
+      return (
+        <video 
+          src={url} 
+          controls 
+          className="rounded-lg max-h-96 w-full"
+        />
+      );
+    }
+
+    if (isPDF) {
+      return (
+        <div className="flex items-center gap-2 p-4 bg-muted rounded-lg">
+          <FileText className="h-6 w-6" />
+          <span className="flex-1 truncate">PDF Document</span>
+          <a 
+            href={url} 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="flex items-center gap-1 text-primary hover:underline"
+          >
+            <Download className="h-4 w-4" />
+            Download
+          </a>
+        </div>
+      );
+    }
+
+    return null;
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -72,11 +126,11 @@ export const PostCard = ({
       <div className="flex items-center justify-between">
         <div 
           className="flex items-center gap-2 cursor-pointer"
-          onClick={() => onProfileClick(post.user_id)}
+          onClick={handleProfileClick}
           role="button"
           tabIndex={0}
           onKeyPress={(e) => {
-            if (e.key === 'Enter') onProfileClick(post.user_id);
+            if (e.key === 'Enter') handleProfileClick();
           }}
           aria-label={`View ${post.profiles?.full_name || 'Anonymous'}'s profile`}
         >
@@ -115,14 +169,17 @@ export const PostCard = ({
 
       <p className="whitespace-pre-wrap break-words">{post.content}</p>
 
-      {post.media_url && (
-        <img 
-          src={post.media_url} 
-          alt="Post attachment" 
-          className="rounded-lg max-h-96 object-cover w-full"
-          loading="lazy"
-        />
-      )}
+      {post.media_urls?.map((url, index) => (
+        <div key={index} className="mt-2">
+          {renderMedia(url)}
+        </div>
+      ))}
+
+      {post.file_urls?.map((url, index) => (
+        <div key={index} className="mt-2">
+          {renderMedia(url)}
+        </div>
+      ))}
 
       <div className="flex items-center gap-4">
         <Button 
