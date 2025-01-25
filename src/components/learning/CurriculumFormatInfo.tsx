@@ -33,15 +33,30 @@ export const CurriculumFormatInfo = () => {
       </DialogTrigger>
       <DialogContent className="max-w-3xl">
         <DialogHeader>
-          <DialogTitle>Curriculum Format</DialogTitle>
+          <DialogTitle>Enhanced Curriculum Format</DialogTitle>
+          <p className="text-sm text-muted-foreground">
+            This format supports advanced features including interactive quizzes, coding assignments, and detailed learning objectives.
+          </p>
         </DialogHeader>
         <div className="space-y-4">
           <ScrollArea className="h-[500px] mt-4">
-            <pre className="p-4 bg-muted rounded-lg text-sm">
-              {JSON.stringify(sampleCurriculum, null, 2)}
-            </pre>
+            <div className="space-y-4 p-4">
+              <div className="rounded-lg bg-muted p-4">
+                <h3 className="font-semibold mb-2">Key Features:</h3>
+                <ul className="list-disc list-inside space-y-2 text-sm">
+                  <li>Interactive quizzes with multiple question types</li>
+                  <li>Coding assignments with automated testing</li>
+                  <li>Detailed learning objectives and assessment criteria</li>
+                  <li>Resource management with various content types</li>
+                  <li>Progress tracking and achievements</li>
+                </ul>
+              </div>
+              <pre className="p-4 bg-muted rounded-lg text-sm overflow-auto">
+                {JSON.stringify(sampleCurriculum, null, 2)}
+              </pre>
+            </div>
           </ScrollArea>
-          <Button onClick={copyFormatToClipboard} className="mt-4">
+          <Button onClick={copyFormatToClipboard} className="w-full">
             <Copy className="mr-2 h-4 w-4" />
             Copy Format
           </Button>

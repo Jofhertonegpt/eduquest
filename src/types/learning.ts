@@ -1,4 +1,4 @@
-import type { DifficultyLevel } from './curriculum';
+import type { DifficultyLevel, Resource } from './curriculum';
 
 export interface LearningObjective {
   id: string;
@@ -15,11 +15,11 @@ export interface Certification {
     requiredModules: string[];
     requiredAssessments: string[];
   };
-  validityPeriod?: number; // in months
+  validityPeriod?: number;
 }
 
 export interface ModuleMetadata {
-  estimatedTime: number; // in minutes
+  estimatedTime: number;
   difficulty: DifficultyLevel;
   prerequisites: string[];
   tags: string[];
@@ -33,7 +33,7 @@ export interface Assessment {
   description: string;
   difficultyLevel: DifficultyLevel;
   points: number;
-  timeLimit?: number; // in minutes
+  timeLimit?: number;
   rubric?: {
     criteria: {
       name: string;
@@ -49,7 +49,7 @@ export interface Module {
   description: string;
   metadata: ModuleMetadata;
   learningObjectives: LearningObjective[];
-  resources: LearningResource[];
+  resources: Resource[];
   assessments: Assessment[];
   milestones: {
     id: string;

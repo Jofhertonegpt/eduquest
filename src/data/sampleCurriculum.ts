@@ -48,7 +48,30 @@ export const sampleCurriculum: Curriculum = {
                   embedType: "youtube"
                 }
               ],
-              assignments: [],
+              assignments: [
+                {
+                  id: "assign-1",
+                  title: "Custom Hooks Implementation",
+                  description: "Create a set of custom hooks",
+                  dueDate: "2024-12-31",
+                  points: 100,
+                  questions: [
+                    {
+                      id: "q1",
+                      type: "coding",
+                      question: "Implement a useLocalStorage hook",
+                      points: 20,
+                      initialCode: "export const useLocalStorage = () => {\n  // Implement here\n}",
+                      testCases: [
+                        {
+                          input: "setValue('test', 'value')",
+                          expectedOutput: "value"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ],
               quizzes: [
                 {
                   id: "quiz-1",
