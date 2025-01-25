@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Upload } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
-import { Curriculum, Degree } from "@/types/curriculum";
+import { Curriculum, Degree, Question } from "@/types/curriculum";
 import { supabase } from "@/lib/supabase";
 import { curriculumSchema, encryptData } from "@/lib/encryption";
 import { sanitizeInput } from "@/lib/supabase";
@@ -88,7 +88,62 @@ const CurriculumImport = ({ onImport }: Props) => {
                 description: assignment.description,
                 dueDate: assignment.dueDate,
                 points: assignment.points,
-                questions: assignment.questions || [],
+                questions: (assignment.questions || []).map((q): Question => {
+                  const baseQuestion = {
+                    id: q.id || crypto.randomUUID(),
+                    title: q.question || '',
+                    description: q.explanation || '',
+                    points: q.points || 0,
+                    type: q.type,
+                  };
+
+                  switch (q.type) {
+                    case 'multiple-choice':
+                      return {
+                        ...baseQuestion,
+                        type: 'multiple-choice',
+                        options: q.options || [],
+                        correctAnswer: q.correctAnswer || 0,
+                        allowMultiple: q.allowMultiple || false,
+                      };
+                    case 'essay':
+                      return {
+                        ...baseQuestion,
+                        type: 'essay',
+                        minWords: q.minWords,
+                        maxWords: q.maxWords,
+                        rubric: q.rubric,
+                      };
+                    case 'coding':
+                      return {
+                        ...baseQuestion,
+                        type: 'coding',
+                        initialCode: q.initialCode || '',
+                        testCases: q.testCases || [],
+                      };
+                    case 'true-false':
+                      return {
+                        ...baseQuestion,
+                        type: 'true-false',
+                        correctAnswer: q.correctAnswer || false,
+                      };
+                    case 'short-answer':
+                      return {
+                        ...baseQuestion,
+                        type: 'short-answer',
+                        sampleAnswer: q.sampleAnswer || '',
+                        keywords: q.keywords || [],
+                      };
+                    case 'matching':
+                      return {
+                        ...baseQuestion,
+                        type: 'matching',
+                        pairs: q.pairs || [],
+                      };
+                    default:
+                      throw new Error(`Unsupported question type: ${q.type}`);
+                  }
+                }),
                 rubric: assignment.rubric
               })),
               quizzes: module.quizzes.map(quiz => ({
