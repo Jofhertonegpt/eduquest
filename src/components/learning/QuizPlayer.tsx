@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Quiz } from '@/types/curriculum';
-import CodeEditor from '@/components/ui/CodeEditor';
+import { Quiz, Question, MultipleChoiceQuestion } from '@/types/curriculum';
+import CodeEditor from '@/components/CodeEditor';
 
 export const QuizPlayer = ({ quiz, onComplete }: { quiz: Quiz; onComplete: (score: number) => void }) => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -17,10 +17,16 @@ export const QuizPlayer = ({ quiz, onComplete }: { quiz: Quiz; onComplete: (scor
     }
   };
 
+  const handleCodeChange = (files: any) => {
+    // Handle code changes here
+    console.log('Code changed:', files);
+  };
+
   const calculateScore = () => {
     return userAnswers.reduce((total, answer, index) => {
-      if (answer === quiz.questions[index].correctAnswer) {
-        return total + quiz.questions[index].points;
+      const question = quiz.questions[index];
+      if (question.type === 'multiple-choice' && answer === (question as MultipleChoiceQuestion).correctAnswer) {
+        return total + question.points;
       }
       return total;
     }, 0);
@@ -36,7 +42,6 @@ export const QuizPlayer = ({ quiz, onComplete }: { quiz: Quiz; onComplete: (scor
               language: "javascript"
             }
           }}
-          onCodeChange={(files) => handleCodeChange(files)}
         />
       )}
       <div>
@@ -44,8 +49,12 @@ export const QuizPlayer = ({ quiz, onComplete }: { quiz: Quiz; onComplete: (scor
         <p>{currentQuestion.description}</p>
         {currentQuestion.type === 'multiple-choice' && (
           <div>
-            {currentQuestion.options.map((option, index) => (
-              <button key={index} onClick={() => handleAnswer(index)} className="block w-full text-left p-2">
+            {(currentQuestion as MultipleChoiceQuestion).options.map((option, index) => (
+              <button 
+                key={index} 
+                onClick={() => handleAnswer(index)} 
+                className="block w-full text-left p-2 hover:bg-accent rounded-lg transition-colors"
+              >
                 {option}
               </button>
             ))}

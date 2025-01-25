@@ -20,11 +20,18 @@ export interface Resource {
   };
 }
 
+export interface LearningObjective {
+  id: string;
+  description: string;
+  assessmentCriteria: string[];
+}
+
 export interface BaseQuestion {
   id: string;
-  question: string;
   type: QuestionType;
   points: number;
+  title: string;
+  description: string;
   explanation?: string;
 }
 
@@ -123,11 +130,7 @@ export interface Module {
     tags: string[];
     skills: string[];
   };
-  learningObjectives: {
-    id: string;
-    description: string;
-    assessmentCriteria: string[];
-  }[];
+  learningObjectives: LearningObjective[];
   resources: Resource[];
   assignments: Assignment[];
   quizzes: Quiz[];
