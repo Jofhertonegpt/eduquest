@@ -1,55 +1,21 @@
 import { useState } from "react";
+import { Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/lib/supabase";
-import { useToast } from "@/hooks/use-toast";
 
-export const MessageInput = ({ recipientId }: { recipientId?: string }) => {
+interface MessageInputProps {
+  onSend: (message: string) => void;
+  disabled?: boolean;
+}
+
+export const MessageInput = ({ onSend, disabled }: MessageInputProps) => {
   const [message, setMessage] = useState("");
-  const { toast } = useToast();
-  const queryClient = useQueryClient();
-
-  const sendMessageMutation = useMutation({
-    mutationFn: async (content: string) => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user || !recipientId) throw new Error("Not authenticated or no recipient");
-
-      const { data, error } = await supabase
-        .from("messages")
-        .insert({
-          sender_id: user.id,
-          recipient_id: recipientId,
-          content,
-        })
-        .select()
-        .single();
-
-      if (error) throw error;
-      return data;
-    },
-    onSuccess: () => {
-      setMessage("");
-      queryClient.invalidateQueries({ queryKey: ["messages"] });
-      toast({
-        title: "Message sent",
-        description: "Your message has been sent successfully.",
-      });
-    },
-    onError: (error) => {
-      console.error("Error sending message:", error);
-      toast({
-        title: "Error",
-        description: "Failed to send message. Please try again.",
-        variant: "destructive",
-      });
-    },
-  });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!message.trim()) return;
-    sendMessageMutation.mutate(message);
+    onSend(message);
+    setMessage("");
   };
 
   return (
@@ -59,9 +25,10 @@ export const MessageInput = ({ recipientId }: { recipientId?: string }) => {
         onChange={(e) => setMessage(e.target.value)}
         placeholder="Type your message..."
         className="flex-1"
+        disabled={disabled}
       />
-      <Button type="submit" disabled={!message.trim()}>
-        Send
+      <Button type="submit" disabled={!message.trim() || disabled}>
+        <Send className="h-4 w-4" />
       </Button>
     </form>
   );
