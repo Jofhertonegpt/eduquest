@@ -1,13 +1,11 @@
-import { useState, useRef } from "react";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
+import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/hooks/use-toast";
-import { Upload, Loader2 } from "lucide-react";
-import { FilePreview } from "./FilePreview";
-import { HashtagInput } from "./HashtagInput";
 import { uploadFile } from "@/lib/storage";
+import { PostForm } from "./post/PostForm";
+import { FileUploader } from "./post/FileUploader";
+import { HashtagManager } from "./post/HashtagManager";
 
 export const CreatePost = () => {
   const [content, setContent] = useState("");
@@ -16,7 +14,6 @@ export const CreatePost = () => {
   const [hashtags, setHashtags] = useState<string[]>([]);
   const [hashtagInput, setHashtagInput] = useState("");
   const [isUploading, setIsUploading] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -157,16 +154,15 @@ export const CreatePost = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 p-4 border rounded-lg bg-card">
-      <Textarea
-        value={content}
-        onChange={(e) => setContent(e.target.value)}
-        placeholder="What's on your mind?"
-        className="min-h-[100px]"
-        disabled={isUploading}
+    <div className="space-y-4 p-4 border rounded-lg bg-card">
+      <PostForm
+        content={content}
+        isUploading={isUploading}
+        onContentChange={setContent}
+        onSubmit={handleSubmit}
       />
       
-      <HashtagInput
+      <HashtagManager
         hashtags={hashtags}
         hashtagInput={hashtagInput}
         isUploading={isUploading}
@@ -175,52 +171,13 @@ export const CreatePost = () => {
         onHashtagRemove={(index) => setHashtags(hashtags.filter((_, i) => i !== index))}
       />
 
-      <input
-        type="file"
-        ref={fileInputRef}
-        onChange={handleFileSelect}
-        multiple
-        className="hidden"
-        accept="image/*,video/*,application/*"
-        disabled={isUploading}
+      <FileUploader
+        files={files}
+        isUploading={isUploading}
+        uploadProgress={uploadProgress}
+        onFileSelect={handleFileSelect}
+        onFileRemove={(fileToRemove) => setFiles(files.filter(f => f !== fileToRemove))}
       />
-
-      <div className="flex flex-wrap gap-2">
-        {files.map((file) => (
-          <FilePreview
-            key={file.name}
-            file={file}
-            progress={uploadProgress[file.name] || 0}
-            isUploading={isUploading}
-            onRemove={(fileToRemove) => setFiles(files.filter(f => f !== fileToRemove))}
-          />
-        ))}
-      </div>
-
-      <div className="flex justify-between items-center">
-        <Button
-          type="button"
-          variant="outline"
-          size="icon"
-          onClick={() => fileInputRef.current?.click()}
-          disabled={isUploading}
-        >
-          <Upload className="h-4 w-4" />
-        </Button>
-        <Button 
-          type="submit" 
-          disabled={(!content.trim() && files.length === 0) || isUploading}
-        >
-          {isUploading ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Uploading...
-            </>
-          ) : (
-            'Post'
-          )}
-        </Button>
-      </div>
-    </form>
+    </div>
   );
 };

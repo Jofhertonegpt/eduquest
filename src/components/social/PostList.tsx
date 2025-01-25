@@ -6,8 +6,9 @@ import { useNavigate } from "react-router-dom";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { PostComments } from "@/components/school/PostComments";
 import ErrorBoundary from "@/components/ErrorBoundary";
-import { PostCard } from "./PostCard";
 import { PostSkeleton } from "./PostSkeleton";
+import { PostFeed } from "./post/PostFeed";
+import { PostFilters } from "./post/PostFilters";
 import type { Post } from "@/types/social";
 
 interface PostPage {
@@ -22,6 +23,7 @@ interface PostListProps {
 
 export const PostList = ({ userId, type = "feed" }: PostListProps) => {
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
+  const [activeTab, setActiveTab] = useState<"feed" | "trending">("feed");
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
@@ -209,25 +211,26 @@ export const PostList = ({ userId, type = "feed" }: PostListProps) => {
   return (
     <ErrorBoundary>
       <div className="space-y-4">
+        <PostFilters
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+        />
+        
         {isLoading ? (
           Array.from({ length: 3 }).map((_, i) => <PostSkeleton key={i} />)
         ) : (
           <>
             {data?.pages.map((page, i) => (
-              <div key={i} className="space-y-4">
-                {page.posts.map((post) => (
-                  <PostCard
-                    key={post.id}
-                    post={post}
-                    onLike={(postId, action) => likeMutation.mutate({ postId, action })}
-                    onBookmark={(postId, action) => bookmarkMutation.mutate({ postId, action })}
-                    onCommentClick={setSelectedPost}
-                    onProfileClick={(userId) => navigate(`/profile/${userId}`)}
-                    isLikeLoading={likeMutation.isPending}
-                    isBookmarkLoading={bookmarkMutation.isPending}
-                  />
-                ))}
-              </div>
+              <PostFeed
+                key={i}
+                posts={page.posts}
+                onLike={(postId, action) => likeMutation.mutate({ postId, action })}
+                onBookmark={(postId, action) => bookmarkMutation.mutate({ postId, action })}
+                onCommentClick={setSelectedPost}
+                onProfileClick={(userId) => navigate(`/profile/${userId}`)}
+                isLikeLoading={likeMutation.isPending}
+                isBookmarkLoading={bookmarkMutation.isPending}
+              />
             ))}
             <div ref={observerTarget} className="h-10" />
             {isFetchingNextPage && <PostSkeleton />}
@@ -245,8 +248,8 @@ export const PostList = ({ userId, type = "feed" }: PostListProps) => {
           </DialogHeader>
           {selectedPost && (
             <div className="space-y-4">
-              <PostCard
-                post={selectedPost}
+              <PostFeed
+                posts={[selectedPost]}
                 onLike={(postId, action) => likeMutation.mutate({ postId, action })}
                 onBookmark={(postId, action) => bookmarkMutation.mutate({ postId, action })}
                 onCommentClick={() => {}}
