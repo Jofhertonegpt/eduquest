@@ -9,6 +9,7 @@ export const sampleCurriculum: Curriculum = {
       title: "Advanced Web Development",
       type: "certificate",
       description: "Master modern web development",
+      requiredCredits: 12,
       courses: [
         {
           id: "react-mastery",
@@ -22,16 +23,6 @@ export const sampleCurriculum: Curriculum = {
               title: "Advanced React Hooks",
               description: "Master React Hooks and Custom Hooks",
               credits: 1,
-              learningObjectives: [
-                {
-                  id: "obj-1",
-                  description: "Understand and implement custom React hooks",
-                  assessmentCriteria: [
-                    "Create a custom hook that manages form state",
-                    "Implement data fetching with custom hooks"
-                  ]
-                }
-              ],
               metadata: {
                 estimatedTime: 180,
                 difficulty: "advanced",
@@ -39,6 +30,13 @@ export const sampleCurriculum: Curriculum = {
                 tags: ["react", "hooks", "frontend"],
                 skills: ["React", "TypeScript", "State Management"]
               },
+              learningObjectives: [
+                {
+                  id: "obj-1",
+                  description: "Understand and implement custom React hooks",
+                  assessmentCriteria: ["Create a custom hook", "Implement data fetching"]
+                }
+              ],
               resources: [
                 {
                   id: "res-1",
@@ -46,62 +44,22 @@ export const sampleCurriculum: Curriculum = {
                   type: "video",
                   content: "Learn how to create and use custom hooks",
                   duration: "45 minutes",
-                  url: "https://www.youtube.com/watch?v=example",
+                  url: "https://example.com/video",
                   embedType: "youtube"
-                },
-                {
-                  id: "res-2",
-                  title: "Hooks Practice",
-                  type: "code",
-                  content: "Practice implementing custom hooks",
-                  code: {
-                    initialCode: "function useCounter() {\n  // Implement counter hook\n}",
-                    solution: "function useCounter() {\n  const [count, setCount] = useState(0);\n  return [count, setCount];\n}",
-                    testCases: [
-                      {
-                        input: "increment()",
-                        expectedOutput: "count === 1"
-                      }
-                    ]
-                  }
                 }
               ],
-              assignments: [
-                {
-                  id: "assign-1",
-                  title: "Custom Hooks Implementation",
-                  description: "Create a custom hook for managing form state",
-                  dueDate: "2024-12-31",
-                  points: 100,
-                  rubric: {
-                    criteria: [
-                      {
-                        name: "Functionality",
-                        description: "Hook works as expected",
-                        points: 40
-                      },
-                      {
-                        name: "Code Quality",
-                        description: "Clean and maintainable code",
-                        points: 30
-                      },
-                      {
-                        name: "Documentation",
-                        description: "Clear documentation and examples",
-                        points: 30
-                      }
-                    ]
-                  }
-                }
-              ],
+              assignments: [],
               quizzes: [
                 {
                   id: "quiz-1",
-                  title: "React Hooks Fundamentals",
+                  title: "React Hooks Quiz",
+                  description: "Test your knowledge of React Hooks",
                   questions: [
                     {
                       id: "q1",
+                      type: "multiple-choice",
                       question: "What is a custom hook?",
+                      points: 10,
                       options: [
                         "A reusable function that contains stateful logic",
                         "A React component",
@@ -116,8 +74,7 @@ export const sampleCurriculum: Curriculum = {
             }
           ]
         }
-      ],
-      requiredCredits: 12
+      ]
     }
   ]
 };

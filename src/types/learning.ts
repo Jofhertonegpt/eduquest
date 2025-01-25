@@ -1,4 +1,4 @@
-import type { DifficultyLevel, LearningResource } from './curriculum';
+import type { DifficultyLevel } from './curriculum';
 
 export interface LearningObjective {
   id: string;

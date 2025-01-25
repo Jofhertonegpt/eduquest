@@ -72,7 +72,7 @@ export const QuizPlayer = ({ quiz }: QuizPlayerProps) => {
             language: "javascript"
           }
         }}
-        onChange={(files) => handleAnswer(question.id, files["solution.js"].content)}
+        onCodeChange={(files) => handleAnswer(question.id, files["solution.js"].content)}
       />
       {question.testCases && (
         <div className="text-sm text-muted-foreground">
