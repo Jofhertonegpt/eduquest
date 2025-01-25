@@ -10,10 +10,50 @@ import { GlassPanel } from "@/components/ui/glass-panel";
 import { useCurriculum } from "@/hooks/use-curriculum";
 import { useProgress } from "@/hooks/use-progress";
 
-// Lazy load components
-const ModuleList = lazy(() => import('@/components/learning/ModuleList'));
-const ModuleContent = lazy(() => import('@/components/learning/ModuleContent').then(m => ({ default: m.ModuleContent })));
-const CurriculumImport = lazy(() => import('@/components/CurriculumImport'));
+// Lazy load components with explicit loading states
+const ModuleList = lazy(() => 
+  Promise.all([
+    import('@/components/learning/ModuleList'),
+    new Promise(resolve => setTimeout(resolve, 100)) // Minimum delay to prevent flash
+  ]).then(([moduleExport]) => moduleExport)
+);
+
+const ModuleContent = lazy(() => 
+  Promise.all([
+    import('@/components/learning/ModuleContent').then(m => ({ default: m.ModuleContent })),
+    new Promise(resolve => setTimeout(resolve, 100))
+  ]).then(([moduleExport]) => moduleExport)
+);
+
+const CurriculumImport = lazy(() => 
+  Promise.all([
+    import('@/components/CurriculumImport'),
+    new Promise(resolve => setTimeout(resolve, 100))
+  ]).then(([moduleExport]) => moduleExport)
+);
+
+const LoadingModuleList = () => (
+  <GlassPanel className="rounded-xl p-4">
+    <Skeleton className="h-8 w-32 mb-4" />
+    <div className="space-y-2">
+      {[1, 2, 3, 4].map((i) => (
+        <Skeleton key={i} className="h-10 w-full" />
+      ))}
+    </div>
+  </GlassPanel>
+);
+
+const LoadingModuleContent = () => (
+  <GlassPanel className="rounded-xl p-6">
+    <Skeleton className="h-8 w-64 mb-4" />
+    <Skeleton className="h-4 w-full max-w-md mb-6" />
+    <div className="space-y-4">
+      {[1, 2].map((i) => (
+        <Skeleton key={i} className="h-32 w-full" />
+      ))}
+    </div>
+  </GlassPanel>
+);
 
 const Learning = () => {
   const [curriculum, setCurriculum] = useState<Curriculum | null>(null);
@@ -92,9 +132,9 @@ const Learning = () => {
             <Skeleton className="h-8 w-64" />
             <Skeleton className="h-4 w-32" />
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-              <Skeleton className="h-[300px]" />
+              <LoadingModuleList />
               <div className="md:col-span-3">
-                <Skeleton className="h-[600px]" />
+                <LoadingModuleContent />
               </div>
             </div>
           </div>
@@ -136,13 +176,7 @@ const Learning = () => {
               </GlassPanel>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                <Suspense 
-                  fallback={
-                    <GlassPanel className="rounded-xl p-4">
-                      <Skeleton className="h-[300px]" />
-                    </GlassPanel>
-                  }
-                >
+                <Suspense fallback={<LoadingModuleList />}>
                   {activeCourse && (
                     <ModuleList
                       modules={activeCourse.modules}
@@ -152,13 +186,7 @@ const Learning = () => {
                   )}
                 </Suspense>
                 <div className="md:col-span-3">
-                  <Suspense 
-                    fallback={
-                      <GlassPanel className="rounded-xl p-6">
-                        <Skeleton className="h-[600px]" />
-                      </GlassPanel>
-                    }
-                  >
+                  <Suspense fallback={<LoadingModuleContent />}>
                     {activeModule && <ModuleContent module={activeModule} />}
                   </Suspense>
                 </div>
