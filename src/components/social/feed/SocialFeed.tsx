@@ -45,9 +45,23 @@ export const SocialFeed = () => {
       const { data: { user } } = await supabase.auth.getUser();
       
       return data.map(post => ({
-        ...post,
-        is_liked: post.likes.some(like => like.user_id === user?.id),
-        is_bookmarked: post.bookmarks.some(bookmark => bookmark.user_id === user?.id)
+        id: post.id,
+        content: post.content,
+        created_at: post.created_at,
+        media_urls: post.media_urls || [],
+        media_metadata: post.media_metadata || [],
+        hashtags: post.hashtags || [],
+        likes_count: post.likes_count || 0,
+        comments_count: post.comments_count || 0,
+        shares_count: post.shares_count || 0,
+        user_id: post.user_id,
+        profiles: {
+          full_name: post.profiles?.full_name || '',
+          avatar_url: post.profiles?.avatar_url || ''
+        },
+        comments: post.comments || [],
+        is_liked: post.likes?.some(like => like.user_id === user?.id) || false,
+        is_bookmarked: post.bookmarks?.some(bookmark => bookmark.user_id === user?.id) || false
       }));
     },
   });
