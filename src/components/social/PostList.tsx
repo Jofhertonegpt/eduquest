@@ -3,10 +3,10 @@ import { supabase } from "@/lib/supabase";
 import { PostCard } from "./PostCard";
 import { Loader2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
-import { Post } from "@/types/social";
+import { Post, PostListType } from "@/types/social";
 
 interface PostListProps {
-  type: "for-you" | "following" | "replies" | "media" | "likes";
+  type: PostListType;
   userId?: string;
 }
 

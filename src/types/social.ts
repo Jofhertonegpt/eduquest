@@ -35,3 +35,5 @@ export interface PostAnalytics {
   engagement_rate: number;
   reach: number;
 }
+
+export type PostListType = "for-you" | "following" | "replies" | "media" | "likes";
