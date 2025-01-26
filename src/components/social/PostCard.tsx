@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { motion } from "framer-motion";
 import { toast } from "@/hooks/use-toast";
 import { Post } from "@/types/social";
 import { PostHeader } from "./post/PostHeader";
 import { PostActions } from "./post/PostActions";
-import { FileViewer } from "./post/FileViewer";
+import { PostContent } from "./post/PostContent";
+import { PostContainer } from "./post/PostContainer";
 import { ShareMenu } from "./post/ShareMenu";
 
 interface PostCardProps {
@@ -56,24 +56,8 @@ export const PostCard = ({
     }
   };
 
-  // Determine file types from media_urls
-  const fileTypes = post.media_urls?.map(url => {
-    if (!url) return 'other';
-    const extension = url.split('.').pop()?.toLowerCase() || '';
-    if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(extension)) return 'image';
-    if (['mp4', 'webm', 'ogg'].includes(extension)) return 'video';
-    if (['pdf'].includes(extension)) return 'pdf';
-    return 'other';
-  }) || [];
-
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="p-4 border rounded-lg space-y-4 bg-card"
-      role="article"
-      aria-label={`Post by ${post.profiles?.full_name || 'Anonymous'}`}
-    >
+    <PostContainer author={post.profiles?.full_name || 'Anonymous'}>
       <div className="flex items-center justify-between">
         <PostHeader
           profileUrl={post.profiles?.avatar_url || undefined}
@@ -85,15 +69,7 @@ export const PostCard = ({
         <ShareMenu onShare={handleShare} isSharing={isSharing} />
       </div>
 
-      <p className="whitespace-pre-wrap break-words">{post.content}</p>
-
-      {post.media_urls && post.media_urls.length > 0 && (
-        <FileViewer 
-          urls={post.media_urls} 
-          fileTypes={fileTypes}
-          metadata={post.media_metadata}
-        />
-      )}
+      <PostContent post={post} />
 
       <PostActions
         isLiked={post.is_liked || false}
@@ -107,6 +83,6 @@ export const PostCard = ({
         isLikeLoading={isLikeLoading}
         isBookmarkLoading={isBookmarkLoading}
       />
-    </motion.div>
+    </PostContainer>
   );
 };
