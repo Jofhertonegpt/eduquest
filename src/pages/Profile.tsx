@@ -1,13 +1,15 @@
+"use client";
+
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { useProfile } from "@/hooks/useProfile";
-import { ProfileHeader } from "@/components/profile/ProfileHeader";
-import { AcademicProgress } from "@/components/profile/AcademicProgress";
-import { Achievements } from "@/components/profile/Achievements";
 import { PostList } from "@/components/social/PostList";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
+import { XHeader } from "@/components/social/profile/XHeader";
+import { ProfileStats } from "@/components/social/profile/ProfileStats";
+import { ProfileBio } from "@/components/social/profile/ProfileBio";
 
 const Profile = () => {
   const { id } = useParams();
@@ -18,6 +20,9 @@ const Profile = () => {
     name: "",
     email: "",
     level: "Intermediate",
+    bio: "",
+    location: "",
+    website: "",
   });
 
   useEffect(() => {
@@ -38,6 +43,9 @@ const Profile = () => {
         name: userData.profile?.full_name || userData.user.email?.split('@')[0] || '',
         email: userData.user.email || '',
         level: userData.profile?.level || 'Intermediate',
+        bio: userData.profile?.bio || '',
+        location: userData.profile?.location || '',
+        website: userData.profile?.website || '',
       });
     }
   }, [userData]);
@@ -55,58 +63,52 @@ const Profile = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
-      className="container mx-auto px-4 py-8"
+      className="min-h-screen bg-background"
     >
-      <div className="max-w-4xl mx-auto space-y-8">
-        <div className="glass-panel rounded-xl p-6">
-          <ProfileHeader
-            name={profile.name}
-            email={profile.email}
-            editMode={editMode && isOwnProfile}
-            onNameChange={(name) => setProfile({ ...profile, name })}
-            onEditToggle={() => setEditMode(true)}
-            onSave={() => {
-              updateProfile({
-                name: profile.name,
-                level: profile.level,
-              });
-              setEditMode(false);
-            }}
-          />
-        </div>
+      <div className="max-w-4xl mx-auto">
+        <XHeader
+          profile={profile}
+          isOwnProfile={isOwnProfile}
+          editMode={editMode}
+          onEditToggle={() => setEditMode(true)}
+          onSave={async () => {
+            await updateProfile(profile);
+            setEditMode(false);
+          }}
+        />
 
-        {isOwnProfile && (
-          <>
-            <AcademicProgress
-              currentDegree={userData?.profile?.current_degree}
-            />
-            <Achievements />
-          </>
-        )}
+        <ProfileBio
+          profile={profile}
+          editMode={editMode}
+          onChange={(updates) => setProfile({ ...profile, ...updates })}
+        />
 
-        <Tabs defaultValue="posts" className="w-full">
-          <TabsList className="w-full">
+        <ProfileStats
+          postsCount={userData?.profile?.posts_count || 0}
+          followersCount={userData?.profile?.followers_count || 0}
+          followingCount={userData?.profile?.following_count || 0}
+        />
+
+        <Tabs defaultValue="posts" className="w-full mt-4">
+          <TabsList className="w-full border-b rounded-none">
             <TabsTrigger value="posts" className="flex-1">Posts</TabsTrigger>
-            {isOwnProfile && (
-              <>
-                <TabsTrigger value="likes" className="flex-1">Likes</TabsTrigger>
-                <TabsTrigger value="bookmarks" className="flex-1">Bookmarks</TabsTrigger>
-              </>
-            )}
+            <TabsTrigger value="replies" className="flex-1">Replies</TabsTrigger>
+            <TabsTrigger value="media" className="flex-1">Media</TabsTrigger>
+            <TabsTrigger value="likes" className="flex-1">Likes</TabsTrigger>
           </TabsList>
+
           <TabsContent value="posts">
             <PostList type="for-you" userId={id || userData?.user?.id} />
           </TabsContent>
-          {isOwnProfile && (
-            <>
-              <TabsContent value="likes">
-                <PostList type="for-you" />
-              </TabsContent>
-              <TabsContent value="bookmarks">
-                <PostList type="for-you" />
-              </TabsContent>
-            </>
-          )}
+          <TabsContent value="replies">
+            <PostList type="replies" userId={id || userData?.user?.id} />
+          </TabsContent>
+          <TabsContent value="media">
+            <PostList type="media" userId={id || userData?.user?.id} />
+          </TabsContent>
+          <TabsContent value="likes">
+            <PostList type="likes" userId={id || userData?.user?.id} />
+          </TabsContent>
         </Tabs>
       </div>
     </motion.div>
