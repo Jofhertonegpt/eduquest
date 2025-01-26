@@ -1,10 +1,19 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Heart, MessageSquare, Bookmark, User, Share2, ExternalLink, FileText, Download } from "lucide-react";
+import { 
+  Heart, MessageSquare, Bookmark, User, Share2, ExternalLink, 
+  FileText, Download, Film, Music, Image, File, Code,
+  Archive, Database, Globe, Book, Presentation, Table
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "@/hooks/use-toast";
 import { Post } from "@/types/social";
+import {
+  Dialog,
+  DialogContent,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,6 +31,61 @@ interface PostCardProps {
   isLikeLoading?: boolean;
   isBookmarkLoading?: boolean;
 }
+
+const fileTypeIcons: Record<string, any> = {
+  // Documents
+  'pdf': FileText,
+  'doc': FileText,
+  'docx': FileText,
+  'txt': FileText,
+  'rtf': FileText,
+  'odt': FileText,
+  // Images
+  'jpg': Image,
+  'jpeg': Image,
+  'png': Image,
+  'gif': Image,
+  'webp': Image,
+  'svg': Image,
+  'bmp': Image,
+  // Video
+  'mp4': Film,
+  'webm': Film,
+  'avi': Film,
+  'mov': Film,
+  'wmv': Film,
+  'flv': Film,
+  // Audio
+  'mp3': Music,
+  'wav': Music,
+  'ogg': Music,
+  'aac': Music,
+  'm4a': Music,
+  // Code
+  'json': Code,
+  'xml': Code,
+  'html': Code,
+  'css': Code,
+  'js': Code,
+  'ts': Code,
+  // Archives
+  'zip': Archive,
+  'rar': Archive,
+  '7z': Archive,
+  // Data
+  'csv': Table,
+  'xlsx': Table,
+  'xls': Table,
+  // Presentations
+  'ppt': Presentation,
+  'pptx': Presentation,
+  'odp': Presentation,
+  // Others
+  'db': Database,
+  'sql': Database,
+  'epub': Book,
+  'mobi': Book
+};
 
 export const PostCard = ({
   post,
@@ -63,24 +127,40 @@ export const PostCard = ({
     }
   };
 
-  const handleProfileClick = () => {
-    navigate(`/profile/${post.user_id}`);
+  const getFileIcon = (url: string) => {
+    const fileType = url.split('.').pop()?.toLowerCase() || '';
+    const IconComponent = fileTypeIcons[fileType] || File;
+    return <IconComponent className="h-6 w-6" />;
   };
 
   const renderMedia = (url: string) => {
-    const fileType = url.split('.').pop()?.toLowerCase();
-    const isImage = ['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(fileType || '');
-    const isVideo = ['mp4', 'webm', 'ogg'].includes(fileType || '');
+    const fileType = url.split('.').pop()?.toLowerCase() || '';
+    const isImage = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'svg'].includes(fileType);
+    const isVideo = ['mp4', 'webm', 'mov', 'avi', 'wmv', 'flv'].includes(fileType);
+    const isAudio = ['mp3', 'wav', 'ogg', 'aac', 'm4a'].includes(fileType);
     const isPDF = fileType === 'pdf';
+    const isDocument = ['doc', 'docx', 'txt', 'rtf', 'odt'].includes(fileType);
+    const isSpreadsheet = ['csv', 'xlsx', 'xls'].includes(fileType);
+    const isPresentation = ['ppt', 'pptx', 'odp'].includes(fileType);
+    const isCode = ['json', 'xml', 'html', 'css', 'js', 'ts'].includes(fileType);
+    const isArchive = ['zip', 'rar', '7z'].includes(fileType);
+    const isEbook = ['epub', 'mobi'].includes(fileType);
 
     if (isImage) {
       return (
-        <img 
-          src={url} 
-          alt="Post attachment" 
-          className="rounded-lg max-h-96 object-cover w-full"
-          loading="lazy"
-        />
+        <Dialog>
+          <DialogTrigger asChild>
+            <img 
+              src={url} 
+              alt="Post attachment" 
+              className="rounded-lg max-h-96 object-cover w-full cursor-pointer hover:opacity-90 transition-opacity"
+              loading="lazy"
+            />
+          </DialogTrigger>
+          <DialogContent className="max-w-4xl">
+            <img src={url} alt="Full size" className="w-full h-auto" />
+          </DialogContent>
+        </Dialog>
       );
     }
 
@@ -90,30 +170,62 @@ export const PostCard = ({
           src={url} 
           controls 
           className="rounded-lg max-h-96 w-full"
+          controlsList="nodownload"
+          playsInline
         />
       );
     }
 
-    if (isPDF) {
+    if (isAudio) {
       return (
         <div className="flex items-center gap-2 p-4 bg-muted rounded-lg">
-          <FileText className="h-6 w-6" />
-          <span className="flex-1 truncate">PDF Document</span>
-          <a 
-            href={url} 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="flex items-center gap-1 text-primary hover:underline"
-          >
-            <Download className="h-4 w-4" />
-            Download
-          </a>
+          <Music className="h-6 w-6" />
+          <audio controls className="w-full" src={url} />
         </div>
       );
     }
 
-    return null;
+    const renderFilePreview = () => (
+      <div className="flex items-center gap-2 p-4 bg-muted rounded-lg">
+        {getFileIcon(url)}
+        <span className="flex-1 truncate">{url.split('/').pop()}</span>
+        <div className="flex gap-2">
+          {isPDF && (
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="sm">
+                  <Globe className="h-4 w-4 mr-2" />
+                  View
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-4xl h-[80vh]">
+                <iframe
+                  src={url}
+                  className="w-full h-full rounded-lg"
+                  title="PDF Viewer"
+                />
+              </DialogContent>
+            </Dialog>
+          )}
+          <a 
+            href={url} 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="inline-flex items-center"
+          >
+            <Button variant="outline" size="sm">
+              <Download className="h-4 w-4 mr-2" />
+              Download
+            </Button>
+          </a>
+        </div>
+      </div>
+    );
+
+    return renderFilePreview();
   };
+
+  // ... keep existing code (profile section and post content)
 
   return (
     <motion.div
@@ -123,6 +235,7 @@ export const PostCard = ({
       role="article"
       aria-label={`Post by ${post.profiles?.full_name || 'Anonymous'}`}
     >
+      {/* ... keep existing code (profile header) */}
       <div className="flex items-center justify-between">
         <div 
           className="flex items-center gap-2 cursor-pointer"
@@ -166,7 +279,6 @@ export const PostCard = ({
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-
       <p className="whitespace-pre-wrap break-words">{post.content}</p>
 
       {post.media_urls?.map((url, index) => (
