@@ -1,6 +1,8 @@
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { PostCard } from "./PostCard";
+import { PostFilters } from "./post/PostFilters";
 import { Loader2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { Post, PostListType } from "@/types/social";
@@ -10,9 +12,11 @@ interface PostListProps {
   userId?: string;
 }
 
-export const PostList = ({ type, userId }: PostListProps) => {
+export const PostList = ({ type: initialType, userId }: PostListProps) => {
+  const [activeFilter, setActiveFilter] = useState<PostListType>(initialType);
+
   const { data: posts, isLoading } = useQuery({
-    queryKey: ["posts", type, userId],
+    queryKey: ["posts", activeFilter, userId],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
@@ -33,7 +37,7 @@ export const PostList = ({ type, userId }: PostListProps) => {
 
       if (userId) {
         query = query.eq("user_id", userId);
-      } else if (type === "following") {
+      } else if (activeFilter === "following") {
         const { data: following } = await supabase
           .from("social_follows")
           .select("following_id")
@@ -41,9 +45,9 @@ export const PostList = ({ type, userId }: PostListProps) => {
         
         const followingIds = following?.map(f => f.following_id) || [];
         query = query.in("user_id", [user.id, ...followingIds]);
-      } else if (type === "media") {
+      } else if (activeFilter === "media") {
         query = query.not("media_urls", "eq", "{}");
-      } else if (type === "likes") {
+      } else if (activeFilter === "likes") {
         const { data: likedPosts } = await supabase
           .from("social_likes")
           .select("post_id")
@@ -126,17 +130,25 @@ export const PostList = ({ type, userId }: PostListProps) => {
   }
 
   return (
-    <div className="divide-y">
-      {posts.map((post) => (
-        <PostCard 
-          key={post.id} 
-          post={post}
-          onLike={handleLike}
-          onBookmark={handleBookmark}
-          onCommentClick={handleCommentClick}
-          onProfileClick={handleProfileClick}
+    <div>
+      {!userId && (
+        <PostFilters
+          activeFilter={activeFilter}
+          onFilterChange={setActiveFilter}
         />
-      ))}
+      )}
+      <div className="divide-y">
+        {posts.map((post) => (
+          <PostCard 
+            key={post.id} 
+            post={post}
+            onLike={handleLike}
+            onBookmark={handleBookmark}
+            onCommentClick={handleCommentClick}
+            onProfileClick={handleProfileClick}
+          />
+        ))}
+      </div>
     </div>
   );
 };

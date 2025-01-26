@@ -1,25 +1,31 @@
 import { Button } from "@/components/ui/button";
+import { PostListType } from "@/types/social";
 
 interface PostFiltersProps {
-  activeTab: "feed" | "trending";
-  onTabChange: (tab: "feed" | "trending") => void;
+  activeFilter: PostListType;
+  onFilterChange: (filter: PostListType) => void;
 }
 
-export const PostFilters = ({ activeTab, onTabChange }: PostFiltersProps) => {
+export const PostFilters = ({ activeFilter, onFilterChange }: PostFiltersProps) => {
+  const filters: { label: string; value: PostListType }[] = [
+    { label: "For You", value: "for-you" },
+    { label: "Following", value: "following" },
+    { label: "Media", value: "media" },
+  ];
+
   return (
-    <div className="flex gap-4 mb-6">
-      <Button
-        onClick={() => onTabChange("feed")}
-        variant={activeTab === "feed" ? "default" : "outline"}
-      >
-        Feed
-      </Button>
-      <Button
-        onClick={() => onTabChange("trending")}
-        variant={activeTab === "trending" ? "default" : "outline"}
-      >
-        Trending
-      </Button>
+    <div className="flex gap-2 p-4 border-b">
+      {filters.map((filter) => (
+        <Button
+          key={filter.value}
+          variant={activeFilter === filter.value ? "default" : "ghost"}
+          size="sm"
+          onClick={() => onFilterChange(filter.value)}
+          className="rounded-full"
+        >
+          {filter.label}
+        </Button>
+      ))}
     </div>
   );
 };

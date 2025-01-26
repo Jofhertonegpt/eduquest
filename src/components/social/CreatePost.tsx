@@ -85,7 +85,6 @@ export const CreatePost = () => {
       let mediaUrls: string[] = [];
       if (files.length > 0) {
         mediaUrls = await Promise.all(files.map(uploadFile));
-        console.log("Uploaded media URLs:", mediaUrls);
       }
 
       const { error } = await supabase
@@ -169,6 +168,11 @@ export const CreatePost = () => {
             <PostActions
               onMediaClick={() => fileInputRef.current?.click()}
               isPosting={isPosting}
+              likesCount={0}
+              commentsCount={0}
+              onLike={() => {}}
+              onComment={() => {}}
+              onShare={() => {}}
             />
             
             <Button
