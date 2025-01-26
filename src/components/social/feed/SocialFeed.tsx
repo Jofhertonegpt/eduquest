@@ -44,7 +44,6 @@ export const SocialFeed = () => {
   });
 
   useEffect(() => {
-    // Subscribe to changes in posts
     const channel = supabase
       .channel('public:social_posts')
       .on(
@@ -90,7 +89,6 @@ export const SocialFeed = () => {
     }
 
     if (isLiked) {
-      // Unlike the post
       const { error } = await supabase
         .from("social_likes")
         .delete()
@@ -106,7 +104,6 @@ export const SocialFeed = () => {
         return;
       }
     } else {
-      // Like the post
       const { error } = await supabase
         .from("social_likes")
         .insert({ post_id: postId, user_id: user.id });
@@ -124,7 +121,6 @@ export const SocialFeed = () => {
   };
 
   const handleComment = async (postId: string) => {
-    // This is now handled by the CommentList component
     console.log("Comment on post:", postId);
   };
 
