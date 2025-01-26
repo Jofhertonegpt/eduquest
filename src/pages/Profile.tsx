@@ -95,15 +95,15 @@ const Profile = () => {
             )}
           </TabsList>
           <TabsContent value="posts">
-            <PostList userId={id || userData?.user?.id} type="profile" />
+            <PostList type="for-you" userId={id || userData?.user?.id} />
           </TabsContent>
           {isOwnProfile && (
             <>
               <TabsContent value="likes">
-                <PostList type="likes" />
+                <PostList type="for-you" />
               </TabsContent>
               <TabsContent value="bookmarks">
-                <PostList type="bookmarks" />
+                <PostList type="for-you" />
               </TabsContent>
             </>
           )}

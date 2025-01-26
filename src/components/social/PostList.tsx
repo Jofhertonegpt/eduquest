@@ -2,14 +2,17 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { PostCard } from "./PostCard";
 import { Loader2 } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
+import { Post } from "@/types/social";
 
 interface PostListProps {
   type: "for-you" | "following";
+  userId?: string;
 }
 
-export const PostList = ({ type }: PostListProps) => {
+export const PostList = ({ type, userId }: PostListProps) => {
   const { data: posts, isLoading } = useQuery({
-    queryKey: ["posts", type],
+    queryKey: ["posts", type, userId],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
@@ -22,21 +25,17 @@ export const PostList = ({ type }: PostListProps) => {
             full_name,
             avatar_url
           ),
-          likes:post_likes(
-            user_id
-          ),
-          reposts:post_reposts(
-            user_id
-          ),
-          comments:post_comments(
-            id
-          )
+          likes:social_likes(user_id),
+          comments:social_comments(id),
+          bookmarks:social_bookmarks(user_id)
         `)
         .order("created_at", { ascending: false });
 
-      if (type === "following") {
+      if (userId) {
+        query = query.eq("user_id", userId);
+      } else if (type === "following") {
         const { data: following } = await supabase
-          .from("user_follows")
+          .from("social_follows")
           .select("following_id")
           .eq("follower_id", user.id);
         
@@ -50,15 +49,54 @@ export const PostList = ({ type }: PostListProps) => {
       return data.map(post => ({
         ...post,
         likes_count: post.likes?.length || 0,
-        reposts_count: post.reposts?.length || 0,
         comments_count: post.comments?.length || 0,
         is_liked: post.likes?.some(like => like.user_id === user.id) || false,
-        is_reposted: post.reposts?.some(repost => repost.user_id === user.id) || false,
+        is_bookmarked: post.bookmarks?.some(bookmark => bookmark.user_id === user.id) || false,
       }));
     },
-    refetchInterval: 30000, // Refetch every 30 seconds
-    staleTime: 10000, // Consider data stale after 10 seconds
   });
+
+  const handleLike = async (postId: string, action: 'like' | 'unlike') => {
+    try {
+      if (action === 'like') {
+        await supabase.from('social_likes').insert({ post_id: postId });
+      } else {
+        await supabase.from('social_likes').delete().match({ post_id: postId });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to like post",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleBookmark = async (postId: string, action: 'bookmark' | 'unbookmark') => {
+    try {
+      if (action === 'bookmark') {
+        await supabase.from('social_bookmarks').insert({ post_id: postId });
+      } else {
+        await supabase.from('social_bookmarks').delete().match({ post_id: postId });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to bookmark post",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleCommentClick = (post: Post) => {
+    // Implement comment functionality
+    console.log("Comment clicked", post);
+  };
+
+  const handleProfileClick = (userId: string) => {
+    // Implement profile navigation
+    console.log("Profile clicked", userId);
+  };
 
   if (isLoading) {
     return (
@@ -83,6 +121,10 @@ export const PostList = ({ type }: PostListProps) => {
         <PostCard 
           key={post.id} 
           post={post}
+          onLike={handleLike}
+          onBookmark={handleBookmark}
+          onCommentClick={handleCommentClick}
+          onProfileClick={handleProfileClick}
         />
       ))}
     </div>
