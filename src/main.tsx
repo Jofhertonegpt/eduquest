@@ -1,27 +1,16 @@
-import React from 'react';
-import { createRoot } from 'react-dom/client';
-import App from './App';
-import './index.css';
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+import App from './App'
+import './index.css'
+import { AppProviders } from './components/providers/AppProviders'
 
-const container = document.getElementById('root');
+const rootElement = document.getElementById('root');
+if (!rootElement) throw new Error('Failed to find the root element');
 
-if (!container) {
-  throw new Error('Root element not found');
-}
-
-const root = createRoot(container);
-
-root.render(
+ReactDOM.createRoot(rootElement).render(
   <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);
-
-// Register service worker
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js').catch(error => {
-      console.error('Service worker registration failed:', error);
-    });
-  });
-}
+    <AppProviders>
+      <App />
+    </AppProviders>
+  </React.StrictMode>,
+)

@@ -1,37 +1,24 @@
 "use client";
 
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "next-themes";
-import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { BrowserRouter } from "react-router-dom";
-import { ReactNode } from "react";
+import { Toaster } from "@/components/ui/sonner";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 const queryClient = new QueryClient();
 
-interface AppProvidersProps {
-  children: ReactNode;
-}
-
-export const AppProviders = ({ children }: AppProvidersProps) => {
+export function AppProviders({ children }: { children: React.ReactNode }) {
   return (
     <BrowserRouter>
       <QueryClientProvider client={queryClient}>
-        <ThemeProvider 
-          defaultTheme="system" 
-          enableSystem={true} 
-          attribute="class" 
-          themes={["light", "dark", "rainbow"]}
-          disableTransitionOnChange
-        >
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <TooltipProvider>
             {children}
+            <Toaster />
           </TooltipProvider>
-          <Toaster />
-          <Sonner />
         </ThemeProvider>
       </QueryClientProvider>
     </BrowserRouter>
   );
-};
+}
