@@ -47,8 +47,9 @@ const Settings = () => {
   const updateProfile = async (updates: any) => {
     try {
       await mutateProfile(updates);
+      return Promise.resolve();
     } catch (error) {
-      throw error;
+      return Promise.reject(error);
     }
   };
 
@@ -100,77 +101,81 @@ const Settings = () => {
     );
   }
 
+  const content = (
+    <div className="container mx-auto px-4 py-8">
+      <div className="max-w-4xl mx-auto">
+        <h1 className="text-3xl font-bold mb-8">Settings</h1>
+        
+        <Tabs defaultValue="appearance" className="space-y-6">
+          <TabsList className="flex flex-wrap gap-2 w-full bg-transparent">
+            <TabsTrigger value="appearance" className="flex-1 md:flex-none data-[state=active]:bg-primary">
+              <span className="flex items-center gap-2">
+                <Palette className="h-4 w-4" />
+                <span className="hidden md:inline">Appearance</span>
+              </span>
+            </TabsTrigger>
+            <TabsTrigger value="profile" className="flex-1 md:flex-none data-[state=active]:bg-primary">
+              <span className="flex items-center gap-2">
+                <User className="h-4 w-4" />
+                <span className="hidden md:inline">Profile</span>
+              </span>
+            </TabsTrigger>
+            <TabsTrigger value="notifications" className="flex-1 md:flex-none data-[state=active]:bg-primary">
+              <span className="flex items-center gap-2">
+                <Bell className="h-4 w-4" />
+                <span className="hidden md:inline">Notifications</span>
+              </span>
+            </TabsTrigger>
+            <TabsTrigger value="privacy" className="flex-1 md:flex-none data-[state=active]:bg-primary">
+              <span className="flex items-center gap-2">
+                <Shield className="h-4 w-4" />
+                <span className="hidden md:inline">Privacy</span>
+              </span>
+            </TabsTrigger>
+            <TabsTrigger value="accessibility" className="flex-1 md:flex-none data-[state=active]:bg-primary">
+              <span className="flex items-center gap-2">
+                <Globe className="h-4 w-4" />
+                <span className="hidden md:inline">Accessibility</span>
+              </span>
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="appearance" className="mt-6">
+            <AppearanceSettings />
+          </TabsContent>
+
+          <TabsContent value="profile" className="mt-6">
+            <ProfileSettings userData={userData} updateProfile={updateProfile} />
+          </TabsContent>
+
+          <TabsContent value="notifications" className="mt-6">
+            <NotificationSettings
+              preferences={userData?.profile?.notification_preferences}
+              onUpdate={(key, value) => handleSettingUpdate('notification_preferences', key, value)}
+            />
+          </TabsContent>
+
+          <TabsContent value="privacy" className="mt-6">
+            <PrivacySettings
+              settings={userData?.profile?.privacy_settings}
+              onUpdate={(key, value) => handleSettingUpdate('privacy_settings', key, value)}
+            />
+          </TabsContent>
+
+          <TabsContent value="accessibility" className="mt-6">
+            <AccessibilitySettings
+              settings={userData?.profile?.accessibility_settings}
+              onUpdate={(key, value) => handleSettingUpdate('accessibility_settings', key, value)}
+            />
+          </TabsContent>
+        </Tabs>
+      </div>
+    </div>
+  );
+
   return (
     <TooltipProvider>
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-4xl mx-auto">
-          <h1 className="text-3xl font-bold mb-8">Settings</h1>
-          
-          <Tabs defaultValue="appearance" className="space-y-6">
-            <TabsList className="flex flex-wrap gap-2 w-full bg-transparent">
-              <TabsTrigger value="appearance" className="flex-1 md:flex-none data-[state=active]:bg-primary">
-                <span className="flex items-center gap-2">
-                  <Palette className="h-4 w-4" />
-                  <span className="hidden md:inline">Appearance</span>
-                </span>
-              </TabsTrigger>
-              <TabsTrigger value="profile" className="flex-1 md:flex-none data-[state=active]:bg-primary">
-                <span className="flex items-center gap-2">
-                  <User className="h-4 w-4" />
-                  <span className="hidden md:inline">Profile</span>
-                </span>
-              </TabsTrigger>
-              <TabsTrigger value="notifications" className="flex-1 md:flex-none data-[state=active]:bg-primary">
-                <span className="flex items-center gap-2">
-                  <Bell className="h-4 w-4" />
-                  <span className="hidden md:inline">Notifications</span>
-                </span>
-              </TabsTrigger>
-              <TabsTrigger value="privacy" className="flex-1 md:flex-none data-[state=active]:bg-primary">
-                <span className="flex items-center gap-2">
-                  <Shield className="h-4 w-4" />
-                  <span className="hidden md:inline">Privacy</span>
-                </span>
-              </TabsTrigger>
-              <TabsTrigger value="accessibility" className="flex-1 md:flex-none data-[state=active]:bg-primary">
-                <span className="flex items-center gap-2">
-                  <Globe className="h-4 w-4" />
-                  <span className="hidden md:inline">Accessibility</span>
-                </span>
-              </TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="appearance" className="mt-6">
-              <AppearanceSettings />
-            </TabsContent>
-
-            <TabsContent value="profile" className="mt-6">
-              <ProfileSettings userData={userData} updateProfile={updateProfile} />
-            </TabsContent>
-
-            <TabsContent value="notifications" className="mt-6">
-              <NotificationSettings
-                preferences={userData?.profile?.notification_preferences}
-                onUpdate={(key, value) => handleSettingUpdate('notification_preferences', key, value)}
-              />
-            </TabsContent>
-
-            <TabsContent value="privacy" className="mt-6">
-              <PrivacySettings
-                settings={userData?.profile?.privacy_settings}
-                onUpdate={(key, value) => handleSettingUpdate('privacy_settings', key, value)}
-              />
-            </TabsContent>
-
-            <TabsContent value="accessibility" className="mt-6">
-              <AccessibilitySettings
-                settings={userData?.profile?.accessibility_settings}
-                onUpdate={(key, value) => handleSettingUpdate('accessibility_settings', key, value)}
-              />
-            </TabsContent>
-          </Tabs>
-        </div>
-      </div>
+      {content}
     </TooltipProvider>
   );
 };
