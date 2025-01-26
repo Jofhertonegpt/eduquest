@@ -12,12 +12,12 @@ export function AppProviders({ children }: { children: React.ReactNode }) {
   return (
     <BrowserRouter>
       <QueryClientProvider client={queryClient}>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <TooltipProvider>
+        <TooltipProvider>
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
             {children}
             <Toaster />
-          </TooltipProvider>
-        </ThemeProvider>
+          </ThemeProvider>
+        </TooltipProvider>
       </QueryClientProvider>
     </BrowserRouter>
   );
