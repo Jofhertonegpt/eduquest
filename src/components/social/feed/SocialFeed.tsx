@@ -17,7 +17,15 @@ export const SocialFeed = () => {
             avatar_url
           ),
           likes:social_likes(user_id),
-          comments:social_comments(id)
+          comments:social_comments(
+            id,
+            content,
+            created_at,
+            profiles:profiles!user_id (
+              full_name,
+              avatar_url
+            )
+          )
         `)
         .order("created_at", { ascending: false });
 
@@ -54,8 +62,8 @@ export const SocialFeed = () => {
     refetch();
   };
 
-  const handleComment = (postId: string) => {
-    // Will be implemented in the next step
+  const handleComment = async (postId: string) => {
+    // This is now handled by the CommentList component
     console.log("Comment on post:", postId);
   };
 

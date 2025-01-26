@@ -4,6 +4,7 @@ import { toast } from "@/hooks/use-toast";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { User } from "lucide-react";
 import { PostActions } from "./PostActions";
+import { CommentList } from "../comments/CommentList";
 
 interface PostCardProps {
   post: {
@@ -12,6 +13,7 @@ interface PostCardProps {
     created_at: string;
     likes_count: number;
     comments_count: number;
+    comments: any[];
     is_liked?: boolean;
     media_urls?: string[];
     media_metadata?: any[];
@@ -32,6 +34,7 @@ export const PostCard = ({
   isLikeLoading
 }: PostCardProps) => {
   const [isSharing, setIsSharing] = useState(false);
+  const [showComments, setShowComments] = useState(false);
 
   const handleShare = async () => {
     setIsSharing(true);
@@ -58,6 +61,13 @@ export const PostCard = ({
       });
     } finally {
       setIsSharing(false);
+    }
+  };
+
+  const toggleComments = () => {
+    setShowComments(!showComments);
+    if (!showComments) {
+      onComment();
     }
   };
 
@@ -103,12 +113,20 @@ export const PostCard = ({
       <PostActions
         isLiked={post.is_liked}
         likesCount={post.likes_count}
-        commentsCount={post.comments_count}
+        commentsCount={post.comments?.length || 0}
         onLike={onLike}
-        onComment={onComment}
+        onComment={toggleComments}
         onShare={handleShare}
         isLikeLoading={isLikeLoading}
       />
+
+      {showComments && (
+        <CommentList
+          postId={post.id}
+          comments={post.comments || []}
+          onCommentAdded={() => onComment()}
+        />
+      )}
     </motion.div>
   );
 };
