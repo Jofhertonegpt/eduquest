@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { NotificationPanel } from "@/components/dashboard/NotificationPanel";
 import { CourseProgressCard } from "@/components/dashboard/CourseProgressCard";
 import { AssignmentsList } from "@/components/dashboard/AssignmentsList";
+import { SocialFeed } from "@/components/social/feed/SocialFeed";
 
 const Dashboard = () => {
   return (
@@ -21,7 +22,10 @@ const Dashboard = () => {
           <div className="lg:col-span-1">
             <NotificationPanel />
           </div>
-          <div className="lg:col-span-3">
+          <div className="lg:col-span-2">
+            <SocialFeed />
+          </div>
+          <div className="lg:col-span-1">
             <AssignmentsList />
           </div>
         </div>
