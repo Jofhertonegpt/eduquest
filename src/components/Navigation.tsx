@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { Home, BookOpen, User, School, Settings } from "lucide-react";
+import { Home, BookOpen, User, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
 import {
@@ -14,7 +14,6 @@ const Navigation = () => {
 
   const links = [
     { to: "/", icon: Home, label: "Dashboard", ariaLabel: "Go to Dashboard" },
-    { to: "/school", icon: School, label: "School", ariaLabel: "Go to School" },
     {
       to: "/learning",
       icon: BookOpen,
