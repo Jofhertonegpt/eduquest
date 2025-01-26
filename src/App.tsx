@@ -61,8 +61,8 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 };
 
 const App = () => (
-  <BrowserRouter>
-    <QueryClientProvider client={queryClient}>
+  <QueryClientProvider client={queryClient}>
+    <BrowserRouter>
       <ThemeProvider 
         defaultTheme="system" 
         enableSystem={true} 
@@ -149,8 +149,8 @@ const App = () => (
           <Sonner />
         </TooltipProvider>
       </ThemeProvider>
-    </QueryClientProvider>
-  </BrowserRouter>
+    </BrowserRouter>
+  </QueryClientProvider>
 );
 
 export default App;
