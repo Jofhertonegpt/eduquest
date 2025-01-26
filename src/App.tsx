@@ -12,87 +12,91 @@ import Signup from "./pages/Signup";
 import JoinSchool from "./pages/JoinSchool";
 import Chatter from "./pages/Chatter";
 
-const AppRoutes = () => (
-  <Routes>
-    <Route path="/login" element={<Login />} />
-    <Route path="/signup" element={<Signup />} />
-    <Route
-      path="/join-school"
-      element={
-        <ProtectedRoute>
-          <Navigation />
-          <div className="container mx-auto px-4 py-4 md:py-8">
-            <JoinSchool />
-          </div>
-        </ProtectedRoute>
-      }
-    />
-    <Route
-      path="/"
-      element={
-        <ProtectedRoute>
-          <Navigation />
-          <div className="container mx-auto px-4 py-4 md:py-8">
-            <Dashboard />
-          </div>
-        </ProtectedRoute>
-      }
-    />
-    <Route
-      path="/school"
-      element={
-        <ProtectedRoute>
-          <Navigation />
-          <School />
-        </ProtectedRoute>
-      }
-    />
-    <Route
-      path="/learning"
-      element={
-        <ProtectedRoute>
-          <Navigation />
-          <Learning />
-        </ProtectedRoute>
-      }
-    />
-    <Route
-      path="/profile"
-      element={
-        <ProtectedRoute>
-          <Navigation />
-          <Profile />
-        </ProtectedRoute>
-      }
-    />
-    <Route
-      path="/settings"
-      element={
-        <ProtectedRoute>
-          <Navigation />
-          <div className="container mx-auto px-4 py-4 md:py-8">
-            <Settings />
-          </div>
-        </ProtectedRoute>
-      }
-    />
-    <Route
-      path="/chatter"
-      element={
-        <ProtectedRoute>
-          <Navigation />
-          <Chatter />
-        </ProtectedRoute>
-      }
-    />
-    <Route path="*" element={<Navigate to="/login" replace />} />
-  </Routes>
-);
+const AppRoutes = () => {
+  return (
+    <Routes>
+      <Route path="/login" element={<Login />} />
+      <Route path="/signup" element={<Signup />} />
+      <Route
+        path="/join-school"
+        element={
+          <ProtectedRoute>
+            <Navigation />
+            <div className="container mx-auto px-4 py-4 md:py-8">
+              <JoinSchool />
+            </div>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/"
+        element={
+          <ProtectedRoute>
+            <Navigation />
+            <div className="container mx-auto px-4 py-4 md:py-8">
+              <Dashboard />
+            </div>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/school"
+        element={
+          <ProtectedRoute>
+            <Navigation />
+            <School />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/learning"
+        element={
+          <ProtectedRoute>
+            <Navigation />
+            <Learning />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/profile"
+        element={
+          <ProtectedRoute>
+            <Navigation />
+            <Profile />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/settings"
+        element={
+          <ProtectedRoute>
+            <Navigation />
+            <div className="container mx-auto px-4 py-4 md:py-8">
+              <Settings />
+            </div>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/chatter"
+        element={
+          <ProtectedRoute>
+            <Navigation />
+            <Chatter />
+          </ProtectedRoute>
+        }
+      />
+      <Route path="*" element={<Navigate to="/login" replace />} />
+    </Routes>
+  );
+};
 
-const App = () => (
-  <AppProviders>
-    <AppRoutes />
-  </AppProviders>
-);
+const App = () => {
+  return (
+    <AppProviders>
+      <AppRoutes />
+    </AppProviders>
+  );
+};
 
 export default App;

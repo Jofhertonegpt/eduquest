@@ -1,9 +1,11 @@
+"use client";
+
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { UserPlus, Mail, Lock, User } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
@@ -19,31 +21,39 @@ const Signup = () => {
     e.preventDefault();
     setIsLoading(true);
 
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          full_name: name,
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            full_name: name,
+          },
         },
-      },
-    });
+      });
 
-    if (error) {
+      if (error) {
+        toast({
+          variant: "destructive",
+          title: "Signup failed",
+          description: error.message,
+        });
+      } else if (data.user) {
+        toast({
+          title: "Account created",
+          description: "Welcome to our platform!",
+        });
+        navigate("/login");
+      }
+    } catch (error) {
       toast({
         variant: "destructive",
         title: "Signup failed",
-        description: error.message,
+        description: "An unexpected error occurred",
       });
-    } else if (data.user) {
-      toast({
-        title: "Account created",
-        description: "Welcome to our platform!",
-      });
-      navigate("/login");
+    } finally {
+      setIsLoading(false);
     }
-
-    setIsLoading(false);
   };
 
   return (
