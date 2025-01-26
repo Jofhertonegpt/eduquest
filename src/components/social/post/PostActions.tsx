@@ -1,69 +1,74 @@
 import { Button } from "@/components/ui/button";
-import { ImagePlus, Smile, Film, BarChart2, Loader2 } from "lucide-react";
+import { Heart, MessageCircle, Bookmark, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-interface PostActionsProps {
-  onFileClick: () => void;
-  isPosting: boolean;
-  canPost: boolean;
-  onPost: () => void;
+export interface PostActionsProps {
+  isLiked: boolean;
+  isBookmarked: boolean;
+  likesCount: number;
+  commentsCount: number;
+  onLike: () => void;
+  onComment: () => void;
+  onBookmark: () => void;
+  isLikeLoading?: boolean;
+  isBookmarkLoading?: boolean;
 }
 
-export const PostActions = ({ onFileClick, isPosting, canPost, onPost }: PostActionsProps) => {
+export const PostActions = ({
+  isLiked,
+  isBookmarked,
+  likesCount,
+  commentsCount,
+  onLike,
+  onComment,
+  onBookmark,
+  isLikeLoading,
+  isBookmarkLoading
+}: PostActionsProps) => {
   return (
-    <div className="flex items-center justify-between pt-4 border-t">
-      <div className="flex items-center gap-2 text-primary">
-        <button
-          onClick={onFileClick}
-          className={cn(
-            "p-2 rounded-full hover:bg-primary/10 transition",
-            isPosting && "opacity-50 cursor-not-allowed"
-          )}
-          disabled={isPosting}
-        >
-          <ImagePlus className="h-5 w-5" />
-        </button>
-        <button
-          className={cn(
-            "p-2 rounded-full hover:bg-primary/10 transition",
-            isPosting && "opacity-50 cursor-not-allowed"
-          )}
-          disabled={isPosting}
-        >
-          <Film className="h-5 w-5" />
-        </button>
-        <button
-          className={cn(
-            "p-2 rounded-full hover:bg-primary/10 transition",
-            isPosting && "opacity-50 cursor-not-allowed"
-          )}
-          disabled={isPosting}
-        >
-          <BarChart2 className="h-5 w-5" />
-        </button>
-        <button
-          className={cn(
-            "p-2 rounded-full hover:bg-primary/10 transition",
-            isPosting && "opacity-50 cursor-not-allowed"
-          )}
-          disabled={isPosting}
-        >
-          <Smile className="h-5 w-5" />
-        </button>
-      </div>
-      
+    <div className="flex items-center gap-4 pt-2">
       <Button
-        onClick={onPost}
-        disabled={!canPost || isPosting}
-        className="rounded-full px-6"
+        variant="ghost"
+        size="sm"
+        className={cn(
+          "gap-1 text-muted-foreground hover:text-primary",
+          isLiked && "text-red-500 hover:text-red-600"
+        )}
+        onClick={onLike}
+        disabled={isLikeLoading}
       >
-        {isPosting ? (
-          <>
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            Posting...
-          </>
+        {isLikeLoading ? (
+          <Loader2 className="h-5 w-5 animate-spin" />
         ) : (
-          'Post'
+          <Heart className={cn("h-5 w-5", isLiked && "fill-current")} />
+        )}
+        {likesCount > 0 && <span>{likesCount}</span>}
+      </Button>
+
+      <Button
+        variant="ghost"
+        size="sm"
+        className="gap-1 text-muted-foreground hover:text-primary"
+        onClick={onComment}
+      >
+        <MessageCircle className="h-5 w-5" />
+        {commentsCount > 0 && <span>{commentsCount}</span>}
+      </Button>
+
+      <Button
+        variant="ghost"
+        size="sm"
+        className={cn(
+          "gap-1 text-muted-foreground hover:text-primary",
+          isBookmarked && "text-primary hover:text-primary/90"
+        )}
+        onClick={onBookmark}
+        disabled={isBookmarkLoading}
+      >
+        {isBookmarkLoading ? (
+          <Loader2 className="h-5 w-5 animate-spin" />
+        ) : (
+          <Bookmark className={cn("h-5 w-5", isBookmarked && "fill-current")} />
         )}
       </Button>
     </div>
