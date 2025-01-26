@@ -13,7 +13,7 @@ import { AccessibilitySettings } from "@/components/settings/AccessibilitySettin
 import { supabase } from "@/lib/supabase";
 
 const Settings = () => {
-  const { userData, updateProfile, isLoading } = useProfile();
+  const { userData, updateProfile: mutateProfile, isLoading } = useProfile();
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -41,6 +41,16 @@ const Settings = () => {
 
     return () => subscription.unsubscribe();
   }, [navigate, toast]);
+
+  // Wrap the mutation function to return a Promise
+  const updateProfile = async (updates: any) => {
+    return new Promise<void>((resolve, reject) => {
+      mutateProfile(updates, {
+        onSuccess: () => resolve(),
+        onError: (error) => reject(error),
+      });
+    });
+  };
 
   const handleSettingUpdate = async (
     category: 'notification_preferences' | 'privacy_settings' | 'accessibility_settings',
