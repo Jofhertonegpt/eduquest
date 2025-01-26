@@ -103,6 +103,7 @@ export const PostCard = ({
         onLike={() => onLike(post.id, post.is_liked ? 'unlike' : 'like')}
         onComment={() => onCommentClick(post)}
         onBookmark={() => onBookmark(post.id, post.is_bookmarked ? 'unbookmark' : 'bookmark')}
+        onShare={handleShare}
         isLikeLoading={isLikeLoading}
         isBookmarkLoading={isBookmarkLoading}
       />
