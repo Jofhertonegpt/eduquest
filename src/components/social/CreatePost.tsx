@@ -42,9 +42,12 @@ export const CreatePost = () => {
     ]);
   };
 
-  const handleFileRemove = (index: number) => {
-    setFiles(prev => prev.filter((_, i) => i !== index));
-    setMediaMetadata(prev => prev.filter((_, i) => i !== index));
+  const handleFileRemove = (file: File) => {
+    const index = files.indexOf(file);
+    if (index > -1) {
+      setFiles(prev => prev.filter((_, i) => i !== index));
+      setMediaMetadata(prev => prev.filter((_, i) => i !== index));
+    }
   };
 
   const handleMetadataChange = (index: number, field: keyof MediaMetadata, value: string) => {
@@ -134,13 +137,13 @@ export const CreatePost = () => {
           />
           
           <div className="space-y-4">
+            <MediaPreview 
+              files={files}
+              onRemove={handleFileRemove}
+              isPosting={isPosting}
+            />
             {files.map((file, index) => (
               <div key={index} className="space-y-2">
-                <MediaPreview 
-                  file={file}
-                  onRemove={() => handleFileRemove(index)}
-                  isPosting={isPosting}
-                />
                 <div className="space-y-2">
                   <input
                     type="text"

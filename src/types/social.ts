@@ -5,6 +5,7 @@ export interface Post {
   created_at: string;
   media_urls?: string[];
   file_urls?: string[];
+  media_metadata?: any[];
   profiles?: {
     full_name: string | null;
     avatar_url: string | null;
