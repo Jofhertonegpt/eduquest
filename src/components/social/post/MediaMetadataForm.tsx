@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 
 interface MediaMetadata {
   alt_text?: string;
@@ -19,23 +21,29 @@ export const MediaMetadataForm = ({
   onChange 
 }: MediaMetadataFormProps) => {
   return (
-    <div className="space-y-2">
-      <input
-        type="text"
-        placeholder="Add alt text for accessibility"
-        value={metadata.alt_text || ""}
-        onChange={(e) => onChange(index, "alt_text", e.target.value)}
-        className="w-full px-3 py-2 border rounded-md text-sm"
-        disabled={isPosting}
-      />
-      <input
-        type="text"
-        placeholder="Add a caption"
-        value={metadata.caption || ""}
-        onChange={(e) => onChange(index, "caption", e.target.value)}
-        className="w-full px-3 py-2 border rounded-md text-sm"
-        disabled={isPosting}
-      />
+    <div className="space-y-4">
+      <div className="space-y-2">
+        <Label htmlFor={`alt-text-${index}`}>Alt text</Label>
+        <Input
+          id={`alt-text-${index}`}
+          placeholder="Describe the image for accessibility"
+          value={metadata.alt_text || ""}
+          onChange={(e) => onChange(index, "alt_text", e.target.value)}
+          disabled={isPosting}
+        />
+      </div>
+      
+      <div className="space-y-2">
+        <Label htmlFor={`caption-${index}`}>Caption</Label>
+        <Textarea
+          id={`caption-${index}`}
+          placeholder="Add a caption to your image"
+          value={metadata.caption || ""}
+          onChange={(e) => onChange(index, "caption", e.target.value)}
+          disabled={isPosting}
+          rows={3}
+        />
+      </div>
     </div>
   );
 };
