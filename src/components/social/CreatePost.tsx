@@ -85,7 +85,7 @@ export const CreatePost = () => {
       let mediaUrls: string[] = [];
       if (files.length > 0) {
         mediaUrls = await Promise.all(files.map(uploadFile));
-        console.log("Uploaded media URLs:", mediaUrls); // Debug log
+        console.log("Uploaded media URLs:", mediaUrls);
       }
 
       const { error } = await supabase
