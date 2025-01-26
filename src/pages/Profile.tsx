@@ -3,7 +3,6 @@
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { useProfile } from "@/hooks/useProfile";
-import { PostList } from "@/components/social/PostList";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
@@ -91,25 +90,21 @@ const Profile = () => {
           followingCount={userData?.profile?.following_count || 0}
         />
 
-        <Tabs defaultValue="posts" className="w-full mt-4">
+        <Tabs defaultValue="achievements" className="w-full mt-4">
           <TabsList className="w-full border-b rounded-none">
-            <TabsTrigger value="posts" className="flex-1">Posts</TabsTrigger>
-            <TabsTrigger value="replies" className="flex-1">Replies</TabsTrigger>
-            <TabsTrigger value="media" className="flex-1">Media</TabsTrigger>
-            <TabsTrigger value="likes" className="flex-1">Likes</TabsTrigger>
+            <TabsTrigger value="achievements" className="flex-1">Achievements</TabsTrigger>
+            <TabsTrigger value="courses" className="flex-1">Courses</TabsTrigger>
+            <TabsTrigger value="certificates" className="flex-1">Certificates</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="posts">
-            <PostList type="for-you" userId={id || userData?.user?.id} />
+          <TabsContent value="achievements">
+            {/* Achievement content will go here */}
           </TabsContent>
-          <TabsContent value="replies">
-            <PostList type="replies" userId={id || userData?.user?.id} />
+          <TabsContent value="courses">
+            {/* Courses content will go here */}
           </TabsContent>
-          <TabsContent value="media">
-            <PostList type="media" userId={id || userData?.user?.id} />
-          </TabsContent>
-          <TabsContent value="likes">
-            <PostList type="likes" userId={id || userData?.user?.id} />
+          <TabsContent value="certificates">
+            {/* Certificates content will go here */}
           </TabsContent>
         </Tabs>
       </div>
