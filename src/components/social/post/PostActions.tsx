@@ -1,52 +1,25 @@
 import { Button } from "@/components/ui/button";
-import { Heart, MessageCircle, Bookmark, Image } from "lucide-react";
+import { Heart, MessageSquare, Share2 } from "lucide-react";
 
 export interface PostActionsProps {
   isLiked?: boolean;
-  isBookmarked?: boolean;
-  likesCount?: number;
-  commentsCount?: number;
-  onLike?: () => void;
-  onComment?: () => void;
-  onBookmark?: () => void;
+  likesCount: number;
+  commentsCount: number;
+  onLike: () => void;
+  onComment: () => void;
+  onShare: () => void;
   isLikeLoading?: boolean;
-  isBookmarkLoading?: boolean;
-  onMediaClick?: () => void;
-  isPosting?: boolean;
 }
 
 export const PostActions = ({
   isLiked,
-  isBookmarked,
-  likesCount = 0,
-  commentsCount = 0,
+  likesCount,
+  commentsCount,
   onLike,
   onComment,
-  onBookmark,
-  isLikeLoading,
-  isBookmarkLoading,
-  onMediaClick,
-  isPosting
+  onShare,
+  isLikeLoading
 }: PostActionsProps) => {
-  // If we're in create post mode (isPosting is defined), show different actions
-  if (isPosting !== undefined) {
-    return (
-      <div className="flex items-center gap-4">
-        <Button
-          variant="ghost"
-          size="sm"
-          className="flex items-center gap-1"
-          onClick={onMediaClick}
-          disabled={isPosting}
-        >
-          <Image className="h-5 w-5" />
-          <span>Media</span>
-        </Button>
-      </div>
-    );
-  }
-
-  // Otherwise show the regular post actions
   return (
     <div className="flex items-center gap-4">
       <Button
@@ -68,7 +41,7 @@ export const PostActions = ({
         className="flex items-center gap-1"
         onClick={onComment}
       >
-        <MessageCircle className="h-5 w-5" />
+        <MessageSquare className="h-5 w-5" />
         <span>{commentsCount}</span>
       </Button>
 
@@ -76,12 +49,9 @@ export const PostActions = ({
         variant="ghost"
         size="sm"
         className="flex items-center gap-1"
-        onClick={onBookmark}
-        disabled={isBookmarkLoading}
+        onClick={onShare}
       >
-        <Bookmark
-          className={`h-5 w-5 ${isBookmarked ? "fill-current" : ""}`}
-        />
+        <Share2 className="h-5 w-5" />
       </Button>
     </div>
   );
