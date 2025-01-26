@@ -18,7 +18,9 @@ export const PostContent = ({ post }: PostContentProps) => {
 
   return (
     <div className="space-y-4">
-      <p className="whitespace-pre-wrap break-words">{post.content}</p>
+      {post.content && (
+        <p className="whitespace-pre-wrap break-words">{post.content}</p>
+      )}
       {post.media_urls && post.media_urls.length > 0 && (
         <FileViewer 
           urls={post.media_urls} 
