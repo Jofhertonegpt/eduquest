@@ -22,7 +22,7 @@ export const SocialFeed = () => {
           comments_count,
           shares_count,
           user_id,
-          profiles!user_id (
+          profiles (
             full_name,
             avatar_url
           ),
@@ -32,7 +32,8 @@ export const SocialFeed = () => {
             id,
             content,
             created_at,
-            profiles!user_id (
+            user_id,
+            profiles (
               full_name,
               avatar_url
             )
@@ -55,9 +56,9 @@ export const SocialFeed = () => {
         comments_count: post.comments_count || 0,
         shares_count: post.shares_count || 0,
         user_id: post.user_id,
-        profiles: {
-          full_name: post.profiles?.full_name || '',
-          avatar_url: post.profiles?.avatar_url || ''
+        profiles: post.profiles || {
+          full_name: '',
+          avatar_url: ''
         },
         comments: post.comments || [],
         is_liked: post.likes?.some(like => like.user_id === user?.id) || false,
