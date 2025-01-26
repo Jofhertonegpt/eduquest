@@ -1,33 +1,13 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { motion, AnimatePresence } from "framer-motion";
-import { MessageSquare, ThumbsUp, Loader2, User } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { useToast } from "@/hooks/use-toast";
-import { getMockSchoolPostsBySchoolId, getMockProfileById } from "@/data/mockData";
-import { CreatePost } from "./CreatePost";
-import { PostComments } from "./PostComments";
+import { Loader2 } from "lucide-react";
+import { CreatePost } from "../social/CreatePost";
+import { PostCard } from "../social/PostCard";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-
-type SchoolPost = {
-  id: string;
-  content: string;
-  created_at: string;
-  created_by: string;
-  likes_count: number;
-  comments_count: number;
-  profiles?: {
-    id: string;
-    full_name: string | null;
-    avatar_url: string | null;
-  };
-};
+import type { Post } from "@/types/social";
 
 export const SchoolPosts = ({ schoolId }: { schoolId: string }) => {
-  const { toast } = useToast();
-  const queryClient = useQueryClient();
-
   const { data: posts, isLoading, error } = useQuery({
     queryKey: ["school-posts", schoolId],
     queryFn: async () => {
@@ -48,13 +28,9 @@ export const SchoolPosts = ({ schoolId }: { schoolId: string }) => {
           .eq("school_id", schoolId)
           .order("created_at", { ascending: false });
         
-        if (error) {
-          console.error("Error fetching posts:", error);
-          throw error;
-        }
+        if (error) throw error;
 
-        console.log("Fetched posts:", data);
-        return data as SchoolPost[];
+        return data as Post[];
       } catch (error) {
         console.error("Error in query function:", error);
         throw error;
@@ -63,46 +39,21 @@ export const SchoolPosts = ({ schoolId }: { schoolId: string }) => {
     enabled: !!schoolId,
   });
 
-  const likeMutation = useMutation({
-    mutationFn: async (postId: string) => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
+  const handleLike = async (postId: string, action: 'like' | 'unlike') => {
+    try {
+      if (action === 'like') {
+        await supabase.from('post_likes').insert({ post_id: postId });
+      } else {
+        await supabase.from('post_likes').delete().match({ post_id: postId });
+      }
+    } catch (error) {
+      console.error('Error handling like:', error);
+    }
+  };
 
-      const { data, error } = await supabase
-        .from("post_likes")
-        .upsert({ post_id: postId, user_id: user.id })
-        .select("id")
-        .single();
-
-      if (error) throw error;
-      return data;
-    },
-    onMutate: async (postId) => {
-      await queryClient.cancelQueries({ queryKey: ["school-posts", schoolId] });
-      const previousPosts = queryClient.getQueryData<SchoolPost[]>(["school-posts", schoolId]);
-
-      queryClient.setQueryData<SchoolPost[]>(["school-posts", schoolId], (old) => 
-        old?.map(post => 
-          post.id === postId 
-            ? { ...post, likes_count: (post.likes_count || 0) + 1 }
-            : post
-        )
-      );
-
-      return { previousPosts };
-    },
-    onError: (err, postId, context) => {
-      queryClient.setQueryData(["school-posts", schoolId], context?.previousPosts);
-      toast({
-        title: "Error",
-        description: "Failed to like post. Please try again.",
-        variant: "destructive",
-      });
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["school-posts", schoolId] });
-    },
-  });
+  const handleBookmark = async (postId: string, action: 'bookmark' | 'unbookmark') => {
+    // Implement bookmark functionality if needed
+  };
 
   if (error) {
     console.error("Error loading posts:", error);
@@ -139,49 +90,14 @@ export const SchoolPosts = ({ schoolId }: { schoolId: string }) => {
       ) : (
         <AnimatePresence mode="popLayout">
           {posts?.map((post) => (
-            <motion.div
+            <PostCard
               key={post.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="bg-card rounded-lg p-4 space-y-4 border"
-            >
-              <div className="flex items-center gap-2">
-                <Avatar className="h-8 w-8">
-                  <AvatarImage src={post.profiles?.avatar_url || undefined} />
-                  <AvatarFallback>
-                    <User className="h-4 w-4" />
-                  </AvatarFallback>
-                </Avatar>
-                <div>
-                  <p className="font-medium">{post.profiles?.full_name || 'Anonymous'}</p>
-                  <p className="text-sm text-muted-foreground">
-                    {new Date(post.created_at).toLocaleDateString()}
-                  </p>
-                </div>
-              </div>
-              <p className="whitespace-pre-wrap break-words">{post.content}</p>
-              <div className="flex items-center gap-4">
-                <Button 
-                  variant="ghost" 
-                  size="sm"
-                  onClick={() => likeMutation.mutate(post.id)}
-                  disabled={likeMutation.isPending}
-                >
-                  {likeMutation.isPending ? (
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  ) : (
-                    <ThumbsUp className="h-4 w-4 mr-2" />
-                  )}
-                  {post.likes_count || 0}
-                </Button>
-                <Button variant="ghost" size="sm">
-                  <MessageSquare className="h-4 w-4 mr-2" />
-                  {post.comments_count || 0}
-                </Button>
-              </div>
-              <PostComments postId={post.id} />
-            </motion.div>
+              post={post}
+              onLike={handleLike}
+              onBookmark={handleBookmark}
+              onCommentClick={() => {}}
+              onProfileClick={() => {}}
+            />
           ))}
         </AnimatePresence>
       )}

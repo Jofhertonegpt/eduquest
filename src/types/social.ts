@@ -6,6 +6,7 @@ export interface Post {
   media_urls?: string[];
   file_urls?: string[];
   media_metadata?: any[];
+  school_id?: string; // Added for school posts
   profiles?: {
     full_name: string | null;
     avatar_url: string | null;
@@ -37,4 +38,9 @@ export interface PostAnalytics {
   reach: number;
 }
 
-export type PostListType = "for-you" | "following" | "replies" | "media" | "likes";
+export type PostListType = "for-you" | "following" | "replies" | "media" | "likes" | "school";
+
+export interface PostFormProps {
+  schoolId?: string;
+  onSuccess?: () => void;
+}

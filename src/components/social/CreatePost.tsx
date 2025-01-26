@@ -9,17 +9,13 @@ import { MediaMetadataForm } from "./post/MediaMetadataForm";
 import { PostActions } from "./post/PostActions";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
+import { PostFormProps } from "@/types/social";
 
-interface MediaMetadata {
-  alt_text?: string;
-  caption?: string;
-}
-
-export const CreatePost = () => {
+export const CreatePost = ({ schoolId, onSuccess }: PostFormProps) => {
   const [content, setContent] = useState("");
   const [files, setFiles] = useState<File[]>([]);
   const [isPosting, setIsPosting] = useState(false);
-  const [mediaMetadata, setMediaMetadata] = useState<MediaMetadata[]>([]);
+  const [mediaMetadata, setMediaMetadata] = useState<any[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   const { toast } = useToast();
@@ -51,7 +47,7 @@ export const CreatePost = () => {
     }
   };
 
-  const handleMetadataChange = (index: number, field: keyof MediaMetadata, value: string) => {
+  const handleMetadataChange = (index: number, field: string, value: string) => {
     setMediaMetadata(prev => prev.map((meta, i) => 
       i === index ? { ...meta, [field]: value } : meta
     ));
@@ -87,24 +83,30 @@ export const CreatePost = () => {
         mediaUrls = await Promise.all(files.map(uploadFile));
       }
 
-      const { error } = await supabase
-        .from("social_posts")
-        .insert({
-          content: content.trim(),
-          user_id: user.id,
-          media_urls: mediaUrls,
-          media_metadata: mediaMetadata
-        });
+      const postData = {
+        content: content.trim(),
+        user_id: user.id,
+        media_urls: mediaUrls,
+        media_metadata: mediaMetadata,
+        ...(schoolId && { school_id: schoolId }) // Add school_id if it exists
+      };
+
+      const { error } = schoolId 
+        ? await supabase.from("school_posts").insert(postData)
+        : await supabase.from("social_posts").insert(postData);
 
       if (error) throw error;
 
       setContent("");
       setFiles([]);
       setMediaMetadata([]);
+      
       toast({
         title: "Success",
         description: "Your post has been published",
       });
+
+      if (onSuccess) onSuccess();
     } catch (error) {
       console.error('Post error:', error);
       toast({
