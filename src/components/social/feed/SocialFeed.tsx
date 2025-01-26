@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import { PostCard } from "@/components/social/post/PostCard";
 import { CreatePost } from "@/components/social/post/CreatePost";
@@ -42,6 +43,41 @@ export const SocialFeed = () => {
     },
   });
 
+  useEffect(() => {
+    // Subscribe to changes in posts
+    const channel = supabase
+      .channel('public:social_posts')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'social_posts' },
+        () => {
+          console.log('Posts changed, refreshing feed...');
+          refetch();
+        }
+      )
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'social_likes' },
+        () => {
+          console.log('Likes changed, refreshing feed...');
+          refetch();
+        }
+      )
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'social_comments' },
+        () => {
+          console.log('Comments changed, refreshing feed...');
+          refetch();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [refetch]);
+
   const handleLike = async (postId: string) => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
@@ -66,8 +102,6 @@ export const SocialFeed = () => {
       });
       return;
     }
-
-    refetch();
   };
 
   const handleComment = async (postId: string) => {
