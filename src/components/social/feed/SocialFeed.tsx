@@ -12,7 +12,16 @@ export const SocialFeed = () => {
       const { data, error } = await supabase
         .from("social_posts")
         .select(`
-          *,
+          id,
+          content,
+          created_at,
+          media_urls,
+          media_metadata,
+          hashtags,
+          likes_count,
+          comments_count,
+          shares_count,
+          user_id,
           profiles:profiles!user_id (
             full_name,
             avatar_url
