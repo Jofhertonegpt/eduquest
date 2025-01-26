@@ -17,6 +17,7 @@ export const SocialFeed = () => {
             avatar_url
           ),
           likes:social_likes(user_id),
+          bookmarks:social_bookmarks(user_id),
           comments:social_comments(
             id,
             content,
@@ -30,7 +31,14 @@ export const SocialFeed = () => {
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      return data;
+      
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      return data.map(post => ({
+        ...post,
+        is_liked: post.likes.some(like => like.user_id === user?.id),
+        is_bookmarked: post.bookmarks.some(bookmark => bookmark.user_id === user?.id)
+      }));
     },
   });
 

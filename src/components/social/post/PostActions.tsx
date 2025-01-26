@@ -31,7 +31,6 @@ export const PostActions = ({
   isPosting
 }: PostActionsProps) => {
   if (onMediaClick) {
-    // This is the create post version of actions
     return (
       <div className="flex items-center gap-4">
         <Button
@@ -41,7 +40,7 @@ export const PostActions = ({
           disabled={isPosting}
         >
           <Share2 className="h-5 w-5" />
-          <span>Media</span>
+          <span className="ml-2">Media</span>
         </Button>
       </div>
     );
@@ -57,7 +56,7 @@ export const PostActions = ({
         disabled={isLikeLoading}
       >
         <Heart
-          className={`h-5 w-5 ${isLiked ? "fill-red-500 text-red-500" : ""}`}
+          className={`h-5 w-5 transition-colors ${isLiked ? "fill-red-500 text-red-500" : ""}`}
         />
         <span>{likesCount}</span>
       </Button>
@@ -81,7 +80,7 @@ export const PostActions = ({
           disabled={isBookmarkLoading}
         >
           <Bookmark
-            className={`h-5 w-5 ${isBookmarked ? "fill-current" : ""}`}
+            className={`h-5 w-5 transition-colors ${isBookmarked ? "fill-current" : ""}`}
           />
         </Button>
       )}
@@ -90,7 +89,7 @@ export const PostActions = ({
         <Button
           variant="ghost"
           size="sm"
-          className="flex items-center gap-1"
+          className="flex items-center gap-1 hover:text-primary"
           onClick={onShare}
         >
           <Share2 className="h-5 w-5" />

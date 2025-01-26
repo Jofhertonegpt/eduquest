@@ -5,6 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { User } from "lucide-react";
 import { PostActions } from "./PostActions";
 import { CommentList } from "../comments/CommentList";
+import { supabase } from "@/lib/supabase";
 
 interface PostCardProps {
   post: {
@@ -15,6 +16,7 @@ interface PostCardProps {
     comments_count: number;
     comments: any[];
     is_liked?: boolean;
+    is_bookmarked?: boolean;
     media_urls?: string[];
     media_metadata?: any[];
     profiles?: {
@@ -35,6 +37,7 @@ export const PostCard = ({
 }: PostCardProps) => {
   const [isSharing, setIsSharing] = useState(false);
   const [showComments, setShowComments] = useState(false);
+  const [isBookmarking, setIsBookmarking] = useState(false);
 
   const handleShare = async () => {
     setIsSharing(true);
@@ -64,6 +67,55 @@ export const PostCard = ({
     }
   };
 
+  const handleBookmark = async () => {
+    setIsBookmarking(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast({
+          title: "Error",
+          description: "You must be logged in to bookmark posts",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (post.is_bookmarked) {
+        const { error } = await supabase
+          .from("social_bookmarks")
+          .delete()
+          .match({ post_id: post.id, user_id: user.id });
+
+        if (error) throw error;
+        
+        toast({
+          title: "Success",
+          description: "Post removed from bookmarks",
+        });
+      } else {
+        const { error } = await supabase
+          .from("social_bookmarks")
+          .insert({ post_id: post.id, user_id: user.id });
+
+        if (error) throw error;
+        
+        toast({
+          title: "Success",
+          description: "Post added to bookmarks",
+        });
+      }
+    } catch (error) {
+      console.error('Error bookmarking post:', error);
+      toast({
+        title: "Error",
+        description: "Failed to bookmark post",
+        variant: "destructive",
+      });
+    } finally {
+      setIsBookmarking(false);
+    }
+  };
+
   const toggleComments = () => {
     setShowComments(!showComments);
     if (!showComments) {
@@ -75,7 +127,7 @@ export const PostCard = ({
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="p-4 border rounded-lg space-y-4 bg-card"
+      className="p-4 border rounded-lg space-y-4 bg-card hover:shadow-md transition-shadow"
       role="article"
       aria-label={`Post by ${post.profiles?.full_name || 'Anonymous'}`}
     >
@@ -112,12 +164,15 @@ export const PostCard = ({
 
       <PostActions
         isLiked={post.is_liked}
+        isBookmarked={post.is_bookmarked}
         likesCount={post.likes_count}
         commentsCount={post.comments?.length || 0}
         onLike={onLike}
         onComment={toggleComments}
+        onBookmark={handleBookmark}
         onShare={handleShare}
         isLikeLoading={isLikeLoading}
+        isBookmarkLoading={isBookmarking}
       />
 
       {showComments && (
