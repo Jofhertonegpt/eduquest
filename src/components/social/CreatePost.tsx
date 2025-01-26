@@ -9,10 +9,16 @@ import { Button } from "@/components/ui/button";
 import { ImagePlus, Smile, Film, BarChart2, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+interface MediaMetadata {
+  alt_text?: string;
+  caption?: string;
+}
+
 export const CreatePost = () => {
   const [content, setContent] = useState("");
   const [files, setFiles] = useState<File[]>([]);
   const [isPosting, setIsPosting] = useState(false);
+  const [mediaMetadata, setMediaMetadata] = useState<MediaMetadata[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   const { toast } = useToast();
@@ -28,14 +34,26 @@ export const CreatePost = () => {
       });
       return;
     }
-    setFiles([...files, ...selectedFiles]);
+    
+    setFiles(prev => [...prev, ...selectedFiles]);
+    setMediaMetadata(prev => [
+      ...prev,
+      ...selectedFiles.map(() => ({ alt_text: "", caption: "" }))
+    ]);
   };
 
-  const handleFileRemove = (file: File) => {
-    setFiles(files.filter(f => f !== file));
+  const handleFileRemove = (index: number) => {
+    setFiles(prev => prev.filter((_, i) => i !== index));
+    setMediaMetadata(prev => prev.filter((_, i) => i !== index));
   };
 
-  const uploadFile = async (file: File): Promise<string> => {
+  const handleMetadataChange = (index: number, field: keyof MediaMetadata, value: string) => {
+    setMediaMetadata(prev => prev.map((meta, i) => 
+      i === index ? { ...meta, [field]: value } : meta
+    ));
+  };
+
+  const uploadFile = async (file: File, index: number): Promise<string> => {
     const fileExt = file.name.split('.').pop();
     const filePath = `${crypto.randomUUID()}.${fileExt}`;
     
@@ -62,7 +80,7 @@ export const CreatePost = () => {
 
       let mediaUrls: string[] = [];
       if (files.length > 0) {
-        mediaUrls = await Promise.all(files.map(uploadFile));
+        mediaUrls = await Promise.all(files.map((file, index) => uploadFile(file, index)));
       }
 
       const { error } = await supabase
@@ -71,12 +89,14 @@ export const CreatePost = () => {
           content: content.trim(),
           user_id: user.id,
           media_urls: mediaUrls,
+          media_metadata: mediaMetadata
         });
 
       if (error) throw error;
 
       setContent("");
       setFiles([]);
+      setMediaMetadata([]);
       toast({
         title: "Success",
         description: "Your post has been published",
@@ -113,11 +133,35 @@ export const CreatePost = () => {
             onChange={setContent}
           />
           
-          <MediaPreview 
-            files={files}
-            onRemove={handleFileRemove}
-            isPosting={isPosting}
-          />
+          <div className="space-y-4">
+            {files.map((file, index) => (
+              <div key={index} className="space-y-2">
+                <MediaPreview 
+                  file={file}
+                  onRemove={() => handleFileRemove(index)}
+                  isPosting={isPosting}
+                />
+                <div className="space-y-2">
+                  <input
+                    type="text"
+                    placeholder="Add alt text for accessibility"
+                    value={mediaMetadata[index]?.alt_text || ""}
+                    onChange={(e) => handleMetadataChange(index, "alt_text", e.target.value)}
+                    className="w-full px-3 py-2 border rounded-md text-sm"
+                    disabled={isPosting}
+                  />
+                  <input
+                    type="text"
+                    placeholder="Add a caption"
+                    value={mediaMetadata[index]?.caption || ""}
+                    onChange={(e) => handleMetadataChange(index, "caption", e.target.value)}
+                    className="w-full px-3 py-2 border rounded-md text-sm"
+                    disabled={isPosting}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
 
           <input
             type="file"

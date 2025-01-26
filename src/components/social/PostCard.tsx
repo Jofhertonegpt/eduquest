@@ -56,6 +56,8 @@ export const PostCard = ({
     }
   };
 
+  const fileTypes = post.media_urls?.map(url => url.split('.').pop()?.toLowerCase() || '') || [];
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -77,23 +79,13 @@ export const PostCard = ({
 
       <p className="whitespace-pre-wrap break-words">{post.content}</p>
 
-      {post.media_urls?.map((url, index) => (
-        <div key={`media-${index}`} className="mt-2">
-          <FileViewer 
-            url={url} 
-            fileType={url.split('.').pop()?.toLowerCase() || ''} 
-          />
-        </div>
-      ))}
-
-      {post.file_urls?.map((url, index) => (
-        <div key={`file-${index}`} className="mt-2">
-          <FileViewer 
-            url={url} 
-            fileType={url.split('.').pop()?.toLowerCase() || ''} 
-          />
-        </div>
-      ))}
+      {post.media_urls && post.media_urls.length > 0 && (
+        <FileViewer 
+          urls={post.media_urls} 
+          fileTypes={fileTypes}
+          metadata={post.media_metadata}
+        />
+      )}
 
       <PostActions
         isLiked={post.is_liked || false}

@@ -698,6 +698,7 @@ export type Database = {
           hashtags: string[] | null
           id: string
           likes_count: number | null
+          media_metadata: Json[] | null
           media_urls: string[] | null
           shares_count: number | null
           user_id: string
@@ -710,6 +711,7 @@ export type Database = {
           hashtags?: string[] | null
           id?: string
           likes_count?: number | null
+          media_metadata?: Json[] | null
           media_urls?: string[] | null
           shares_count?: number | null
           user_id: string
@@ -722,6 +724,7 @@ export type Database = {
           hashtags?: string[] | null
           id?: string
           likes_count?: number | null
+          media_metadata?: Json[] | null
           media_urls?: string[] | null
           shares_count?: number | null
           user_id?: string
