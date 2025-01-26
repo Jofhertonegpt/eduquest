@@ -1,12 +1,11 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { toast } from "@/hooks/use-toast";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { User } from "lucide-react";
 import { PostActions } from "./PostActions";
 import { CommentList } from "../comments/CommentList";
 import { supabase } from "@/lib/supabase";
-import { MediaViewer } from "./MediaViewer";
+import { PostHeader } from "./PostHeader";
+import { PostMedia } from "./PostMedia";
 
 interface PostCardProps {
   post: {
@@ -39,7 +38,6 @@ export const PostCard = ({
   const [isSharing, setIsSharing] = useState(false);
   const [showComments, setShowComments] = useState(false);
   const [isBookmarking, setIsBookmarking] = useState(false);
-  const [showMediaViewer, setShowMediaViewer] = useState(false);
 
   const handleShare = async () => {
     setIsSharing(true);
@@ -133,56 +131,17 @@ export const PostCard = ({
       role="article"
       aria-label={`Post by ${post.profiles?.full_name || 'Anonymous'}`}
     >
-      <div className="flex items-center gap-2">
-        <Avatar>
-          <AvatarImage src={post.profiles?.avatar_url || undefined} />
-          <AvatarFallback>
-            <User className="h-4 w-4" />
-          </AvatarFallback>
-        </Avatar>
-        <div>
-          <p className="font-medium">{post.profiles?.full_name || 'Anonymous'}</p>
-          <p className="text-sm text-muted-foreground">
-            {new Date(post.created_at).toLocaleDateString()}
-          </p>
-        </div>
-      </div>
+      <PostHeader 
+        profile={post.profiles || { full_name: null, avatar_url: null }}
+        createdAt={post.created_at}
+      />
 
       <p className="whitespace-pre-wrap break-words">{post.content}</p>
 
-      {post.media_urls && post.media_urls.length > 0 && (
-        <>
-          <div className="grid grid-cols-2 gap-2">
-            {post.media_urls.map((url, index) => (
-              <div
-                key={index}
-                className="relative aspect-square cursor-pointer"
-                onClick={() => setShowMediaViewer(true)}
-              >
-                <img
-                  src={url}
-                  alt={post.media_metadata?.[index]?.alt_text || ''}
-                  className="object-cover w-full h-full rounded-lg"
-                />
-                {post.media_metadata?.[index]?.caption && (
-                  <div className="absolute bottom-0 left-0 right-0 p-2 bg-black/50 text-white text-sm rounded-b-lg">
-                    {post.media_metadata[index].caption}
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-
-          {showMediaViewer && (
-            <MediaViewer
-              urls={post.media_urls}
-              metadata={post.media_metadata}
-              onClose={() => setShowMediaViewer(false)}
-              isOpen={showMediaViewer}
-            />
-          )}
-        </>
-      )}
+      <PostMedia 
+        mediaUrls={post.media_urls || []}
+        mediaMetadata={post.media_metadata}
+      />
 
       <PostActions
         isLiked={post.is_liked}
