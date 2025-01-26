@@ -20,7 +20,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useNavigate } from "react-router-dom";
 
 interface PostCardProps {
   post: Post;
@@ -97,7 +96,7 @@ export const PostCard = ({
   isBookmarkLoading
 }: PostCardProps) => {
   const [isSharing, setIsSharing] = useState(false);
-  const navigate = useNavigate();
+  const [activeMediaUrl, setActiveMediaUrl] = useState<string | null>(null);
 
   const handleShare = async () => {
     setIsSharing(true);
@@ -139,12 +138,6 @@ export const PostCard = ({
     const isVideo = ['mp4', 'webm', 'mov', 'avi', 'wmv', 'flv'].includes(fileType);
     const isAudio = ['mp3', 'wav', 'ogg', 'aac', 'm4a'].includes(fileType);
     const isPDF = fileType === 'pdf';
-    const isDocument = ['doc', 'docx', 'txt', 'rtf', 'odt'].includes(fileType);
-    const isSpreadsheet = ['csv', 'xlsx', 'xls'].includes(fileType);
-    const isPresentation = ['ppt', 'pptx', 'odp'].includes(fileType);
-    const isCode = ['json', 'xml', 'html', 'css', 'js', 'ts'].includes(fileType);
-    const isArchive = ['zip', 'rar', '7z'].includes(fileType);
-    const isEbook = ['epub', 'mobi'].includes(fileType);
 
     if (isImage) {
       return (
@@ -166,13 +159,20 @@ export const PostCard = ({
 
     if (isVideo) {
       return (
-        <video 
-          src={url} 
-          controls 
-          className="rounded-lg max-h-96 w-full"
-          controlsList="nodownload"
-          playsInline
-        />
+        <div className="relative aspect-video w-full">
+          <video 
+            src={url} 
+            controls 
+            className="rounded-lg w-full h-full object-cover"
+            controlsList="nodownload"
+            playsInline
+            poster={`${url}#t=0.1`} // Grab first frame as thumbnail
+            preload="metadata"
+          >
+            <track kind="captions" />
+            Your browser does not support the video tag.
+          </video>
+        </div>
       );
     }
 
@@ -180,49 +180,60 @@ export const PostCard = ({
       return (
         <div className="flex items-center gap-2 p-4 bg-muted rounded-lg">
           <Music className="h-6 w-6" />
-          <audio controls className="w-full" src={url} />
+          <audio 
+            controls 
+            className="w-full" 
+            preload="metadata"
+          >
+            <source src={url} type={`audio/${fileType}`} />
+            Your browser does not support the audio element.
+          </audio>
         </div>
       );
     }
 
-    const renderFilePreview = () => (
+    if (isPDF) {
+      return (
+        <Dialog>
+          <DialogTrigger asChild>
+            <div className="flex items-center gap-2 p-4 bg-muted rounded-lg cursor-pointer hover:bg-muted/80 transition-colors">
+              <FileText className="h-6 w-6" />
+              <span className="flex-1 truncate">{url.split('/').pop()}</span>
+              <Button variant="outline" size="sm">
+                <Globe className="h-4 w-4 mr-2" />
+                View PDF
+              </Button>
+            </div>
+          </DialogTrigger>
+          <DialogContent className="max-w-4xl h-[80vh]">
+            <iframe
+              src={url}
+              className="w-full h-full rounded-lg"
+              title="PDF Viewer"
+            />
+          </DialogContent>
+        </Dialog>
+      );
+    }
+
+    // For other file types, show download option
+    return (
       <div className="flex items-center gap-2 p-4 bg-muted rounded-lg">
         {getFileIcon(url)}
         <span className="flex-1 truncate">{url.split('/').pop()}</span>
-        <div className="flex gap-2">
-          {isPDF && (
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button variant="outline" size="sm">
-                  <Globe className="h-4 w-4 mr-2" />
-                  View
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="max-w-4xl h-[80vh]">
-                <iframe
-                  src={url}
-                  className="w-full h-full rounded-lg"
-                  title="PDF Viewer"
-                />
-              </DialogContent>
-            </Dialog>
-          )}
-          <a 
-            href={url} 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="inline-flex items-center"
-          >
-            <Button variant="outline" size="sm">
-              <Download className="h-4 w-4 mr-2" />
-              Download
-            </Button>
-          </a>
-        </div>
+        <a 
+          href={url} 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="inline-flex items-center"
+        >
+          <Button variant="outline" size="sm">
+            <Download className="h-4 w-4 mr-2" />
+            Download
+          </Button>
+        </a>
       </div>
     );
-
-    return renderFilePreview();
   };
 
   return (
@@ -276,6 +287,7 @@ export const PostCard = ({
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
+
       <p className="whitespace-pre-wrap break-words">{post.content}</p>
 
       {post.media_urls?.map((url, index) => (
