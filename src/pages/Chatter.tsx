@@ -9,14 +9,50 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useProfile } from "@/hooks/useProfile";
 import { Input } from "@/components/ui/input";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Menu } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export default function Chatter() {
   const [activeTab, setActiveTab] = useState<"for-you" | "following">("for-you");
   const { userData } = useProfile();
 
+  const SidebarContent = () => (
+    <div className="space-y-6">
+      <div className="bg-muted rounded-xl p-4">
+        <h2 className="font-bold text-xl mb-4">Trending</h2>
+        <TrendingTopics />
+      </div>
+
+      <div className="bg-muted rounded-xl p-4">
+        <h2 className="font-bold text-xl mb-4">Who to follow</h2>
+        <UserSuggestions />
+      </div>
+    </div>
+  );
+
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto grid grid-cols-1 md:grid-cols-12 gap-0 md:gap-4">
+        {/* Mobile Header */}
+        <header className="md:hidden sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b">
+          <div className="flex items-center justify-between p-4">
+            <h1 className="text-2xl font-bold">Chatter</h1>
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  <Menu className="h-5 w-5" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-[300px] sm:w-[400px]">
+                <div className="py-4">
+                  <SidebarContent />
+                </div>
+              </SheetContent>
+            </Sheet>
+          </div>
+        </header>
+
         {/* Left Sidebar */}
         <aside className="hidden md:block md:col-span-3 p-4 sticky top-0 h-screen border-r">
           <div className="space-y-6">
@@ -75,16 +111,7 @@ export default function Chatter() {
               className="w-full px-4 py-2 bg-muted rounded-full"
             />
           </div>
-
-          <div className="bg-muted rounded-xl p-4">
-            <h2 className="font-bold text-xl mb-4">Trending</h2>
-            <TrendingTopics />
-          </div>
-
-          <div className="bg-muted rounded-xl p-4">
-            <h2 className="font-bold text-xl mb-4">Who to follow</h2>
-            <UserSuggestions />
-          </div>
+          <SidebarContent />
         </aside>
       </div>
     </div>

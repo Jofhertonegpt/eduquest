@@ -1,16 +1,14 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { ImagePlus, Smile, Globe, X, Loader2, Image as ImageIcon, Film, BarChart2 } from "lucide-react";
 import { useProfile } from "@/hooks/useProfile";
 import { supabase } from "@/lib/supabase";
-import { FileUploader } from "./post/FileUploader";
-import { HashtagManager } from "./post/HashtagManager";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { cn } from "@/lib/utils";
+import { PostInput } from "./post/PostInput";
+import { MediaPreview } from "./post/MediaPreview";
+import { PostActions } from "./post/PostActions";
+import { HashtagManager } from "./post/HashtagManager";
 
 export const CreatePost = () => {
   const [content, setContent] = useState("");
@@ -18,7 +16,6 @@ export const CreatePost = () => {
   const [isPosting, setIsPosting] = useState(false);
   const [hashtags, setHashtags] = useState<string[]>([]);
   const [hashtagInput, setHashtagInput] = useState("");
-  const [uploadProgress, setUploadProgress] = useState<Record<string, number>>({});
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   const { toast } = useToast();
@@ -131,40 +128,17 @@ export const CreatePost = () => {
         </Avatar>
         
         <div className="flex-1 space-y-4">
-          <Textarea
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            placeholder="What's happening?"
-            className="min-h-[120px] resize-none border-none text-xl bg-transparent"
+          <PostInput 
+            content={content}
+            isPosting={isPosting}
+            onChange={setContent}
           />
           
-          {files.length > 0 && (
-            <div className="grid grid-cols-2 gap-2">
-              {files.map((file, index) => (
-                <div key={index} className="relative group">
-                  {file.type.startsWith('image/') ? (
-                    <img
-                      src={URL.createObjectURL(file)}
-                      alt="Preview"
-                      className="w-full h-48 object-cover rounded-xl"
-                    />
-                  ) : (
-                    <video
-                      src={URL.createObjectURL(file)}
-                      className="w-full h-48 object-cover rounded-xl"
-                      controls
-                    />
-                  )}
-                  <button
-                    onClick={() => handleFileRemove(file)}
-                    className="absolute top-2 right-2 p-1 bg-black/50 rounded-full hover:bg-black/70 transition"
-                  >
-                    <X className="h-4 w-4 text-white" />
-                  </button>
-                </div>
-              ))}
-            </div>
-          )}
+          <MediaPreview 
+            files={files}
+            onRemove={handleFileRemove}
+            isPosting={isPosting}
+          />
 
           <HashtagManager
             hashtags={hashtags}
@@ -175,71 +149,22 @@ export const CreatePost = () => {
             onHashtagRemove={handleHashtagRemove}
           />
 
-          <div className="flex items-center justify-between pt-4 border-t">
-            <div className="flex items-center gap-2 text-primary">
-              <input
-                type="file"
-                ref={fileInputRef}
-                onChange={handleFileSelect}
-                className="hidden"
-                multiple
-                accept="image/*,video/*"
-                disabled={isPosting}
-              />
-              <button
-                onClick={() => fileInputRef.current?.click()}
-                className={cn(
-                  "p-2 rounded-full hover:bg-primary/10 transition",
-                  isPosting && "opacity-50 cursor-not-allowed"
-                )}
-                disabled={isPosting}
-              >
-                <ImagePlus className="h-5 w-5" />
-              </button>
-              <button
-                className={cn(
-                  "p-2 rounded-full hover:bg-primary/10 transition",
-                  isPosting && "opacity-50 cursor-not-allowed"
-                )}
-                disabled={isPosting}
-              >
-                <Film className="h-5 w-5" />
-              </button>
-              <button
-                className={cn(
-                  "p-2 rounded-full hover:bg-primary/10 transition",
-                  isPosting && "opacity-50 cursor-not-allowed"
-                )}
-                disabled={isPosting}
-              >
-                <BarChart2 className="h-5 w-5" />
-              </button>
-              <button
-                className={cn(
-                  "p-2 rounded-full hover:bg-primary/10 transition",
-                  isPosting && "opacity-50 cursor-not-allowed"
-                )}
-                disabled={isPosting}
-              >
-                <Smile className="h-5 w-5" />
-              </button>
-            </div>
-            
-            <Button
-              onClick={handlePost}
-              disabled={(!content.trim() && files.length === 0) || isPosting}
-              className="rounded-full px-6"
-            >
-              {isPosting ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Posting...
-                </>
-              ) : (
-                'Post'
-              )}
-            </Button>
-          </div>
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileSelect}
+            className="hidden"
+            multiple
+            accept="image/*,video/*"
+            disabled={isPosting}
+          />
+
+          <PostActions 
+            onFileClick={() => fileInputRef.current?.click()}
+            isPosting={isPosting}
+            canPost={!!content.trim() || files.length > 0}
+            onPost={handlePost}
+          />
         </div>
       </div>
     </div>

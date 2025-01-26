@@ -1,63 +1,70 @@
-import { Heart, MessageSquare, Bookmark } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ImagePlus, Smile, Film, BarChart2, Loader2 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface PostActionsProps {
-  isLiked: boolean;
-  isBookmarked: boolean;
-  likesCount: number;
-  commentsCount: number;
-  onLike: () => void;
-  onComment: () => void;
-  onBookmark: () => void;
-  isLikeLoading?: boolean;
-  isBookmarkLoading?: boolean;
+  onFileClick: () => void;
+  isPosting: boolean;
+  canPost: boolean;
+  onPost: () => void;
 }
 
-export const PostActions = ({
-  isLiked,
-  isBookmarked,
-  likesCount,
-  commentsCount,
-  onLike,
-  onComment,
-  onBookmark,
-  isLikeLoading,
-  isBookmarkLoading,
-}: PostActionsProps) => {
+export const PostActions = ({ onFileClick, isPosting, canPost, onPost }: PostActionsProps) => {
   return (
-    <div className="flex items-center gap-4">
-      <Button 
-        variant="ghost" 
-        size="sm"
-        className={`text-muted-foreground ${isLiked ? 'text-red-500' : ''}`}
-        onClick={onLike}
-        disabled={isLikeLoading}
-        aria-label={isLiked ? 'Unlike post' : 'Like post'}
-        aria-pressed={isLiked}
-      >
-        <Heart className={`h-4 w-4 mr-2 ${isLiked ? 'fill-current' : ''}`} />
-        {likesCount || 0}
-      </Button>
+    <div className="flex items-center justify-between pt-4 border-t">
+      <div className="flex items-center gap-2 text-primary">
+        <button
+          onClick={onFileClick}
+          className={cn(
+            "p-2 rounded-full hover:bg-primary/10 transition",
+            isPosting && "opacity-50 cursor-not-allowed"
+          )}
+          disabled={isPosting}
+        >
+          <ImagePlus className="h-5 w-5" />
+        </button>
+        <button
+          className={cn(
+            "p-2 rounded-full hover:bg-primary/10 transition",
+            isPosting && "opacity-50 cursor-not-allowed"
+          )}
+          disabled={isPosting}
+        >
+          <Film className="h-5 w-5" />
+        </button>
+        <button
+          className={cn(
+            "p-2 rounded-full hover:bg-primary/10 transition",
+            isPosting && "opacity-50 cursor-not-allowed"
+          )}
+          disabled={isPosting}
+        >
+          <BarChart2 className="h-5 w-5" />
+        </button>
+        <button
+          className={cn(
+            "p-2 rounded-full hover:bg-primary/10 transition",
+            isPosting && "opacity-50 cursor-not-allowed"
+          )}
+          disabled={isPosting}
+        >
+          <Smile className="h-5 w-5" />
+        </button>
+      </div>
+      
       <Button
-        variant="ghost"
-        size="sm"
-        className="text-muted-foreground"
-        onClick={onComment}
-        aria-label="View comments"
+        onClick={onPost}
+        disabled={!canPost || isPosting}
+        className="rounded-full px-6"
       >
-        <MessageSquare className="h-4 w-4 mr-2" />
-        {commentsCount || 0}
-      </Button>
-      <Button
-        variant="ghost"
-        size="sm"
-        className={`text-muted-foreground ml-auto ${isBookmarked ? 'text-primary' : ''}`}
-        onClick={onBookmark}
-        disabled={isBookmarkLoading}
-        aria-label={isBookmarked ? 'Remove bookmark' : 'Bookmark post'}
-        aria-pressed={isBookmarked}
-      >
-        <Bookmark className={`h-4 w-4 ${isBookmarked ? 'fill-current' : ''}`} />
+        {isPosting ? (
+          <>
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            Posting...
+          </>
+        ) : (
+          'Post'
+        )}
       </Button>
     </div>
   );
