@@ -62,7 +62,7 @@ export const CreatePost = () => {
     const { error: uploadError } = await supabase.storage
       .from('social-media')
       .upload(filePath, file, {
-        upsert: true,
+        upsert: true
       });
 
     if (uploadError) throw uploadError;
