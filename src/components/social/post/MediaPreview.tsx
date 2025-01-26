@@ -28,13 +28,13 @@ export const MediaPreview = ({
         {files.map((file, index) => (
           <div key={index} className="relative group">
             <div 
-              className="aspect-video rounded-lg overflow-hidden bg-muted cursor-pointer"
+              className="aspect-square rounded-lg overflow-hidden bg-muted cursor-pointer"
               onClick={() => setExpandedIndex(expandedIndex === index ? null : index)}
             >
               {file.type.startsWith("image/") ? (
                 <img
                   src={URL.createObjectURL(file)}
-                  alt={`Preview ${index + 1}`}
+                  alt={metadata[index]?.alt || `Preview ${index + 1}`}
                   className="w-full h-full object-cover"
                 />
               ) : file.type.startsWith("video/") ? (

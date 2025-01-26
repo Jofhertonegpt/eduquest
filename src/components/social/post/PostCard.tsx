@@ -13,6 +13,8 @@ interface PostCardProps {
     likes_count: number;
     comments_count: number;
     is_liked?: boolean;
+    media_urls?: string[];
+    media_metadata?: any[];
     profiles?: {
       full_name: string | null;
       avatar_url: string | null;
@@ -83,6 +85,20 @@ export const PostCard = ({
       </div>
 
       <p className="whitespace-pre-wrap break-words">{post.content}</p>
+
+      {post.media_urls && post.media_urls.length > 0 && (
+        <div className="grid grid-cols-2 gap-2">
+          {post.media_urls.map((url, index) => (
+            <div key={index} className="relative aspect-square">
+              <img
+                src={url}
+                alt={post.media_metadata?.[index]?.alt || ''}
+                className="object-cover w-full h-full rounded-lg"
+              />
+            </div>
+          ))}
+        </div>
+      )}
 
       <PostActions
         isLiked={post.is_liked}
