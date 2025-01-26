@@ -14,8 +14,8 @@ interface AppProvidersProps {
 
 export const AppProviders = ({ children }: AppProvidersProps) => {
   return (
-    <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
+    <BrowserRouter>
+      <QueryClientProvider client={queryClient}>
         <ThemeProvider 
           defaultTheme="system" 
           enableSystem={true} 
@@ -23,13 +23,13 @@ export const AppProviders = ({ children }: AppProvidersProps) => {
           themes={["light", "dark", "rainbow"]}
           disableTransitionOnChange
         >
-          <TooltipProvider>
+          <TooltipProvider delayDuration={0}>
             {children}
             <Toaster />
             <Sonner />
           </TooltipProvider>
         </ThemeProvider>
-      </BrowserRouter>
-    </QueryClientProvider>
+      </QueryClientProvider>
+    </BrowserRouter>
   );
 };
