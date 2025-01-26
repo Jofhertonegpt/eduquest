@@ -5,9 +5,10 @@ import { supabase } from "@/lib/supabase";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { PostInput } from "./post/PostInput";
 import { MediaPreview } from "./post/MediaPreview";
+import { MediaMetadataForm } from "./post/MediaMetadataForm";
+import { PostActions } from "./post/PostActions";
 import { Button } from "@/components/ui/button";
-import { ImagePlus, Smile, Film, BarChart2, Loader2 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Loader2 } from "lucide-react";
 
 interface MediaMetadata {
   alt_text?: string;
@@ -143,26 +144,13 @@ export const CreatePost = () => {
               isPosting={isPosting}
             />
             {files.map((file, index) => (
-              <div key={index} className="space-y-2">
-                <div className="space-y-2">
-                  <input
-                    type="text"
-                    placeholder="Add alt text for accessibility"
-                    value={mediaMetadata[index]?.alt_text || ""}
-                    onChange={(e) => handleMetadataChange(index, "alt_text", e.target.value)}
-                    className="w-full px-3 py-2 border rounded-md text-sm"
-                    disabled={isPosting}
-                  />
-                  <input
-                    type="text"
-                    placeholder="Add a caption"
-                    value={mediaMetadata[index]?.caption || ""}
-                    onChange={(e) => handleMetadataChange(index, "caption", e.target.value)}
-                    className="w-full px-3 py-2 border rounded-md text-sm"
-                    disabled={isPosting}
-                  />
-                </div>
-              </div>
+              <MediaMetadataForm
+                key={index}
+                index={index}
+                metadata={mediaMetadata[index]}
+                isPosting={isPosting}
+                onChange={handleMetadataChange}
+              />
             ))}
           </div>
 
@@ -177,45 +165,10 @@ export const CreatePost = () => {
           />
 
           <div className="flex items-center justify-between pt-4 border-t">
-            <div className="flex items-center gap-2 text-primary">
-              <button
-                onClick={() => fileInputRef.current?.click()}
-                className={cn(
-                  "p-2 rounded-full hover:bg-primary/10 transition",
-                  isPosting && "opacity-50 cursor-not-allowed"
-                )}
-                disabled={isPosting}
-              >
-                <ImagePlus className="h-5 w-5" />
-              </button>
-              <button
-                className={cn(
-                  "p-2 rounded-full hover:bg-primary/10 transition",
-                  isPosting && "opacity-50 cursor-not-allowed"
-                )}
-                disabled={isPosting}
-              >
-                <Film className="h-5 w-5" />
-              </button>
-              <button
-                className={cn(
-                  "p-2 rounded-full hover:bg-primary/10 transition",
-                  isPosting && "opacity-50 cursor-not-allowed"
-                )}
-                disabled={isPosting}
-              >
-                <BarChart2 className="h-5 w-5" />
-              </button>
-              <button
-                className={cn(
-                  "p-2 rounded-full hover:bg-primary/10 transition",
-                  isPosting && "opacity-50 cursor-not-allowed"
-                )}
-                disabled={isPosting}
-              >
-                <Smile className="h-5 w-5" />
-              </button>
-            </div>
+            <PostActions
+              onMediaClick={() => fileInputRef.current?.click()}
+              isPosting={isPosting}
+            />
             
             <Button
               onClick={handlePost}
