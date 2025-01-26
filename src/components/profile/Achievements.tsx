@@ -42,7 +42,7 @@ export const Achievements = () => {
           const Icon = achievement.icon;
           return (
             <div
-              key={achievement.id}
+              key={`${achievement.id}-${achievement.category}`}
               className="p-4 rounded-lg bg-background/50 hover:bg-background/70 transition-colors"
             >
               <div className="flex items-center gap-2 mb-2">

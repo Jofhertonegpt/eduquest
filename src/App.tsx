@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import { AppProviders } from "@/components/providers/AppProviders";
 import { ProtectedRoute } from "@/components/routes/ProtectedRoute";
+import ErrorBoundary from "@/components/ErrorBoundary";
 import Navigation from "./components/Navigation";
 import Dashboard from "./pages/Dashboard";
 import School from "./pages/School";
@@ -83,9 +84,11 @@ const AppRoutes = () => {
 
 const App = () => {
   return (
-    <AppProviders>
-      <AppRoutes />
-    </AppProviders>
+    <ErrorBoundary>
+      <AppProviders>
+        <AppRoutes />
+      </AppProviders>
+    </ErrorBoundary>
   );
 };
 
