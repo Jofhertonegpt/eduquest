@@ -13,7 +13,7 @@ export const FileViewer = ({ urls, fileTypes = [], metadata = [] }: FileViewerPr
   const [selectedFile, setSelectedFile] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
 
-  console.log('FileViewer props:', { urls, fileTypes, metadata }); // Debug log
+  console.log('FileViewer received props:', { urls, fileTypes, metadata }); // Debug log
 
   const getFileType = (url: string) => {
     if (!url) return 'unknown';
@@ -25,6 +25,7 @@ export const FileViewer = ({ urls, fileTypes = [], metadata = [] }: FileViewerPr
   };
 
   const handleFileClick = (url: string) => {
+    console.log('File clicked:', url); // Debug log
     setSelectedFile(url);
     setCurrentPage(1);
   };
@@ -47,7 +48,11 @@ export const FileViewer = ({ urls, fileTypes = [], metadata = [] }: FileViewerPr
     <>
       <div className={`grid ${getGridCols()} gap-2 relative`}>
         {urls.map((url, index) => {
-          if (!url) return null;
+          if (!url) {
+            console.log('Skipping empty URL at index:', index); // Debug log
+            return null;
+          }
+
           const fileType = fileTypes[index] || getFileType(url);
           const alt = metadata?.[index]?.alt_text || `File ${index + 1}`;
           console.log('Rendering file:', { url, fileType, alt }); // Debug log
@@ -63,6 +68,10 @@ export const FileViewer = ({ urls, fileTypes = [], metadata = [] }: FileViewerPr
                   src={url}
                   alt={alt}
                   className="w-full h-full object-cover rounded-lg"
+                  onError={(e) => {
+                    console.error('Image failed to load:', url); // Debug log
+                    e.currentTarget.src = '/placeholder.svg';
+                  }}
                 />
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all rounded-lg flex items-center justify-center">
                   <Maximize2 className="text-white opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -78,6 +87,7 @@ export const FileViewer = ({ urls, fileTypes = [], metadata = [] }: FileViewerPr
                   src={url}
                   controls
                   className="w-full h-full object-cover rounded-lg"
+                  onError={(e) => console.error('Video failed to load:', url)} // Debug log
                 />
               </div>
             );
@@ -111,6 +121,10 @@ export const FileViewer = ({ urls, fileTypes = [], metadata = [] }: FileViewerPr
                   src={selectedFile}
                   alt="Full size preview"
                   className="max-w-full max-h-full object-contain"
+                  onError={(e) => {
+                    console.error('Preview image failed to load:', selectedFile); // Debug log
+                    e.currentTarget.src = '/placeholder.svg';
+                  }}
                 />
               )}
               

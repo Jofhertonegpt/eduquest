@@ -6,15 +6,9 @@ interface PostContentProps {
 }
 
 export const PostContent = ({ post }: PostContentProps) => {
-  // Determine file types from media_urls
-  const fileTypes = post.media_urls?.map(url => {
-    if (!url) return 'other';
-    const extension = url.split('.').pop()?.toLowerCase() || '';
-    if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(extension)) return 'image';
-    if (['mp4', 'webm', 'ogg'].includes(extension)) return 'video';
-    if (['pdf'].includes(extension)) return 'pdf';
-    return 'other';
-  }) || [];
+  console.log('PostContent received post:', post); // Debug log
+  console.log('Media URLs:', post.media_urls); // Debug log
+  console.log('Media metadata:', post.media_metadata); // Debug log
 
   return (
     <div className="space-y-4">
@@ -24,7 +18,6 @@ export const PostContent = ({ post }: PostContentProps) => {
       {post.media_urls && post.media_urls.length > 0 && (
         <FileViewer 
           urls={post.media_urls} 
-          fileTypes={fileTypes}
           metadata={post.media_metadata}
         />
       )}
