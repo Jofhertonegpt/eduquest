@@ -6,7 +6,7 @@ import { toast } from "@/hooks/use-toast";
 import { Post } from "@/types/social";
 
 interface PostListProps {
-  type: "for-you" | "following";
+  type: "for-you" | "following" | "replies" | "media" | "likes";
   userId?: string;
 }
 
@@ -41,6 +41,16 @@ export const PostList = ({ type, userId }: PostListProps) => {
         
         const followingIds = following?.map(f => f.following_id) || [];
         query = query.in("user_id", [user.id, ...followingIds]);
+      } else if (type === "media") {
+        query = query.not("media_urls", "eq", "{}");
+      } else if (type === "likes") {
+        const { data: likedPosts } = await supabase
+          .from("social_likes")
+          .select("post_id")
+          .eq("user_id", userId || user.id);
+        
+        const likedPostIds = likedPosts?.map(like => like.post_id) || [];
+        query = query.in("id", likedPostIds);
       }
 
       const { data, error } = await query;

@@ -23,6 +23,7 @@ const Profile = () => {
     bio: "",
     location: "",
     website: "",
+    avatar_url: "",
   });
 
   useEffect(() => {
@@ -46,6 +47,7 @@ const Profile = () => {
         bio: userData.profile?.bio || '',
         location: userData.profile?.location || '',
         website: userData.profile?.website || '',
+        avatar_url: userData.profile?.avatar_url || '',
       });
     }
   }, [userData]);

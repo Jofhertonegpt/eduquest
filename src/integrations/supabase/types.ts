@@ -337,47 +337,68 @@ export type Database = {
         Row: {
           accessibility_settings: Json | null
           avatar_url: string | null
+          bio: string | null
           completed_degrees: string[] | null
           created_at: string
           current_degree: string | null
+          email: string | null
+          followers_count: number | null
+          following_count: number | null
           full_name: string | null
           id: string
           language_preference: string | null
           level: string | null
+          location: string | null
           notification_preferences: Json | null
+          posts_count: number | null
           privacy_settings: Json | null
           theme_preference: string | null
           updated_at: string
+          website: string | null
         }
         Insert: {
           accessibility_settings?: Json | null
           avatar_url?: string | null
+          bio?: string | null
           completed_degrees?: string[] | null
           created_at?: string
           current_degree?: string | null
+          email?: string | null
+          followers_count?: number | null
+          following_count?: number | null
           full_name?: string | null
           id: string
           language_preference?: string | null
           level?: string | null
+          location?: string | null
           notification_preferences?: Json | null
+          posts_count?: number | null
           privacy_settings?: Json | null
           theme_preference?: string | null
           updated_at?: string
+          website?: string | null
         }
         Update: {
           accessibility_settings?: Json | null
           avatar_url?: string | null
+          bio?: string | null
           completed_degrees?: string[] | null
           created_at?: string
           current_degree?: string | null
+          email?: string | null
+          followers_count?: number | null
+          following_count?: number | null
           full_name?: string | null
           id?: string
           language_preference?: string | null
           level?: string | null
+          location?: string | null
           notification_preferences?: Json | null
+          posts_count?: number | null
           privacy_settings?: Json | null
           theme_preference?: string | null
           updated_at?: string
+          website?: string | null
         }
         Relationships: []
       }

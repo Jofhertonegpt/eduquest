@@ -63,12 +63,6 @@ export const CreatePost = () => {
       .from('social-media')
       .upload(filePath, file, {
         upsert: true,
-        onUploadProgress: (progress) => {
-          setUploadProgress(prev => ({
-            ...prev,
-            [file.name]: (progress.loaded / progress.total) * 100
-          }));
-        }
       });
 
     if (uploadError) throw uploadError;

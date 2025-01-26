@@ -9,6 +9,7 @@ interface XHeaderProps {
     email: string;
     location?: string;
     website?: string;
+    avatar_url?: string;
   };
   isOwnProfile: boolean;
   editMode: boolean;
