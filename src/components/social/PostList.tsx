@@ -1,45 +1,16 @@
-import { useState, useEffect, useRef } from "react";
-import { useInfiniteQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
-import { useToast } from "@/hooks/use-toast";
-import { useNavigate } from "react-router-dom";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { PostComments } from "@/components/school/PostComments";
-import ErrorBoundary from "@/components/ErrorBoundary";
-import { PostSkeleton } from "./PostSkeleton";
-import { PostFeed } from "./post/PostFeed";
-import { PostFilters } from "./post/PostFilters";
-import type { Post } from "@/types/social";
-
-interface PostPage {
-  posts: Post[];
-  nextPage: number | null;
-}
+import { PostCard } from "./PostCard";
+import { Loader2 } from "lucide-react";
 
 interface PostListProps {
-  userId?: string;
-  type?: "feed" | "trending" | "profile" | "likes" | "bookmarks";
+  type: "for-you" | "following";
 }
 
-export const PostList = ({ userId, type = "feed" }: PostListProps) => {
-  const [selectedPost, setSelectedPost] = useState<Post | null>(null);
-  const [activeTab, setActiveTab] = useState<"feed" | "trending">("feed");
-  const { toast } = useToast();
-  const queryClient = useQueryClient();
-  const navigate = useNavigate();
-  const observerTarget = useRef<HTMLDivElement>(null);
-
-  const {
-    data,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-    isLoading,
-    error
-  } = useInfiniteQuery<PostPage>({
-    queryKey: ["social-posts", type, userId],
-    queryFn: async (context) => {
-      const pageParam = context.pageParam as number;
+export const PostList = ({ type }: PostListProps) => {
+  const { data: posts, isLoading } = useQuery({
+    queryKey: ["posts", type],
+    queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
@@ -47,221 +18,73 @@ export const PostList = ({ userId, type = "feed" }: PostListProps) => {
         .from("social_posts")
         .select(`
           *,
-          profiles (
+          profiles:profiles!user_id (
             full_name,
             avatar_url
+          ),
+          likes:post_likes(
+            user_id
+          ),
+          reposts:post_reposts(
+            user_id
+          ),
+          comments:post_comments(
+            id
           )
         `)
-        .range(pageParam * 10, (pageParam + 1) * 10 - 1);
+        .order("created_at", { ascending: false });
 
-      if (type === "profile" && userId) {
-        query = query.eq('user_id', userId);
-      } else if (type === "likes" && user) {
-        const { data: likedPosts } = await supabase
-          .from('social_likes')
-          .select('post_id')
-          .eq('user_id', user.id);
+      if (type === "following") {
+        const { data: following } = await supabase
+          .from("user_follows")
+          .select("following_id")
+          .eq("follower_id", user.id);
         
-        if (likedPosts) {
-          query = query.in('id', likedPosts.map(like => like.post_id));
-        }
-      } else if (type === "bookmarks" && user) {
-        const { data: bookmarkedPosts } = await supabase
-          .from('social_bookmarks')
-          .select('post_id')
-          .eq('user_id', user.id);
-        
-        if (bookmarkedPosts) {
-          query = query.in('id', bookmarkedPosts.map(bookmark => bookmark.post_id));
-        }
+        const followingIds = following?.map(f => f.following_id) || [];
+        query = query.in("user_id", [user.id, ...followingIds]);
       }
 
-      if (type === "trending") {
-        query = query.order('likes_count', { ascending: false });
-      } else {
-        query = query.order('created_at', { ascending: false });
-      }
-
-      const { data: posts, error } = await query;
+      const { data, error } = await query;
       if (error) throw error;
 
-      const { data: likes } = await supabase
-        .from('social_likes')
-        .select('post_id')
-        .eq('user_id', user.id);
-
-      const { data: bookmarks } = await supabase
-        .from('social_bookmarks')
-        .select('post_id')
-        .eq('user_id', user.id);
-
-      const likedPostIds = new Set(likes?.map(like => like.post_id) || []);
-      const bookmarkedPostIds = new Set(bookmarks?.map(bookmark => bookmark.post_id) || []);
-
-      const postsWithMeta = posts?.map(post => ({
+      return data.map(post => ({
         ...post,
-        is_liked: likedPostIds.has(post.id),
-        is_bookmarked: bookmarkedPostIds.has(post.id)
-      })) as Post[];
-
-      return {
-        posts: postsWithMeta,
-        nextPage: posts?.length === 10 ? pageParam + 1 : null
-      };
+        likes_count: post.likes?.length || 0,
+        reposts_count: post.reposts?.length || 0,
+        comments_count: post.comments?.length || 0,
+        is_liked: post.likes?.some(like => like.user_id === user.id) || false,
+        is_reposted: post.reposts?.some(repost => repost.user_id === user.id) || false,
+      }));
     },
-    initialPageParam: 0,
-    getNextPageParam: (lastPage: PostPage) => lastPage.nextPage,
+    refetchInterval: 30000, // Refetch every 30 seconds
+    staleTime: 10000, // Consider data stale after 10 seconds
   });
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
-          fetchNextPage();
-        }
-      },
-      { threshold: 0.5 }
-    );
-
-    if (observerTarget.current) {
-      observer.observe(observerTarget.current);
-    }
-
-    return () => observer.disconnect();
-  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
-
-  const likeMutation = useMutation({
-    mutationFn: async ({ postId, action }: { postId: string; action: 'like' | 'unlike' }) => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
-
-      if (action === 'like') {
-        const { error } = await supabase
-          .from("social_likes")
-          .insert({ post_id: postId, user_id: user.id });
-        if (error) throw error;
-      } else {
-        const { error } = await supabase
-          .from("social_likes")
-          .delete()
-          .eq('post_id', postId)
-          .eq('user_id', user.id);
-        if (error) throw error;
-      }
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["social-posts"] });
-      toast({
-        title: "Success",
-        description: "Post interaction updated successfully!",
-      });
-    },
-    onError: () => {
-      toast({
-        title: "Error",
-        description: "Failed to update post interaction. Please try again.",
-        variant: "destructive",
-      });
-    },
-  });
-
-  const bookmarkMutation = useMutation({
-    mutationFn: async ({ postId, action }: { postId: string; action: 'bookmark' | 'unbookmark' }) => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
-
-      if (action === 'bookmark') {
-        const { error } = await supabase
-          .from("social_bookmarks")
-          .insert({ post_id: postId, user_id: user.id });
-        if (error) throw error;
-      } else {
-        const { error } = await supabase
-          .from("social_bookmarks")
-          .delete()
-          .eq('post_id', postId)
-          .eq('user_id', user.id);
-        if (error) throw error;
-      }
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["social-posts"] });
-      toast({
-        title: "Success",
-        description: "Bookmark updated successfully!",
-      });
-    },
-    onError: () => {
-      toast({
-        title: "Error",
-        description: "Failed to update bookmark. Please try again.",
-        variant: "destructive",
-      });
-    },
-  });
-
-  if (error) {
+  if (isLoading) {
     return (
-      <div className="p-4 text-center text-red-500">
-        Error loading posts. Please try again later.
+      <div className="flex justify-center p-8">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
+  if (!posts?.length) {
+    return (
+      <div className="flex flex-col items-center justify-center p-8 text-muted-foreground">
+        <p className="text-lg font-medium">No posts yet</p>
+        <p className="text-sm">Be the first to post something!</p>
       </div>
     );
   }
 
   return (
-    <ErrorBoundary>
-      <div className="space-y-4">
-        <PostFilters
-          activeTab={activeTab}
-          onTabChange={setActiveTab}
+    <div className="divide-y">
+      {posts.map((post) => (
+        <PostCard 
+          key={post.id} 
+          post={post}
         />
-        
-        {isLoading ? (
-          Array.from({ length: 3 }).map((_, i) => <PostSkeleton key={i} />)
-        ) : (
-          <>
-            {data?.pages.map((page, i) => (
-              <PostFeed
-                key={i}
-                posts={page.posts}
-                onLike={(postId, action) => likeMutation.mutate({ postId, action })}
-                onBookmark={(postId, action) => bookmarkMutation.mutate({ postId, action })}
-                onCommentClick={setSelectedPost}
-                onProfileClick={(userId) => navigate(`/profile/${userId}`)}
-                isLikeLoading={likeMutation.isPending}
-                isBookmarkLoading={bookmarkMutation.isPending}
-              />
-            ))}
-            <div ref={observerTarget} className="h-10" />
-            {isFetchingNextPage && <PostSkeleton />}
-          </>
-        )}
-      </div>
-
-      <Dialog open={!!selectedPost} onOpenChange={() => setSelectedPost(null)}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>Comments</DialogTitle>
-            <DialogDescription>
-              Join the conversation and share your thoughts
-            </DialogDescription>
-          </DialogHeader>
-          {selectedPost && (
-            <div className="space-y-4">
-              <PostFeed
-                posts={[selectedPost]}
-                onLike={(postId, action) => likeMutation.mutate({ postId, action })}
-                onBookmark={(postId, action) => bookmarkMutation.mutate({ postId, action })}
-                onCommentClick={() => {}}
-                onProfileClick={(userId) => navigate(`/profile/${userId}`)}
-                isLikeLoading={likeMutation.isPending}
-                isBookmarkLoading={bookmarkMutation.isPending}
-              />
-              <PostComments postId={selectedPost.id} />
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
-    </ErrorBoundary>
+      ))}
+    </div>
   );
 };
