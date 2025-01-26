@@ -10,7 +10,6 @@ import Settings from "./pages/Settings";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import JoinSchool from "./pages/JoinSchool";
-import Chatter from "./pages/Chatter";
 
 const AppRoutes = () => {
   return (
@@ -74,15 +73,6 @@ const AppRoutes = () => {
             <div className="container mx-auto px-4 py-4 md:py-8">
               <Settings />
             </div>
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/chatter"
-        element={
-          <ProtectedRoute>
-            <Navigation />
-            <Chatter />
           </ProtectedRoute>
         }
       />
