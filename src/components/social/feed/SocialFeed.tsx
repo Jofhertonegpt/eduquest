@@ -78,7 +78,7 @@ export const SocialFeed = () => {
     };
   }, [refetch]);
 
-  const handleLike = async (postId: string) => {
+  const handleLike = async (postId: string, isLiked: boolean) => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
       toast({
@@ -89,18 +89,37 @@ export const SocialFeed = () => {
       return;
     }
 
-    const { error } = await supabase
-      .from("social_likes")
-      .insert({ post_id: postId, user_id: user.id });
+    if (isLiked) {
+      // Unlike the post
+      const { error } = await supabase
+        .from("social_likes")
+        .delete()
+        .match({ post_id: postId, user_id: user.id });
 
-    if (error) {
-      console.error("Error liking post:", error);
-      toast({
-        title: "Error",
-        description: "Failed to like post",
-        variant: "destructive",
-      });
-      return;
+      if (error) {
+        console.error("Error unliking post:", error);
+        toast({
+          title: "Error",
+          description: "Failed to unlike post",
+          variant: "destructive",
+        });
+        return;
+      }
+    } else {
+      // Like the post
+      const { error } = await supabase
+        .from("social_likes")
+        .insert({ post_id: postId, user_id: user.id });
+
+      if (error) {
+        console.error("Error liking post:", error);
+        toast({
+          title: "Error",
+          description: "Failed to like post",
+          variant: "destructive",
+        });
+        return;
+      }
     }
   };
 
@@ -124,7 +143,7 @@ export const SocialFeed = () => {
         <PostCard
           key={post.id}
           post={post}
-          onLike={() => handleLike(post.id)}
+          onLike={() => handleLike(post.id, post.is_liked)}
           onComment={() => handleComment(post.id)}
           isLikeLoading={false}
         />
