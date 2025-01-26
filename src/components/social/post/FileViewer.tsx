@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight, Maximize2, FileText } from "lucide-react";
+import { ChevronLeft, ChevronRight, Maximize2, FileText, ImageIcon } from "lucide-react";
 
 interface FileViewerProps {
   urls: string[];
@@ -12,8 +12,9 @@ interface FileViewerProps {
 export const FileViewer = ({ urls, fileTypes = [], metadata = [] }: FileViewerProps) => {
   const [selectedFile, setSelectedFile] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [failedImages, setFailedImages] = useState<Set<string>>(new Set());
 
-  console.log('FileViewer received props:', { urls, fileTypes, metadata }); // Debug log
+  console.log('FileViewer received props:', { urls, fileTypes, metadata });
 
   const getFileType = (url: string) => {
     if (!url) return 'unknown';
@@ -25,7 +26,7 @@ export const FileViewer = ({ urls, fileTypes = [], metadata = [] }: FileViewerPr
   };
 
   const handleFileClick = (url: string) => {
-    console.log('File clicked:', url); // Debug log
+    console.log('File clicked:', url);
     setSelectedFile(url);
     setCurrentPage(1);
   };
@@ -39,8 +40,13 @@ export const FileViewer = ({ urls, fileTypes = [], metadata = [] }: FileViewerPr
     }
   };
 
+  const handleImageError = (url: string) => {
+    console.error('Image failed to load:', url);
+    setFailedImages(prev => new Set([...prev, url]));
+  };
+
   if (!urls || urls.length === 0) {
-    console.log('No files to display'); // Debug log
+    console.log('No files to display');
     return null;
   }
 
@@ -49,13 +55,13 @@ export const FileViewer = ({ urls, fileTypes = [], metadata = [] }: FileViewerPr
       <div className={`grid ${getGridCols()} gap-2 relative`}>
         {urls.map((url, index) => {
           if (!url) {
-            console.log('Skipping empty URL at index:', index); // Debug log
+            console.log('Skipping empty URL at index:', index);
             return null;
           }
 
           const fileType = fileTypes[index] || getFileType(url);
           const alt = metadata?.[index]?.alt_text || `File ${index + 1}`;
-          console.log('Rendering file:', { url, fileType, alt }); // Debug log
+          console.log('Rendering file:', { url, fileType, alt });
 
           if (fileType === 'image') {
             return (
@@ -64,15 +70,18 @@ export const FileViewer = ({ urls, fileTypes = [], metadata = [] }: FileViewerPr
                 className="relative aspect-square group cursor-pointer"
                 onClick={() => handleFileClick(url)}
               >
-                <img
-                  src={url}
-                  alt={alt}
-                  className="w-full h-full object-cover rounded-lg"
-                  onError={(e) => {
-                    console.error('Image failed to load:', url); // Debug log
-                    e.currentTarget.src = '/placeholder.svg';
-                  }}
-                />
+                {failedImages.has(url) ? (
+                  <div className="w-full h-full flex items-center justify-center bg-muted rounded-lg">
+                    <ImageIcon className="h-8 w-8 text-muted-foreground" />
+                  </div>
+                ) : (
+                  <img
+                    src={url}
+                    alt={alt}
+                    className="w-full h-full object-cover rounded-lg"
+                    onError={() => handleImageError(url)}
+                  />
+                )}
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all rounded-lg flex items-center justify-center">
                   <Maximize2 className="text-white opacity-0 group-hover:opacity-100 transition-opacity" />
                 </div>
@@ -87,7 +96,7 @@ export const FileViewer = ({ urls, fileTypes = [], metadata = [] }: FileViewerPr
                   src={url}
                   controls
                   className="w-full h-full object-cover rounded-lg"
-                  onError={(e) => console.error('Video failed to load:', url)} // Debug log
+                  onError={() => console.error('Video failed to load:', url)}
                 />
               </div>
             );
@@ -117,15 +126,20 @@ export const FileViewer = ({ urls, fileTypes = [], metadata = [] }: FileViewerPr
                   title="PDF Viewer"
                 />
               ) : (
-                <img
-                  src={selectedFile}
-                  alt="Full size preview"
-                  className="max-w-full max-h-full object-contain"
-                  onError={(e) => {
-                    console.error('Preview image failed to load:', selectedFile); // Debug log
-                    e.currentTarget.src = '/placeholder.svg';
-                  }}
-                />
+                <>
+                  {failedImages.has(selectedFile) ? (
+                    <div className="w-full h-full flex items-center justify-center bg-muted">
+                      <ImageIcon className="h-16 w-16 text-muted-foreground" />
+                    </div>
+                  ) : (
+                    <img
+                      src={selectedFile}
+                      alt="Full size preview"
+                      className="max-w-full max-h-full object-contain"
+                      onError={() => handleImageError(selectedFile)}
+                    />
+                  )}
+                </>
               )}
               
               {getFileType(selectedFile) === 'pdf' && (
