@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { 
   FileText, Video, Music, Image, File, Code,
   Archive, Database, Globe, Book, Presentation, Table,
-  Download
+  Download, ArrowLeft, ArrowRight
 } from "lucide-react";
 import { useState } from "react";
 import { MediaViewer } from "./MediaViewer";
@@ -17,6 +17,7 @@ interface FileViewerProps {
 
 export const FileViewer = ({ urls, fileTypes, metadata = [] }: FileViewerProps) => {
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
+  const [currentPdfPage, setCurrentPdfPage] = useState(1);
   
   const imageUrls = urls.filter((_, index) => 
     ['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(fileTypes[index].toLowerCase())
@@ -70,6 +71,53 @@ export const FileViewer = ({ urls, fileTypes, metadata = [] }: FileViewerProps) 
     );
   };
 
+  const renderPdfViewer = (url: string) => {
+    return (
+      <Dialog>
+        <DialogTrigger asChild>
+          <div className="flex items-center gap-2 p-4 bg-muted rounded-lg cursor-pointer hover:bg-muted/80 transition-colors">
+            <FileText className="h-6 w-6" />
+            <span className="flex-1 truncate">{url.split('/').pop()}</span>
+            <Button variant="outline" size="sm">
+              <Globe className="h-4 w-4 mr-2" />
+              View PDF
+            </Button>
+          </div>
+        </DialogTrigger>
+        <DialogContent className="max-w-4xl h-[80vh]">
+          <div className="relative w-full h-full flex flex-col">
+            <div className="flex-1">
+              <iframe
+                src={`${url}#page=${currentPdfPage}`}
+                className="w-full h-full rounded-lg"
+                title="PDF Viewer"
+              />
+            </div>
+            <div className="flex items-center justify-between p-4 bg-background/80 backdrop-blur-sm">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPdfPage(prev => Math.max(1, prev - 1))}
+              >
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Previous Page
+              </Button>
+              <span className="text-sm">Page {currentPdfPage}</span>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPdfPage(prev => prev + 1)}
+              >
+                Next Page
+                <ArrowRight className="h-4 w-4 ml-2" />
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+    );
+  };
+
   const renderOtherFiles = () => {
     return urls.map((url, index) => {
       if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(fileTypes[index].toLowerCase())) {
@@ -80,27 +128,7 @@ export const FileViewer = ({ urls, fileTypes, metadata = [] }: FileViewerProps) 
       const isVideo = ['mp4', 'webm', 'mov'].includes(fileTypes[index].toLowerCase());
 
       if (isPDF) {
-        return (
-          <Dialog key={url}>
-            <DialogTrigger asChild>
-              <div className="flex items-center gap-2 p-4 bg-muted rounded-lg cursor-pointer hover:bg-muted/80 transition-colors">
-                <FileText className="h-6 w-6" />
-                <span className="flex-1 truncate">{url.split('/').pop()}</span>
-                <Button variant="outline" size="sm">
-                  <Globe className="h-4 w-4 mr-2" />
-                  View PDF
-                </Button>
-              </div>
-            </DialogTrigger>
-            <DialogContent className="max-w-4xl h-[80vh]">
-              <iframe
-                src={url}
-                className="w-full h-full rounded-lg"
-                title="PDF Viewer"
-              />
-            </DialogContent>
-          </Dialog>
-        );
+        return renderPdfViewer(url);
       }
 
       if (isVideo) {
