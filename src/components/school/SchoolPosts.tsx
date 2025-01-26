@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { motion, AnimatePresence } from "framer-motion";
 import { Loader2 } from "lucide-react";
-import { CreatePost } from "../social/CreatePost";
+import { CreatePost } from "./CreatePost";
 import { PostCard } from "../social/PostCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { Post } from "@/types/social";
