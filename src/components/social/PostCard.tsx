@@ -225,8 +225,6 @@ export const PostCard = ({
     return renderFilePreview();
   };
 
-  // ... keep existing code (profile section and post content)
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -235,15 +233,14 @@ export const PostCard = ({
       role="article"
       aria-label={`Post by ${post.profiles?.full_name || 'Anonymous'}`}
     >
-      {/* ... keep existing code (profile header) */}
       <div className="flex items-center justify-between">
         <div 
           className="flex items-center gap-2 cursor-pointer"
-          onClick={handleProfileClick}
+          onClick={() => onProfileClick(post.user_id)}
           role="button"
           tabIndex={0}
           onKeyPress={(e) => {
-            if (e.key === 'Enter') handleProfileClick();
+            if (e.key === 'Enter') onProfileClick(post.user_id);
           }}
           aria-label={`View ${post.profiles?.full_name || 'Anonymous'}'s profile`}
         >
