@@ -1,17 +1,28 @@
 import { useState } from 'react';
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight, Maximize2 } from "lucide-react";
+import { ChevronLeft, ChevronRight, Maximize2, FileText } from "lucide-react";
 
 interface FileViewerProps {
   urls: string[];
-  fileTypes: string[];
+  fileTypes?: string[];
   metadata?: any[];
 }
 
-export const FileViewer = ({ urls, fileTypes, metadata }: FileViewerProps) => {
+export const FileViewer = ({ urls, fileTypes = [], metadata = [] }: FileViewerProps) => {
   const [selectedFile, setSelectedFile] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
+
+  console.log('FileViewer props:', { urls, fileTypes, metadata }); // Debug log
+
+  const getFileType = (url: string) => {
+    if (!url) return 'unknown';
+    const extension = url.split('.').pop()?.toLowerCase() || '';
+    if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(extension)) return 'image';
+    if (['mp4', 'webm', 'mov'].includes(extension)) return 'video';
+    if (extension === 'pdf') return 'pdf';
+    return 'other';
+  };
 
   const handleFileClick = (url: string) => {
     setSelectedFile(url);
@@ -27,13 +38,19 @@ export const FileViewer = ({ urls, fileTypes, metadata }: FileViewerProps) => {
     }
   };
 
+  if (!urls || urls.length === 0) {
+    console.log('No files to display'); // Debug log
+    return null;
+  }
+
   return (
     <>
       <div className={`grid ${getGridCols()} gap-2 relative`}>
         {urls.map((url, index) => {
           if (!url) return null;
-          const fileType = fileTypes[index];
+          const fileType = fileTypes[index] || getFileType(url);
           const alt = metadata?.[index]?.alt_text || `File ${index + 1}`;
+          console.log('Rendering file:', { url, fileType, alt }); // Debug log
 
           if (fileType === 'image') {
             return (
@@ -66,19 +83,16 @@ export const FileViewer = ({ urls, fileTypes, metadata }: FileViewerProps) => {
             );
           }
 
-          if (fileType === 'pdf') {
-            return (
-              <div 
-                key={url}
-                className="aspect-square bg-muted rounded-lg flex items-center justify-center cursor-pointer"
-                onClick={() => handleFileClick(url)}
-              >
-                <span className="text-sm font-medium">View PDF</span>
-              </div>
-            );
-          }
-
-          return null;
+          return (
+            <div 
+              key={url}
+              className="aspect-square bg-muted rounded-lg flex items-center justify-center cursor-pointer gap-2"
+              onClick={() => handleFileClick(url)}
+            >
+              <FileText className="h-6 w-6" />
+              <span className="text-sm font-medium">View File</span>
+            </div>
+          );
         })}
       </div>
 
@@ -86,7 +100,7 @@ export const FileViewer = ({ urls, fileTypes, metadata }: FileViewerProps) => {
         <DialogContent className="max-w-4xl w-full h-[80vh]">
           {selectedFile && (
             <div className="relative w-full h-full flex items-center justify-center">
-              {selectedFile.endsWith('.pdf') ? (
+              {getFileType(selectedFile) === 'pdf' ? (
                 <iframe
                   src={`${selectedFile}#page=${currentPage}`}
                   className="w-full h-full"
@@ -100,7 +114,7 @@ export const FileViewer = ({ urls, fileTypes, metadata }: FileViewerProps) => {
                 />
               )}
               
-              {selectedFile.endsWith('.pdf') && (
+              {getFileType(selectedFile) === 'pdf' && (
                 <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-background/80 p-2 rounded-lg">
                   <Button
                     variant="outline"
