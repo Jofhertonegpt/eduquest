@@ -1,5 +1,3 @@
-"use client";
-
 import { useState, useRef } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useProfile } from "@/hooks/useProfile";
@@ -7,15 +5,14 @@ import { supabase } from "@/lib/supabase";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { PostInput } from "./post/PostInput";
 import { MediaPreview } from "./post/MediaPreview";
-import { PostActions } from "./post/PostActions";
-import { HashtagManager } from "./post/HashtagManager";
+import { Button } from "@/components/ui/button";
+import { ImagePlus, Smile, Film, BarChart2, Loader2 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export const CreatePost = () => {
   const [content, setContent] = useState("");
   const [files, setFiles] = useState<File[]>([]);
   const [isPosting, setIsPosting] = useState(false);
-  const [hashtags, setHashtags] = useState<string[]>([]);
-  const [hashtagInput, setHashtagInput] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   const { toast } = useToast();
@@ -38,29 +35,13 @@ export const CreatePost = () => {
     setFiles(files.filter(f => f !== file));
   };
 
-  const handleHashtagAdd = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && hashtagInput.trim()) {
-      e.preventDefault();
-      if (!hashtags.includes(hashtagInput)) {
-        setHashtags([...hashtags, hashtagInput]);
-      }
-      setHashtagInput("");
-    }
-  };
-
-  const handleHashtagRemove = (index: number) => {
-    setHashtags(hashtags.filter((_, i) => i !== index));
-  };
-
   const uploadFile = async (file: File): Promise<string> => {
     const fileExt = file.name.split('.').pop();
     const filePath = `${crypto.randomUUID()}.${fileExt}`;
     
     const { error: uploadError } = await supabase.storage
       .from('social-media')
-      .upload(filePath, file, {
-        upsert: true
-      });
+      .upload(filePath, file);
 
     if (uploadError) throw uploadError;
 
@@ -90,14 +71,12 @@ export const CreatePost = () => {
           content: content.trim(),
           user_id: user.id,
           media_urls: mediaUrls,
-          hashtags: hashtags,
         });
 
       if (error) throw error;
 
       setContent("");
       setFiles([]);
-      setHashtags([]);
       toast({
         title: "Success",
         description: "Your post has been published",
@@ -140,15 +119,6 @@ export const CreatePost = () => {
             isPosting={isPosting}
           />
 
-          <HashtagManager
-            hashtags={hashtags}
-            hashtagInput={hashtagInput}
-            isUploading={isPosting}
-            onHashtagInputChange={setHashtagInput}
-            onHashtagAdd={handleHashtagAdd}
-            onHashtagRemove={handleHashtagRemove}
-          />
-
           <input
             type="file"
             ref={fileInputRef}
@@ -159,12 +129,62 @@ export const CreatePost = () => {
             disabled={isPosting}
           />
 
-          <PostActions 
-            onFileClick={() => fileInputRef.current?.click()}
-            isPosting={isPosting}
-            canPost={!!content.trim() || files.length > 0}
-            onPost={handlePost}
-          />
+          <div className="flex items-center justify-between pt-4 border-t">
+            <div className="flex items-center gap-2 text-primary">
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                className={cn(
+                  "p-2 rounded-full hover:bg-primary/10 transition",
+                  isPosting && "opacity-50 cursor-not-allowed"
+                )}
+                disabled={isPosting}
+              >
+                <ImagePlus className="h-5 w-5" />
+              </button>
+              <button
+                className={cn(
+                  "p-2 rounded-full hover:bg-primary/10 transition",
+                  isPosting && "opacity-50 cursor-not-allowed"
+                )}
+                disabled={isPosting}
+              >
+                <Film className="h-5 w-5" />
+              </button>
+              <button
+                className={cn(
+                  "p-2 rounded-full hover:bg-primary/10 transition",
+                  isPosting && "opacity-50 cursor-not-allowed"
+                )}
+                disabled={isPosting}
+              >
+                <BarChart2 className="h-5 w-5" />
+              </button>
+              <button
+                className={cn(
+                  "p-2 rounded-full hover:bg-primary/10 transition",
+                  isPosting && "opacity-50 cursor-not-allowed"
+                )}
+                disabled={isPosting}
+              >
+                <Smile className="h-5 w-5" />
+              </button>
+            </div>
+            
+            <Button
+              onClick={handlePost}
+              disabled={!content.trim() && files.length === 0 || isPosting}
+              className="rounded-full px-6"
+            >
+              {isPosting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Posting...
+                </>
+              ) : (
+                'Post'
+              )}
+            </Button>
+          </div>
         </div>
       </div>
     </div>

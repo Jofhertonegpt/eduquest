@@ -23,7 +23,7 @@ export const PostActions = ({
   onComment,
   onBookmark,
   isLikeLoading,
-  isBookmarkLoading
+  isBookmarkLoading,
 }: PostActionsProps) => {
   return (
     <div className="flex items-center gap-4 pt-2">
