@@ -22,7 +22,7 @@ export const SocialFeed = () => {
           comments_count,
           shares_count,
           user_id,
-          profiles:profiles!user_id (
+          profiles!user_id (
             full_name,
             avatar_url
           ),
@@ -32,7 +32,7 @@ export const SocialFeed = () => {
             id,
             content,
             created_at,
-            profiles:profiles!user_id (
+            profiles!user_id (
               full_name,
               avatar_url
             )
