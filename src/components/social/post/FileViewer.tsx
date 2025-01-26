@@ -31,6 +31,7 @@ export const FileViewer = ({ urls, fileTypes, metadata }: FileViewerProps) => {
     <>
       <div className={`grid ${getGridCols()} gap-2 relative`}>
         {urls.map((url, index) => {
+          if (!url) return null;
           const fileType = fileTypes[index];
           const alt = metadata?.[index]?.alt_text || `File ${index + 1}`;
 

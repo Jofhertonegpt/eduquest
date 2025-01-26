@@ -57,19 +57,19 @@ export const CreatePost = () => {
     ));
   };
 
-  const uploadFile = async (file: File, index: number): Promise<string> => {
+  const uploadFile = async (file: File): Promise<string> => {
     const fileExt = file.name.split('.').pop();
-    const filePath = `${crypto.randomUUID()}.${fileExt}`;
+    const fileName = `${crypto.randomUUID()}.${fileExt}`;
     
     const { error: uploadError } = await supabase.storage
       .from('social-media')
-      .upload(filePath, file);
+      .upload(fileName, file);
 
     if (uploadError) throw uploadError;
 
     const { data: { publicUrl } } = supabase.storage
       .from('social-media')
-      .getPublicUrl(filePath);
+      .getPublicUrl(fileName);
 
     return publicUrl;
   };
@@ -84,7 +84,8 @@ export const CreatePost = () => {
 
       let mediaUrls: string[] = [];
       if (files.length > 0) {
-        mediaUrls = await Promise.all(files.map((file, index) => uploadFile(file, index)));
+        mediaUrls = await Promise.all(files.map(uploadFile));
+        console.log("Uploaded media URLs:", mediaUrls); // Debug log
       }
 
       const { error } = await supabase

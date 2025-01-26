@@ -58,8 +58,9 @@ export const PostCard = ({
 
   // Determine file types from media_urls
   const fileTypes = post.media_urls?.map(url => {
+    if (!url) return 'other';
     const extension = url.split('.').pop()?.toLowerCase() || '';
-    if (['jpg', 'jpeg', 'png', 'gif'].includes(extension)) return 'image';
+    if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(extension)) return 'image';
     if (['mp4', 'webm', 'ogg'].includes(extension)) return 'video';
     if (['pdf'].includes(extension)) return 'pdf';
     return 'other';
