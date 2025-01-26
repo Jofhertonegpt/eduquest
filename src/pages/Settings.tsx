@@ -1,4 +1,5 @@
-import { useState, Suspense } from "react";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { useProfile } from "@/hooks/useProfile";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -9,10 +10,37 @@ import { ProfileSettings } from "@/components/settings/ProfileSettings";
 import { NotificationSettings } from "@/components/settings/NotificationSettings";
 import { PrivacySettings } from "@/components/settings/PrivacySettings";
 import { AccessibilitySettings } from "@/components/settings/AccessibilitySettings";
+import { supabase } from "@/lib/supabase";
 
 const Settings = () => {
   const { userData, updateProfile, isLoading } = useProfile();
   const { toast } = useToast();
+  const navigate = useNavigate();
+
+  // Security: Check authentication status
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        toast({
+          title: "Authentication required",
+          description: "Please log in to access settings",
+          variant: "destructive",
+        });
+        navigate("/login");
+      }
+    };
+    checkAuth();
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_OUT') {
+        navigate("/login");
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [navigate, toast]);
 
   const handleSettingUpdate = async (
     category: 'notification_preferences' | 'privacy_settings' | 'accessibility_settings',
@@ -20,6 +48,19 @@ const Settings = () => {
     value: any
   ) => {
     try {
+      // Rate limiting
+      const now = Date.now();
+      const lastUpdate = localStorage.getItem('lastSettingsUpdate');
+      if (lastUpdate && now - parseInt(lastUpdate) < 1000) { // 1 second cooldown
+        toast({
+          title: "Please wait",
+          description: "Too many updates. Please wait a moment.",
+          variant: "destructive",
+        });
+        return;
+      }
+      localStorage.setItem('lastSettingsUpdate', now.toString());
+
       const updatedSettings = {
         ...userData?.profile,
         [category]: {
@@ -88,29 +129,29 @@ const Settings = () => {
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="appearance">
+          <TabsContent value="appearance" className="mt-6">
             <AppearanceSettings />
           </TabsContent>
 
-          <TabsContent value="profile">
+          <TabsContent value="profile" className="mt-6">
             <ProfileSettings userData={userData} updateProfile={updateProfile} />
           </TabsContent>
 
-          <TabsContent value="notifications">
+          <TabsContent value="notifications" className="mt-6">
             <NotificationSettings
               preferences={userData?.profile?.notification_preferences}
               onUpdate={(key, value) => handleSettingUpdate('notification_preferences', key, value)}
             />
           </TabsContent>
 
-          <TabsContent value="privacy">
+          <TabsContent value="privacy" className="mt-6">
             <PrivacySettings
               settings={userData?.profile?.privacy_settings}
               onUpdate={(key, value) => handleSettingUpdate('privacy_settings', key, value)}
             />
           </TabsContent>
 
-          <TabsContent value="accessibility">
+          <TabsContent value="accessibility" className="mt-6">
             <AccessibilitySettings
               settings={userData?.profile?.accessibility_settings}
               onUpdate={(key, value) => handleSettingUpdate('accessibility_settings', key, value)}
