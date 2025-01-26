@@ -9,6 +9,7 @@ import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 const AppRoutes = () => {
   return (
@@ -64,7 +65,9 @@ const App = () => {
   return (
     <ErrorBoundary>
       <AppProviders>
-        <AppRoutes />
+        <TooltipProvider>
+          <AppRoutes />
+        </TooltipProvider>
       </AppProviders>
     </ErrorBoundary>
   );
