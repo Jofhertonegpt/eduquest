@@ -23,7 +23,7 @@ export const AppProviders = ({ children }: AppProvidersProps) => {
           themes={["light", "dark", "rainbow"]}
           disableTransitionOnChange
         >
-          <TooltipProvider delayDuration={0}>
+          <TooltipProvider>
             {children}
             <Toaster />
             <Sonner />
