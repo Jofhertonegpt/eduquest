@@ -1,89 +1,95 @@
-import { Routes, Route, Navigate } from "react-router-dom";
-import { AppProviders } from "@/components/providers/AppProviders";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { Toaster } from "@/components/ui/toaster";
 import { ProtectedRoute } from "@/components/routes/ProtectedRoute";
-import ErrorBoundary from "@/components/ErrorBoundary";
-import Navigation from "./components/Navigation";
-import Dashboard from "./pages/Dashboard";
-import Import from "./pages/Import";
-import Learning from "./pages/Learning";
-import Profile from "./pages/Profile";
-import Settings from "./pages/Settings";
-import Login from "./pages/Login";
-import Signup from "./pages/Signup";
+import Navigation from "@/components/Navigation";
+import Index from "@/pages/Index";
+import Dashboard from "@/pages/Dashboard";
+import Import from "@/pages/Import";
+import Learning from "@/pages/Learning";
+import Profile from "@/pages/Profile";
+import Settings from "@/pages/Settings";
+import Login from "@/pages/Login";
+import Signup from "@/pages/Signup";
+import JoinSchool from "@/pages/JoinSchool";
 
-const AppRoutes = () => {
+function App() {
   return (
-    <Routes>
-      <Route path="/login" element={<Login />} />
-      <Route path="/signup" element={<Signup />} />
-      <Route
-        path="/"
-        element={
-          <ProtectedRoute>
-            <Navigation />
-            <div className="container mx-auto px-4 py-4 md:py-8">
-              <Dashboard />
-            </div>
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/import"
-        element={
-          <ProtectedRoute>
-            <Navigation />
-            <div className="container mx-auto px-4 py-4 md:py-8">
-              <Import />
-            </div>
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/learning"
-        element={
-          <ProtectedRoute>
-            <Navigation />
-            <div className="container mx-auto px-4 py-4 md:py-8">
-              <Learning />
-            </div>
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/profile"
-        element={
-          <ProtectedRoute>
-            <Navigation />
-            <div className="container mx-auto px-4 py-4 md:py-8">
-              <Profile />
-            </div>
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/settings"
-        element={
-          <ProtectedRoute>
-            <Navigation />
-            <div className="container mx-auto px-4 py-4 md:py-8">
-              <Settings />
-            </div>
-          </ProtectedRoute>
-        }
-      />
-      <Route path="*" element={<Navigate to="/login" replace />} />
-    </Routes>
+    <Router>
+      <Routes>
+        <Route path="/" element={<Index />} />
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <div className="min-h-screen bg-background">
+                <Navigation />
+                <main className="container mx-auto px-4 py-20 md:py-24">
+                  <Dashboard />
+                </main>
+              </div>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/import"
+          element={
+            <ProtectedRoute>
+              <div className="min-h-screen bg-background">
+                <Navigation />
+                <main className="container mx-auto px-4 py-20 md:py-24">
+                  <Import />
+                </main>
+              </div>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/learning"
+          element={
+            <ProtectedRoute>
+              <div className="min-h-screen bg-background">
+                <Navigation />
+                <main className="container mx-auto px-4 py-20 md:py-24">
+                  <Learning />
+                </main>
+              </div>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <div className="min-h-screen bg-background">
+                <Navigation />
+                <main className="container mx-auto px-4 py-20 md:py-24">
+                  <Profile />
+                </main>
+              </div>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/settings"
+          element={
+            <ProtectedRoute>
+              <div className="min-h-screen bg-background">
+                <Navigation />
+                <main className="container mx-auto px-4 py-20 md:py-24">
+                  <Settings />
+                </main>
+              </div>
+            </ProtectedRoute>
+          }
+        />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/join-school" element={<JoinSchool />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+      <Toaster />
+    </Router>
   );
-};
-
-const App = () => {
-  return (
-    <ErrorBoundary>
-      <AppProviders>
-        <AppRoutes />
-      </AppProviders>
-    </ErrorBoundary>
-  );
-};
+}
 
 export default App;

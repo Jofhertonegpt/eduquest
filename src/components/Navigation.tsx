@@ -17,7 +17,7 @@ const Navigation = () => {
 
   const links = [
     { 
-      to: "/", 
+      to: "/dashboard", 
       icon: Home, 
       label: "Dashboard", 
       ariaLabel: "Go to Dashboard",
@@ -56,23 +56,23 @@ const Navigation = () => {
   return (
     <nav
       className={cn(
-        "fixed z-50 bg-background/80 backdrop-blur-lg border-t md:border-t-0 md:border-b",
-        isMobile ? "bottom-0 left-0 right-0" : "top-0 left-0 right-0"
+        "fixed z-50 w-full bg-background/80 backdrop-blur-lg border-t md:border-t-0 md:border-b",
+        isMobile ? "bottom-0" : "top-0"
       )}
       role="navigation"
       aria-label="Main navigation"
     >
-      <div className="container mx-auto px-2 md:px-4">
-        <div className="flex items-center justify-around md:justify-start gap-1 md:gap-4 h-16">
+      <div className="container mx-auto px-4">
+        <div className="flex items-center justify-around md:justify-start gap-1 md:gap-6 h-16">
           {links.map(({ to, icon: Icon, label, ariaLabel, disabled }) => (
             <Tooltip key={to}>
               <TooltipTrigger asChild>
                 <Link
                   to={disabled ? "#" : to}
                   className={cn(
-                    "flex flex-col md:flex-row items-center gap-1 md:gap-2 px-2 md:px-3 py-1.5 rounded-lg transition-colors",
-                    "text-muted-foreground hover:text-foreground focus-visible:ring-2 focus-visible:ring-primary focus:outline-none",
-                    "text-xs md:text-sm",
+                    "flex flex-col md:flex-row items-center gap-1 md:gap-2 px-3 py-2 rounded-lg transition-colors",
+                    "text-muted-foreground hover:text-foreground",
+                    "text-xs md:text-sm font-medium",
                     location.pathname === to && "text-primary bg-primary/5",
                     disabled && "opacity-50 cursor-not-allowed hover:text-muted-foreground"
                   )}
@@ -82,7 +82,7 @@ const Navigation = () => {
                   onClick={e => disabled && e.preventDefault()}
                 >
                   <Icon className="h-5 w-5" aria-hidden="true" />
-                  <span className="font-medium">{label}</span>
+                  <span>{label}</span>
                 </Link>
               </TooltipTrigger>
               <TooltipContent>
