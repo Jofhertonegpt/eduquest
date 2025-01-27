@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
-import { CurriculumModule, ModuleType } from "@/types/curriculum-module";
+import { ModuleType } from "@/types/curriculum-module";
 
 export const useCurriculumModules = (curriculumId: string, type?: ModuleType) => {
   return useQuery({
@@ -19,7 +19,8 @@ export const useCurriculumModules = (curriculumId: string, type?: ModuleType) =>
       
       if (error) throw error;
       
-      return data as CurriculumModule[];
+      return data;
     },
+    enabled: !!curriculumId,
   });
 };
