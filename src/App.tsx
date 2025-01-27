@@ -2,7 +2,6 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-d
 import { Toaster } from "@/components/ui/toaster";
 import { ProtectedRoute } from "@/components/routes/ProtectedRoute";
 import Navigation from "@/components/Navigation";
-import Index from "@/pages/Index";
 import Dashboard from "@/pages/Dashboard";
 import Import from "@/pages/Import";
 import Learning from "@/pages/Learning";
@@ -16,7 +15,12 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Index />} />
+        {/* Redirect root to login or dashboard based on auth status */}
+        <Route 
+          path="/" 
+          element={<Navigate to="/login" replace />} 
+        />
+        
         <Route
           path="/dashboard"
           element={
@@ -85,7 +89,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/join-school" element={<JoinSchool />} />
-        <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
       <Toaster />
     </Router>
