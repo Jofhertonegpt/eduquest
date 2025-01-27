@@ -1,7 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-import { Toaster } from "@/components/ui/toaster";
 import { ProtectedRoute } from "@/components/routes/ProtectedRoute";
-import { TooltipProvider } from "@/components/ui/tooltip";
 import Navigation from "@/components/Navigation";
 import Dashboard from "@/pages/Dashboard";
 import Import from "@/pages/Import";
@@ -11,11 +9,12 @@ import Settings from "@/pages/Settings";
 import Login from "@/pages/Login";
 import Signup from "@/pages/Signup";
 import JoinSchool from "@/pages/JoinSchool";
+import { AppProviders } from "@/components/providers/AppProviders";
 
 function App() {
   return (
-    <Router>
-      <TooltipProvider delayDuration={0}>
+    <AppProviders>
+      <Router>
         <Routes>
           {/* Redirect root to login or dashboard based on auth status */}
           <Route 
@@ -93,9 +92,8 @@ function App() {
           <Route path="/join-school" element={<JoinSchool />} />
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
-        <Toaster />
-      </TooltipProvider>
-    </Router>
+      </Router>
+    </AppProviders>
   );
 }
 
