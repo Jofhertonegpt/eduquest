@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { HeroButton } from "./HeroButton";
+import { useNavigate } from "react-router-dom";
 import type { HeroProps } from "@/types/home";
 
 export const Hero = ({ 
@@ -7,6 +8,19 @@ export const Hero = ({
   subtitle = "Welcome to EduQuest",
   description = "Discover a new way of learning with our interactive platform designed to help you achieve your educational goals."
 }: HeroProps) => {
+  const navigate = useNavigate();
+
+  const handleGetStarted = () => {
+    navigate("/signup");
+  };
+
+  const handleLearnMore = () => {
+    const featuredSection = document.querySelector("#featured-courses");
+    if (featuredSection) {
+      featuredSection.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   return (
     <section className="min-h-[80vh] flex items-center justify-center relative overflow-hidden">
       <div className="container px-4 mx-auto relative z-10">
@@ -26,8 +40,12 @@ export const Hero = ({
             {description}
           </p>
           <div className="flex flex-wrap gap-4 justify-center">
-            <HeroButton variant="primary">Get Started</HeroButton>
-            <HeroButton variant="secondary">Learn More</HeroButton>
+            <HeroButton variant="primary" onClick={handleGetStarted}>
+              Get Started
+            </HeroButton>
+            <HeroButton variant="secondary" onClick={handleLearnMore}>
+              Learn More
+            </HeroButton>
           </div>
         </motion.div>
       </div>

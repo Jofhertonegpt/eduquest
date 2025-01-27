@@ -28,7 +28,7 @@ export const FeaturedCourses = ({
   courses = defaultCourses 
 }: FeaturedCoursesProps) => {
   return (
-    <section className="py-20 bg-gradient-to-b from-white to-gray-50">
+    <section id="featured-courses" className="py-20 bg-gradient-to-b from-white to-gray-50">
       <div className="container px-4 mx-auto">
         <div className="text-center mb-16">
           <h2 className="font-display text-4xl font-bold mb-4">{title}</h2>
