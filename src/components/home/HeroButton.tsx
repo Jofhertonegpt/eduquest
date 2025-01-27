@@ -1,27 +1,29 @@
-import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
+import { ButtonHTMLAttributes } from "react";
+import { cn } from "@/lib/utils";
 
-interface HeroButtonProps {
-  variant: "primary" | "secondary";
+interface HeroButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: "primary" | "secondary";
   children: React.ReactNode;
-  onClick?: () => void;
 }
 
-export const HeroButton = ({ variant, children, onClick }: HeroButtonProps) => {
+export const HeroButton = ({ 
+  variant = "primary",
+  children,
+  className,
+  ...props
+}: HeroButtonProps) => {
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ delay: 0.3 }}
+    <button
+      className={cn(
+        "px-8 py-3 rounded-full font-medium transition-all duration-200",
+        variant === "primary" 
+          ? "bg-primary text-primary-foreground hover:opacity-90" 
+          : "border border-gray-200 hover:bg-gray-50 dark:border-gray-800 dark:hover:bg-gray-800",
+        className
+      )}
+      {...props}
     >
-      <Button
-        onClick={onClick}
-        variant={variant === "primary" ? "default" : "outline"}
-        size="lg"
-        className="rounded-full"
-      >
-        {children}
-      </Button>
-    </motion.div>
+      {children}
+    </button>
   );
 };
