@@ -1,16 +1,78 @@
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Card } from "@/components/ui/card";
+import { ModuleList } from "@/components/curriculum/ModuleList";
+import { ModuleContent } from "@/components/learning/ModuleContent";
+import { useProgress } from "@/hooks/use-progress";
+import { useCurriculumQueries } from "@/hooks/useCurriculumQueries";
+import type { Module } from "@/types/curriculum";
 
 const Learning = () => {
   const { id } = useParams();
+  const [selectedModule, setSelectedModule] = useState<Module | null>(null);
+  const { progress, updateProgress } = useProgress(id);
+  const { modules, modulesLoading } = useCurriculumQueries(id);
+
+  // Load last active module from progress
+  useEffect(() => {
+    if (progress?.active_module_id && modules) {
+      const lastActiveModule = modules.find(
+        m => m.content.id === progress.active_module_id
+      );
+      if (lastActiveModule) {
+        setSelectedModule(lastActiveModule.content);
+      }
+    }
+  }, [progress, modules]);
+
+  const handleModuleSelect = async (module: Module) => {
+    setSelectedModule(module);
+    if (id) {
+      await updateProgress.mutateAsync({
+        moduleId: module.id,
+        courseId: module.id // Using module.id as courseId for now
+      });
+    }
+  };
+
+  if (modulesLoading) {
+    return (
+      <div className="container mx-auto p-6">
+        <Card className="p-6">
+          <div className="animate-pulse">
+            <div className="h-8 bg-muted rounded w-1/3 mb-4"></div>
+            <div className="h-4 bg-muted rounded w-full mb-2"></div>
+            <div className="h-4 bg-muted rounded w-2/3"></div>
+          </div>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto p-6">
-      <Card className="p-6">
-        <h1 className="text-2xl font-bold mb-4">Learning Curriculum</h1>
-        <p>Curriculum ID: {id}</p>
-        {/* We'll implement the full learning interface in the next iteration */}
-      </Card>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="md:col-span-1">
+          {id && (
+            <ModuleList
+              curriculumId={id}
+              onModuleSelect={handleModuleSelect}
+            />
+          )}
+        </div>
+        <div className="md:col-span-2">
+          {selectedModule ? (
+            <ModuleContent module={selectedModule} />
+          ) : (
+            <Card className="p-6 text-center">
+              <h2 className="text-xl font-semibold mb-2">Welcome to your curriculum!</h2>
+              <p className="text-muted-foreground">
+                Select a module from the list to begin learning.
+              </p>
+            </Card>
+          )}
+        </div>
+      </div>
     </div>
   );
 };

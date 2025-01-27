@@ -1,7 +1,9 @@
+import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { BookOpen, FileText, CheckCircle, Clock, Target, Code, Award } from "lucide-react";
 import type { Module } from "@/types/curriculum";
 import { ResourceViewer } from "./ResourceViewer";
@@ -10,10 +12,37 @@ import CodeEditor from "@/components/CodeEditor";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 
-export const ModuleContent = ({ module }: { module: Module }) => {
+interface ModuleContentProps {
+  module: Module;
+}
+
+export const ModuleContent = ({ module }: ModuleContentProps) => {
   const { toast } = useToast();
+  const [progress, setProgress] = useState(() => {
+    const savedProgress = localStorage.getItem(`module-progress-${module.id}`);
+    return savedProgress ? JSON.parse(savedProgress) : {
+      completedResources: [],
+      completedQuizzes: [],
+      completedAssignments: [],
+      overallProgress: 0
+    };
+  });
+
+  const handleResourceComplete = (resourceId: string) => {
+    const newProgress = {
+      ...progress,
+      completedResources: [...progress.completedResources, resourceId]
+    };
+    updateProgress(newProgress);
+  };
 
   const handleQuizComplete = (score: number) => {
+    const newProgress = {
+      ...progress,
+      completedQuizzes: [...progress.completedQuizzes, score]
+    };
+    updateProgress(newProgress);
+    
     toast({
       title: "Quiz completed",
       description: `You scored ${score} points!`,
@@ -24,11 +53,41 @@ export const ModuleContent = ({ module }: { module: Module }) => {
     });
   };
 
+  const updateProgress = (newProgress: any) => {
+    const total = module.resources.length + module.quizzes.length + module.assignments.length;
+    const completed = 
+      newProgress.completedResources.length + 
+      newProgress.completedQuizzes.length + 
+      newProgress.completedAssignments.length;
+    
+    const overallProgress = Math.round((completed / total) * 100);
+    
+    const finalProgress = {
+      ...newProgress,
+      overallProgress
+    };
+    
+    setProgress(finalProgress);
+    localStorage.setItem(`module-progress-${module.id}`, JSON.stringify(finalProgress));
+  };
+
   return (
     <div className="glass-panel rounded-xl p-6 animate-fade-in">
       <div className="mb-6">
-        <h2 className="text-2xl font-bold mb-2">{module.title}</h2>
-        <p className="text-muted-foreground mb-4">{module.description}</p>
+        <div className="flex justify-between items-start mb-4">
+          <div>
+            <h2 className="text-2xl font-bold mb-2">{module.title}</h2>
+            <p className="text-muted-foreground mb-4">{module.description}</p>
+          </div>
+          <div className="text-right">
+            <div className="mb-2">
+              <Progress value={progress.overallProgress} className="w-32" />
+            </div>
+            <p className="text-sm text-muted-foreground">
+              {progress.overallProgress}% Complete
+            </p>
+          </div>
+        </div>
         
         <div className="flex flex-wrap gap-2 mb-4">
           <Badge variant="outline" className="flex items-center gap-1">
@@ -91,13 +150,38 @@ export const ModuleContent = ({ module }: { module: Module }) => {
             {module.resources.map((resource) => (
               <Card key={resource.id} className="hover:shadow-md transition-shadow">
                 <CardHeader>
-                  <CardTitle>{resource.title}</CardTitle>
-                  <CardDescription>
-                    {resource.type} • {resource.duration || "No duration"}
-                  </CardDescription>
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <CardTitle>{resource.title}</CardTitle>
+                      <CardDescription>
+                        {resource.type} • {resource.duration || "No duration"}
+                      </CardDescription>
+                    </div>
+                    {progress.completedResources.includes(resource.id) && (
+                      <Badge variant="success">
+                        <CheckCircle className="w-4 h-4 mr-1" />
+                        Completed
+                      </Badge>
+                    )}
+                  </div>
                 </CardHeader>
                 <CardContent>
-                  <ResourceViewer resource={resource} />
+                  <ResourceViewer 
+                    resource={resource} 
+                    onComplete={() => handleResourceComplete(resource.id)}
+                  />
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </TabsContent>
+
+        <TabsContent value="quizzes" className="mt-4">
+          <div className="space-y-4">
+            {module.quizzes.map((quiz) => (
+              <Card key={quiz.id}>
+                <CardContent className="pt-6">
+                  <QuizPlayer quiz={quiz} onComplete={handleQuizComplete} />
                 </CardContent>
               </Card>
             ))}
@@ -139,18 +223,6 @@ export const ModuleContent = ({ module }: { module: Module }) => {
                   <div className="mt-4">
                     <CodeEditor />
                   </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </TabsContent>
-
-        <TabsContent value="quizzes" className="mt-4">
-          <div className="space-y-4">
-            {module.quizzes.map((quiz) => (
-              <Card key={quiz.id}>
-                <CardContent className="pt-6">
-                  <QuizPlayer quiz={quiz} onComplete={handleQuizComplete} />
                 </CardContent>
               </Card>
             ))}
