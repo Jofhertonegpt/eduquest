@@ -32,16 +32,16 @@ const Learning = () => {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex items-center justify-center min-h-[calc(100vh-4rem)]">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8 min-h-[calc(100vh-4rem)]">
       <div className="flex flex-col space-y-6">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b">
           <h1 className="text-3xl font-bold">Learning</h1>
           <CurriculumSelector
             curricula={curricula}
@@ -50,11 +50,11 @@ const Learning = () => {
           />
         </div>
 
-        {curriculumId && (
+        {curriculumId ? (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            <div className="lg:col-span-4">
+            <div className="lg:col-span-4 glass-panel rounded-xl">
               <Tabs defaultValue="resources" className="w-full">
-                <TabsList className="w-full">
+                <TabsList className="w-full mb-4">
                   <TabsTrigger value="resources" className="flex items-center gap-2">
                     <BookOpen className="w-4 h-4" />
                     Resources
@@ -70,7 +70,7 @@ const Learning = () => {
                 </TabsList>
 
                 <TabsContent value="resources">
-                  <ScrollArea className="h-[600px]">
+                  <ScrollArea className="h-[calc(100vh-20rem)]">
                     <ModuleList
                       curriculumId={curriculumId}
                       type="resource"
@@ -80,7 +80,7 @@ const Learning = () => {
                 </TabsContent>
 
                 <TabsContent value="assignments">
-                  <ScrollArea className="h-[600px]">
+                  <ScrollArea className="h-[calc(100vh-20rem)]">
                     <ModuleList
                       curriculumId={curriculumId}
                       type="assignment"
@@ -90,7 +90,7 @@ const Learning = () => {
                 </TabsContent>
 
                 <TabsContent value="quizzes">
-                  <ScrollArea className="h-[600px]">
+                  <ScrollArea className="h-[calc(100vh-20rem)]">
                     <ModuleList
                       curriculumId={curriculumId}
                       type="quiz"
@@ -105,15 +105,16 @@ const Learning = () => {
               {selectedModule ? (
                 <ModuleContent module={selectedModule} />
               ) : (
-                <div className="flex items-center justify-center h-[600px] rounded-xl border p-8 text-muted-foreground">
-                  Select a module to begin learning
+                <div className="flex items-center justify-center h-[calc(100vh-20rem)] glass-panel rounded-xl p-8 text-muted-foreground">
+                  <div className="text-center">
+                    <BookOpen className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                    <p className="text-lg">Select a module to begin learning</p>
+                  </div>
                 </div>
               )}
             </div>
           </div>
-        )}
-
-        {!curriculumId && (
+        ) : (
           <div className="text-center py-12">
             <h2 className="text-2xl font-semibold mb-4">Welcome to Learning</h2>
             <p className="text-muted-foreground mb-8">
