@@ -1,13 +1,24 @@
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/lib/supabase";
+import { supabase } from "@/lib/supabase"; // Fixed import path
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
+
+interface Course {
+  id: string;
+  title: string;
+  description: string | null;
+  level: string | null;
+  metadata: {
+    duration?: string;
+  } | null;
+  created_at: string;
+}
 
 export const FeaturedCourses = () => {
   const { toast } = useToast();
   
-  const { data: courses, isLoading, error } = useQuery({
+  const { data: courses, isLoading, error } = useQuery<Course[]>({
     queryKey: ['featured-courses'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -37,7 +48,7 @@ export const FeaturedCourses = () => {
   }
 
   return (
-    <section className="py-20 bg-gradient-to-b from-white to-gray-50">
+    <section className="py-20 bg-gradient-to-b from-white to-gray-50 dark:from-background dark:to-background/80">
       <div className="container px-4 mx-auto">
         <div className="text-center mb-16">
           <h2 className="font-display text-4xl font-bold mb-4">Featured Courses</h2>
