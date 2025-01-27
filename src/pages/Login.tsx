@@ -1,13 +1,14 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useToast } from "@/components/ui/use-toast";
-import { LogIn, Mail, Lock } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { Mail, Lock } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/lib/supabase";
 
-const Login = () => {
+export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -18,36 +19,39 @@ const Login = () => {
     e.preventDefault();
     setIsLoading(true);
 
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
-    if (error) {
+      if (error) throw error;
+
       toast({
+        title: "Success",
+        description: "You have successfully logged in",
+      });
+
+      navigate("/dashboard");
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to login",
         variant: "destructive",
-        title: "Login failed",
-        description: error.message,
       });
-    } else if (data.user) {
-      toast({
-        title: "Login successful",
-        description: "Welcome back!",
-      });
-      navigate("/");
+    } finally {
+      setIsLoading(false);
     }
-
-    setIsLoading(false);
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4">
-      <div className="w-full max-w-md space-y-8">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold">Welcome back</h2>
-          <p className="text-muted-foreground mt-2">Sign in to your account</p>
+    <div className="container mx-auto flex h-screen items-center justify-center">
+      <Card className="w-full max-w-md p-8">
+        <div className="mb-8 text-center">
+          <h1 className="text-3xl font-bold">Welcome Back</h1>
+          <p className="text-muted-foreground">Please sign in to continue</p>
         </div>
-        
+
         <form onSubmit={handleLogin} className="space-y-6">
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
@@ -57,10 +61,11 @@ const Login = () => {
                 id="email"
                 type="email"
                 placeholder="Enter your email"
-                className="pl-10"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                className="pl-10"
                 required
+                autoComplete="email"
               />
             </div>
           </div>
@@ -73,29 +78,30 @@ const Login = () => {
                 id="password"
                 type="password"
                 placeholder="Enter your password"
-                className="pl-10"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                className="pl-10"
                 required
+                autoComplete="current-password"
               />
             </div>
           </div>
 
           <Button type="submit" className="w-full" disabled={isLoading}>
-            <LogIn className="mr-2 h-4 w-4" />
-            {isLoading ? "Signing in..." : "Sign in"}
+            {isLoading ? "Signing in..." : "Sign In"}
           </Button>
-        </form>
 
-        <p className="text-center text-sm text-muted-foreground">
-          Don't have an account?{" "}
-          <Link to="/signup" className="text-primary hover:underline">
-            Sign up
-          </Link>
-        </p>
-      </div>
+          <div className="text-center text-sm">
+            <Button
+              variant="link"
+              className="text-muted-foreground"
+              onClick={() => navigate("/signup")}
+            >
+              Don't have an account? Sign up
+            </Button>
+          </div>
+        </form>
+      </Card>
     </div>
   );
-};
-
-export default Login;
+}

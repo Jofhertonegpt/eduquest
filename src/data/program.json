@@ -13,7 +13,7 @@
     {
       "id": "year-1-interdisciplinary",
       "title": "Bachelor of Interdisciplinary Studies - Year 1",
-      "type": "undergraduate",
+      "type": "bachelors",
       "description": "First-year program combining philosophical thought, psychological insights, coding fundamentals, and neuroscience basics.",
       "requiredCredits": 32,
       "metadata": {
@@ -22,10 +22,38 @@
         "department": "Interdisciplinary Studies"
       },
       "courses": [
-        "intro-philosophy",
-        "psychology-personality",
-        "fullstack-webdev-101",
-        "intro-neuroscience"
+        {
+          "id": "intro-philosophy",
+          "title": "Introduction to Philosophy",
+          "description": "Core philosophical questions and critical thinking methods",
+          "credits": 4,
+          "level": "introductory",
+          "modules": []
+        },
+        {
+          "id": "psychology-personality",
+          "title": "Psychology: Personality & Transformations",
+          "description": "Understanding human personality and development",
+          "credits": 4,
+          "level": "introductory",
+          "modules": []
+        },
+        {
+          "id": "fullstack-webdev-101",
+          "title": "Full Stack Web Development 101",
+          "description": "Introduction to web development fundamentals",
+          "credits": 8,
+          "level": "introductory",
+          "modules": []
+        },
+        {
+          "id": "intro-neuroscience",
+          "title": "Introduction to Neuroscience",
+          "description": "Basic principles of brain function and neuroscience",
+          "credits": 4,
+          "level": "introductory",
+          "modules": []
+        }
       ]
     }
   ]
