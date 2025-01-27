@@ -714,13 +714,6 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "fk_school_posts_profiles"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "school_posts_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
