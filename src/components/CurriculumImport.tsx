@@ -4,27 +4,47 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { validateAndTransformCurriculum } from "@/lib/curriculumValidation";
 import { supabase } from "@/lib/supabase";
 import defaultCurriculum from "@/data/curriculum/program.json";
+import defaultCourses from "@/data/curriculum/courses.json";
+import defaultModules from "@/data/curriculum/modules.json";
+import defaultQuizzes from "@/data/curriculum/quizzes.json";
+import defaultAssignments from "@/data/curriculum/assignments.json";
+import defaultResources from "@/data/curriculum/resources.json";
+import { CurriculumFormatInfo } from "@/components/learning/CurriculumFormatInfo";
 import type { Json } from "@/lib/database.types";
-import type { Curriculum } from "@/types/curriculum";
+
+interface JsonInputs {
+  curriculum: string;
+  courses: string;
+  modules: string;
+  quizzes: string;
+  assignments: string;
+  resources: string;
+}
 
 export function CurriculumImport() {
   const [isLoading, setIsLoading] = useState(false);
-  const [jsonInput, setJsonInput] = useState("");
+  const [jsonInputs, setJsonInputs] = useState<JsonInputs>({
+    curriculum: "",
+    courses: "",
+    modules: "",
+    quizzes: "",
+    assignments: "",
+    resources: "",
+  });
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Check authentication status when component mounts
     supabase.auth.getSession().then(({ data: { session } }) => {
       setIsAuthenticated(!!session);
     });
 
-    // Subscribe to auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setIsAuthenticated(!!session);
     });
@@ -32,7 +52,36 @@ export function CurriculumImport() {
     return () => subscription.unsubscribe();
   }, []);
 
-  const handleImport = async (curriculumData?: any) => {
+  const handleInputChange = (field: keyof JsonInputs, value: string) => {
+    setJsonInputs(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const mergeCurriculumData = () => {
+    try {
+      const curriculumData = jsonInputs.curriculum ? JSON.parse(jsonInputs.curriculum) : {};
+      const coursesData = jsonInputs.courses ? JSON.parse(jsonInputs.courses) : [];
+      const modulesData = jsonInputs.modules ? JSON.parse(jsonInputs.modules) : [];
+      const quizzesData = jsonInputs.quizzes ? JSON.parse(jsonInputs.quizzes) : [];
+      const assignmentsData = jsonInputs.assignments ? JSON.parse(jsonInputs.assignments) : [];
+      const resourcesData = jsonInputs.resources ? JSON.parse(jsonInputs.resources) : [];
+
+      return {
+        ...curriculumData,
+        courses: coursesData,
+        modules: modulesData,
+        quizzes: quizzesData,
+        assignments: assignmentsData,
+        resources: resourcesData,
+      };
+    } catch (error) {
+      throw new Error("Invalid JSON format in one or more inputs");
+    }
+  };
+
+  const handleImport = async (useDefault?: boolean) => {
     try {
       if (!isAuthenticated) {
         toast({
@@ -46,20 +95,27 @@ export function CurriculumImport() {
 
       setIsLoading(true);
       
-      // Use provided data or parse JSON input
-      const dataToImport = curriculumData || JSON.parse(jsonInput);
-      const validatedCurriculum = validateAndTransformCurriculum(dataToImport);
-
-      // Get current user
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        throw new Error("Not authenticated");
+      let dataToImport;
+      if (useDefault) {
+        dataToImport = {
+          ...defaultCurriculum,
+          courses: defaultCourses,
+          modules: defaultModules,
+          quizzes: defaultQuizzes,
+          assignments: defaultAssignments,
+          resources: defaultResources,
+        };
+      } else {
+        dataToImport = mergeCurriculumData();
       }
 
-      // Convert curriculum to JSON type expected by Supabase
+      const validatedCurriculum = validateAndTransformCurriculum(dataToImport);
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) throw new Error("Not authenticated");
+
       const curriculumJson: Json = validatedCurriculum as unknown as Json;
 
-      // Insert curriculum
       const { data, error } = await supabase
         .from("imported_curricula")
         .insert({
@@ -77,7 +133,6 @@ export function CurriculumImport() {
         description: "Curriculum imported successfully",
       });
 
-      // Navigate to the learning page with the new curriculum ID
       navigate(`/learning/${data.id}`);
     } catch (error) {
       console.error("Import error:", error);
@@ -91,33 +146,48 @@ export function CurriculumImport() {
     }
   };
 
-  const handleUseDefault = () => {
-    handleImport(defaultCurriculum);
-  };
-
   return (
     <Card className="p-6">
       <div className="space-y-4">
-        <div className="space-y-2">
-          <Label htmlFor="curriculum-json">Curriculum JSON</Label>
-          <Textarea
-            id="curriculum-json"
-            placeholder="Paste your curriculum JSON here..."
-            value={jsonInput}
-            onChange={(e) => setJsonInput(e.target.value)}
-            className="min-h-[200px]"
-          />
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-lg font-semibold">Import Curriculum</h2>
+          <CurriculumFormatInfo />
         </div>
+
+        <Tabs defaultValue="curriculum" className="w-full">
+          <TabsList className="grid grid-cols-3 lg:grid-cols-6 w-full">
+            <TabsTrigger value="curriculum">Curriculum</TabsTrigger>
+            <TabsTrigger value="courses">Courses</TabsTrigger>
+            <TabsTrigger value="modules">Modules</TabsTrigger>
+            <TabsTrigger value="quizzes">Quizzes</TabsTrigger>
+            <TabsTrigger value="assignments">Assignments</TabsTrigger>
+            <TabsTrigger value="resources">Resources</TabsTrigger>
+          </TabsList>
+
+          {Object.keys(jsonInputs).map((key) => (
+            <TabsContent key={key} value={key} className="space-y-2">
+              <Label htmlFor={`${key}-json`} className="capitalize">{key} JSON</Label>
+              <Textarea
+                id={`${key}-json`}
+                placeholder={`Paste your ${key} JSON here...`}
+                value={jsonInputs[key as keyof JsonInputs]}
+                onChange={(e) => handleInputChange(key as keyof JsonInputs, e.target.value)}
+                className="min-h-[200px]"
+              />
+            </TabsContent>
+          ))}
+        </Tabs>
+
         <div className="flex gap-4">
           <Button 
             onClick={() => handleImport()} 
-            disabled={isLoading || !jsonInput}
+            disabled={isLoading || !jsonInputs.curriculum}
             className="flex-1"
           >
             {isLoading ? "Importing..." : "Import Custom Curriculum"}
           </Button>
           <Button 
-            onClick={handleUseDefault}
+            onClick={() => handleImport(true)}
             disabled={isLoading}
             variant="secondary"
             className="flex-1"
