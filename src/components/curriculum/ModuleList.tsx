@@ -4,9 +4,10 @@ import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BookOpen, FileText, CheckCircle } from "lucide-react";
+import { BookOpen, FileText, CheckCircle, Clock, Tag } from "lucide-react";
 import type { Module } from "@/types/curriculum";
 import { useCurriculumQueries } from "@/hooks/useCurriculumQueries";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface ModuleListProps {
   curriculumId: string;
@@ -14,19 +15,30 @@ interface ModuleListProps {
   onModuleSelect: (module: Module) => void;
 }
 
+const ModuleListSkeleton = () => (
+  <div className="space-y-4">
+    {[1, 2, 3].map((i) => (
+      <div key={i} className="p-4 border rounded-lg">
+        <Skeleton className="h-6 w-3/4 mb-2" />
+        <Skeleton className="h-4 w-full mb-4" />
+        <div className="flex gap-2">
+          <Skeleton className="h-6 w-16" />
+          <Skeleton className="h-6 w-16" />
+        </div>
+      </div>
+    ))}
+  </div>
+);
+
 export const ModuleList = ({ curriculumId, type, onModuleSelect }: ModuleListProps) => {
   const { modules, modulesLoading, prefetchModuleContent } = useCurriculumQueries(curriculumId);
 
   if (modulesLoading) {
-    return (
-      <div className="flex items-center justify-center p-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-      </div>
-    );
+    return <ModuleListSkeleton />;
   }
 
-  const filterModulesByType = (modules: any[], type: string) => {
-    return modules?.filter(m => m.module_type === type) || [];
+  const filterModulesByType = (modules: any[], moduleType: string) => {
+    return modules?.filter(m => m.module_type === moduleType) || [];
   };
 
   return (
@@ -84,8 +96,11 @@ ModuleList.Content = function ModuleListContent({
 }) {
   if (!modules?.length) {
     return (
-      <div className="p-4 text-center text-muted-foreground">
-        No modules available
+      <div className="p-8 text-center text-muted-foreground">
+        <div className="mb-4">
+          <FileText className="w-12 h-12 mx-auto opacity-50" />
+        </div>
+        <p className="text-sm">No modules available</p>
       </div>
     );
   }
@@ -96,11 +111,11 @@ ModuleList.Content = function ModuleListContent({
         {modules.map((module) => (
           <Card 
             key={module.content.id} 
-            className="p-4 hover:bg-accent cursor-pointer transition-colors"
+            className="p-4 hover:bg-accent cursor-pointer transition-all duration-200 hover:shadow-md"
             onClick={() => onModuleSelect(module.content)}
             onMouseEnter={() => onModuleHover(module.content.id)}
           >
-            <h3 className="text-lg font-semibold">
+            <h3 className="text-lg font-semibold group-hover:text-primary transition-colors">
               {module.content.title || "Untitled Module"}
             </h3>
             <p className="text-sm text-muted-foreground mb-2">
@@ -108,12 +123,14 @@ ModuleList.Content = function ModuleListContent({
             </p>
             <div className="flex flex-wrap gap-2">
               {module.content.metadata?.estimatedTime && (
-                <Badge variant="outline">
+                <Badge variant="outline" className="flex items-center gap-1">
+                  <Clock className="w-3 h-3" />
                   {module.content.metadata.estimatedTime} mins
                 </Badge>
               )}
               {module.content.metadata?.tags?.map((tag: string) => (
-                <Badge key={tag} variant="secondary">
+                <Badge key={tag} variant="secondary" className="flex items-center gap-1">
+                  <Tag className="w-3 h-3" />
                   {tag}
                 </Badge>
               ))}
