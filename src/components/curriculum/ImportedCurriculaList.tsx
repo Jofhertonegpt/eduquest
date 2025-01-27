@@ -21,6 +21,8 @@ export const ImportedCurriculaList = () => {
   const { curricula, isLoading, deleteCurriculum } = useCurriculum();
   const navigate = useNavigate();
 
+  console.log("Curricula data:", curricula);
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center p-8">
@@ -50,7 +52,9 @@ export const ImportedCurriculaList = () => {
             <CardHeader className="p-4">
               <div className="flex items-start justify-between">
                 <div className="space-y-1">
-                  <CardTitle className="text-lg">{curr.curriculum.name}</CardTitle>
+                  <CardTitle className="text-lg">
+                    {curr.curriculum.name || "Untitled Curriculum"}
+                  </CardTitle>
                   <CardDescription className="flex items-center gap-1">
                     <Clock className="w-3 h-3" />
                     {format(new Date(curr.created_at), "PPP")}

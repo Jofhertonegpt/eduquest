@@ -68,6 +68,15 @@ export function CurriculumImport() {
       const assignmentsData = jsonInputs.assignments ? JSON.parse(jsonInputs.assignments) : [];
       const resourcesData = jsonInputs.resources ? JSON.parse(jsonInputs.resources) : [];
 
+      console.log("Merged curriculum data:", {
+        ...curriculumData,
+        courses: coursesData,
+        modules: modulesData,
+        quizzes: quizzesData,
+        assignments: assignmentsData,
+        resources: resourcesData,
+      });
+
       return {
         ...curriculumData,
         courses: coursesData,
@@ -77,6 +86,7 @@ export function CurriculumImport() {
         resources: resourcesData,
       };
     } catch (error) {
+      console.error("Error merging curriculum data:", error);
       throw new Error("Invalid JSON format in one or more inputs");
     }
   };
@@ -105,28 +115,34 @@ export function CurriculumImport() {
           assignments: defaultAssignments,
           resources: defaultResources,
         };
+        console.log("Using default curriculum:", dataToImport);
       } else {
         dataToImport = mergeCurriculumData();
       }
 
       const validatedCurriculum = validateAndTransformCurriculum(dataToImport);
+      console.log("Validated curriculum:", validatedCurriculum);
+
       const { data: { user } } = await supabase.auth.getUser();
       
       if (!user) throw new Error("Not authenticated");
-
-      const curriculumJson: Json = validatedCurriculum as unknown as Json;
 
       const { data, error } = await supabase
         .from("imported_curricula")
         .insert({
           user_id: user.id,
-          curriculum: curriculumJson,
+          curriculum: validatedCurriculum as Json,
           created_at: new Date().toISOString(),
         })
         .select()
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error("Supabase error:", error);
+        throw error;
+      }
+
+      console.log("Imported curriculum data:", data);
 
       toast({
         title: "Success",
