@@ -3,12 +3,10 @@ import { ProtectedRoute } from "@/components/routes/ProtectedRoute";
 import Navigation from "@/components/Navigation";
 import Dashboard from "@/pages/Dashboard";
 import Import from "@/pages/Import";
-import Learning from "@/pages/Learning";
 import Profile from "@/pages/Profile";
 import Settings from "@/pages/Settings";
 import Login from "@/pages/Login";
 import Signup from "@/pages/Signup";
-import JoinSchool from "@/pages/JoinSchool";
 import Creator from "@/pages/Creator";
 
 export const AppRoutes = () => {
@@ -66,18 +64,6 @@ export const AppRoutes = () => {
       />
 
       <Route
-        path="/learning"
-        element={
-          <ProtectedRoute>
-            <>
-              <Navigation />
-              <Learning />
-            </>
-          </ProtectedRoute>
-        }
-      />
-
-      <Route
         path="/profile"
         element={
           <ProtectedRoute>
@@ -101,7 +87,6 @@ export const AppRoutes = () => {
         }
       />
 
-      <Route path="/join-school" element={<JoinSchool />} />
       <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   );
