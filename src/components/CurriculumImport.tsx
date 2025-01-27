@@ -7,6 +7,7 @@ import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { validateAndTransformCurriculum } from "@/lib/curriculumValidation";
 import { supabase } from "@/integrations/supabase/client";
+import programData from "@/data/program.json";
 import type { Json } from "@/lib/database.types";
 import type { Curriculum } from "@/types/curriculum";
 
@@ -16,13 +17,13 @@ export function CurriculumImport() {
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  const handleImport = async () => {
+  const handleImport = async (curriculumData: any = null) => {
     try {
       setIsLoading(true);
       
-      // Parse and validate JSON input
-      const curriculumData = JSON.parse(jsonInput);
-      const validatedCurriculum = validateAndTransformCurriculum(curriculumData);
+      // Use provided data or parse JSON input
+      const dataToImport = curriculumData || JSON.parse(jsonInput);
+      const validatedCurriculum = validateAndTransformCurriculum(dataToImport);
 
       // Get current user
       const { data: { user } } = await supabase.auth.getUser();
@@ -65,6 +66,10 @@ export function CurriculumImport() {
     }
   };
 
+  const handleUseDefault = () => {
+    handleImport(programData);
+  };
+
   return (
     <Card className="p-6">
       <div className="space-y-4">
@@ -78,13 +83,23 @@ export function CurriculumImport() {
             className="min-h-[200px]"
           />
         </div>
-        <Button 
-          onClick={handleImport} 
-          disabled={isLoading}
-          className="w-full"
-        >
-          {isLoading ? "Importing..." : "Import Curriculum"}
-        </Button>
+        <div className="flex gap-4">
+          <Button 
+            onClick={() => handleImport()} 
+            disabled={isLoading || !jsonInput}
+            className="flex-1"
+          >
+            {isLoading ? "Importing..." : "Import Custom Curriculum"}
+          </Button>
+          <Button 
+            onClick={handleUseDefault}
+            disabled={isLoading}
+            variant="secondary"
+            className="flex-1"
+          >
+            Use Default Curriculum
+          </Button>
+        </div>
       </div>
     </Card>
   );
