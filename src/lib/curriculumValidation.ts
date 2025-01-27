@@ -148,7 +148,7 @@ export const validateAndTransformCurriculum = (rawData: any): Curriculum => {
     degrees: data.degrees.map(degree => ({
       id: degree.id || crypto.randomUUID(),
       title: degree.title,
-      type: degree.type as any, // Allow any string type for degree type
+      type: degree.type,
       description: degree.description,
       requiredCredits: degree.requiredCredits,
       courses: degree.courses.map(course => {
@@ -159,17 +159,17 @@ export const validateAndTransformCurriculum = (rawData: any): Curriculum => {
             title: '',
             description: '',
             credits: 0,
-            level: 'introductory',
+            level: 'introductory' as const,
             modules: []
           };
         }
-        // If it's already a course object, use it directly
+        // If it's already a course object, ensure level is a valid CourseLevel
         return {
           id: course.id,
           title: course.title,
           description: course.description,
           credits: course.credits,
-          level: course.level,
+          level: course.level as 'introductory' | 'intermediate' | 'advanced',
           modules: course.modules || []
         };
       })

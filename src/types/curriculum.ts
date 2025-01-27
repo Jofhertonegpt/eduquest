@@ -2,6 +2,7 @@ export type DegreeType = 'associates' | 'bachelors' | 'masters' | 'doctorate' | 
 
 export type DifficultyLevel = 'beginner' | 'intermediate' | 'advanced' | 'expert';
 export type ResourceType = 'video' | 'pdf' | 'epub' | 'article' | 'document' | 'code';
+export type CourseLevel = 'introductory' | 'intermediate' | 'advanced';
 
 export interface Resource {
   id: string;
@@ -143,7 +144,7 @@ export interface Course {
   title: string;
   description: string;
   credits: number;
-  level: 'introductory' | 'intermediate' | 'advanced';
+  level: CourseLevel;
   modules: Module[];
 }
 

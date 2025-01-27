@@ -1,15 +1,15 @@
-import { z } from "zod";
 import CryptoJS from 'crypto-js';
+import { z } from 'zod';
 
-const ENCRYPTION_KEY = 'your-secret-key'; // In production, this should be an environment variable
+const ENCRYPTION_KEY = 'your-secret-key'; // Replace with environment variable
 
-export const encryptData = (data: string): string => {
-  return CryptoJS.AES.encrypt(data, ENCRYPTION_KEY).toString();
+export const encryptData = (data: any): string => {
+  return CryptoJS.AES.encrypt(JSON.stringify(data), ENCRYPTION_KEY).toString();
 };
 
-export const decryptData = (encryptedData: string): string => {
+export const decryptData = (encryptedData: string): any => {
   const bytes = CryptoJS.AES.decrypt(encryptedData, ENCRYPTION_KEY);
-  return bytes.toString(CryptoJS.enc.Utf8);
+  return JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
 };
 
 // Define a more flexible schema that accepts both string IDs and full course objects
@@ -19,18 +19,18 @@ export const curriculumSchema = z.object({
   degrees: z.array(z.object({
     id: z.string(),
     title: z.string(),
-    type: z.string(), // Accept any string for degree type
+    type: z.string(),
     description: z.string(),
     requiredCredits: z.number(),
     courses: z.array(
       z.union([
-        z.string(), // Allow string course IDs
-        z.object({ // Allow full course objects
+        z.string(),
+        z.object({
           id: z.string(),
           title: z.string(),
           description: z.string(),
           credits: z.number(),
-          level: z.string(),
+          level: z.enum(['introductory', 'intermediate', 'advanced']),
           modules: z.array(z.any()).optional()
         })
       ])
