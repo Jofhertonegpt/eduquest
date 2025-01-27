@@ -6,8 +6,8 @@ import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { validateAndTransformCurriculum } from "@/lib/curriculumValidation";
-import { supabase } from "@/integrations/supabase/client";
-import programData from "@/data/program.json";
+import { supabase } from "@/lib/supabase";
+import defaultCurriculum from "@/data/curriculum/program.json";
 import type { Json } from "@/lib/database.types";
 import type { Curriculum } from "@/types/curriculum";
 
@@ -17,7 +17,7 @@ export function CurriculumImport() {
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  const handleImport = async (curriculumData: any = null) => {
+  const handleImport = async (curriculumData?: any) => {
     try {
       setIsLoading(true);
       
@@ -67,7 +67,7 @@ export function CurriculumImport() {
   };
 
   const handleUseDefault = () => {
-    handleImport(programData);
+    handleImport(defaultCurriculum);
   };
 
   return (
