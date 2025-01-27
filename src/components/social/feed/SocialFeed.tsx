@@ -1,158 +1,41 @@
-import { useQuery } from "@tanstack/react-query";
-import { useEffect } from "react";
-import { supabase } from "@/lib/supabase";
-import { PostCard } from "@/components/social/post/PostCard";
-import { CreatePost } from "@/components/social/post/CreatePost";
-import { toast } from "@/hooks/use-toast";
+import { useEffect, useState } from 'react';
+import { usePostFeed } from '@/hooks/usePostFeed';
+import { PostCard } from '../post/PostCard';
+import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/lib/supabase';
+import type { Profile } from '@/types/social';
 
-export const SocialFeed = () => {
-  const { data: posts, isLoading, refetch } = useQuery({
-    queryKey: ["social-posts"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("social_posts")
-        .select(`
-          id,
-          content,
-          created_at,
-          media_urls,
-          media_metadata,
-          hashtags,
-          likes_count,
-          comments_count,
-          shares_count,
-          user_id,
-          profiles:profiles!user_id (
-            full_name,
-            avatar_url
-          ),
-          likes:social_likes(user_id),
-          bookmarks:social_bookmarks(user_id),
-          comments:social_comments(
-            id,
-            content,
-            created_at,
-            user_id,
-            profiles (
-              full_name,
-              avatar_url
-            )
-          )
-        `)
-        .order("created_at", { ascending: false });
+interface Post {
+  id: string;
+  content: string;
+  created_at: string;
+  user_id: string;
+  media_urls: string[];
+  likes_count: number;
+  comments_count: number;
+  profiles?: Profile;
+  comments?: Array<{
+    id: string;
+    content: string;
+    created_at: string;
+    profiles?: Profile;
+  }>;
+  likes?: Array<{ user_id: string }>;
+  bookmarks?: Array<{ user_id: string }>;
+}
 
-      if (error) throw error;
-      
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      return data.map(post => ({
-        id: post.id,
-        content: post.content,
-        created_at: post.created_at,
-        media_urls: post.media_urls || [],
-        media_metadata: post.media_metadata || [],
-        hashtags: post.hashtags || [],
-        likes_count: post.likes_count || 0,
-        comments_count: post.comments_count || 0,
-        shares_count: post.shares_count || 0,
-        user_id: post.user_id,
-        profiles: {
-          full_name: post.profiles?.full_name || 'Anonymous',
-          avatar_url: post.profiles?.avatar_url || ''
-        },
-        comments: (post.comments || []).map(comment => ({
-          ...comment,
-          profiles: {
-            full_name: comment.profiles?.full_name || 'Anonymous',
-            avatar_url: comment.profiles?.avatar_url || ''
-          }
-        })),
-        is_liked: post.likes?.some(like => like.user_id === user?.id) || false,
-        is_bookmarked: post.bookmarks?.some(bookmark => bookmark.user_id === user?.id) || false
-      }));
-    },
-  });
+export function SocialFeed() {
+  const { data: posts, isLoading } = usePostFeed();
+  const [user, setUser] = useState<{ id: string } | null>(null);
+  const { toast } = useToast();
 
   useEffect(() => {
-    const channel = supabase
-      .channel('public:social_posts')
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'social_posts' },
-        () => {
-          console.log('Posts changed, refreshing feed...');
-          refetch();
-        }
-      )
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'social_likes' },
-        () => {
-          console.log('Likes changed, refreshing feed...');
-          refetch();
-        }
-      )
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'social_comments' },
-        () => {
-          console.log('Comments changed, refreshing feed...');
-          refetch();
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
+    const getUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUser(user);
     };
-  }, [refetch]);
-
-  const handleLike = async (postId: string, isLiked: boolean) => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      toast({
-        title: "Error",
-        description: "You must be logged in to like posts",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    if (isLiked) {
-      const { error } = await supabase
-        .from("social_likes")
-        .delete()
-        .match({ post_id: postId, user_id: user.id });
-
-      if (error) {
-        console.error("Error unliking post:", error);
-        toast({
-          title: "Error",
-          description: "Failed to unlike post",
-          variant: "destructive",
-        });
-        return;
-      }
-    } else {
-      const { error } = await supabase
-        .from("social_likes")
-        .insert({ post_id: postId, user_id: user.id });
-
-      if (error) {
-        console.error("Error liking post:", error);
-        toast({
-          title: "Error",
-          description: "Failed to like post",
-          variant: "destructive",
-        });
-        return;
-      }
-    }
-  };
-
-  const handleComment = async (postId: string) => {
-    console.log("Comment on post:", postId);
-  };
+    getUser();
+  }, []);
 
   if (isLoading) {
     return (
@@ -162,18 +45,28 @@ export const SocialFeed = () => {
     );
   }
 
+  const transformedPosts = posts?.map(post => ({
+    ...post,
+    profiles: {
+      full_name: post.profiles?.full_name || 'Anonymous',
+      avatar_url: post.profiles?.avatar_url || ''
+    },
+    comments: (post.comments || []).map(comment => ({
+      ...comment,
+      profiles: {
+        full_name: comment.profiles?.full_name || 'Anonymous',
+        avatar_url: comment.profiles?.avatar_url || ''
+      }
+    })),
+    is_liked: post.likes?.some(like => like.user_id === user?.id) || false,
+    is_bookmarked: post.bookmarks?.some(bookmark => bookmark.user_id === user?.id) || false
+  }));
+
   return (
     <div className="space-y-6">
-      <CreatePost onSuccess={() => refetch()} />
-      {posts?.map((post) => (
-        <PostCard
-          key={post.id}
-          post={post}
-          onLike={() => handleLike(post.id, post.is_liked)}
-          onComment={() => handleComment(post.id)}
-          isLikeLoading={false}
-        />
+      {transformedPosts?.map((post) => (
+        <PostCard key={post.id} post={post} currentUser={user} />
       ))}
     </div>
   );
-};
+}
