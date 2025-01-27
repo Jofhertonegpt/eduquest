@@ -1,7 +1,6 @@
 import { motion } from "framer-motion";
 import { HeroButton } from "./HeroButton";
 import { useNavigate } from "react-router-dom";
-import type { HeroProps } from "@/types/home";
 
 export const Hero = ({ 
   title = "Transform Your Learning Journey",
@@ -15,7 +14,7 @@ export const Hero = ({
   };
 
   const handleLearnMore = () => {
-    const featuredSection = document.querySelector("#featured-courses");
+    const featuredSection = document.getElementById("featured-courses");
     if (featuredSection) {
       featuredSection.scrollIntoView({ behavior: "smooth" });
     }
@@ -39,14 +38,19 @@ export const Hero = ({
           <p className="text-lg md:text-xl text-muted-foreground mb-8 text-balance">
             {description}
           </p>
-          <div className="flex flex-wrap gap-4 justify-center">
-            <HeroButton variant="primary" onClick={handleGetStarted}>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3 }}
+            className="flex flex-wrap gap-4 justify-center"
+          >
+            <HeroButton onClick={handleGetStarted}>
               Get Started
             </HeroButton>
             <HeroButton variant="secondary" onClick={handleLearnMore}>
               Learn More
             </HeroButton>
-          </div>
+          </motion.div>
         </motion.div>
       </div>
       <div className="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent" />
