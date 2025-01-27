@@ -36,7 +36,8 @@ export default defineConfig(({ mode }) => ({
   },
   plugins: [
     react({
-      jsxRuntime: 'automatic'
+      jsxImportSource: 'react',
+      plugins: [['@swc/plugin-react-refresh']],
     }),
     mode === 'development' && componentTagger(),
   ].filter(Boolean),
