@@ -38,14 +38,14 @@ export function ProgramList({ onProgramSelect }: ProgramListProps) {
                 <p className="text-muted-foreground mt-2">{program.description}</p>
               </div>
               
-              {program.program_outcomes && program.program_outcomes.length > 0 && (
+              {program.programOutcomes && program.programOutcomes.length > 0 && (
                 <div>
                   <h4 className="font-medium mb-2 flex items-center gap-2">
                     <Target className="h-4 w-4" />
                     Program Outcomes
                   </h4>
                   <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
-                    {program.program_outcomes.map((outcome, index) => (
+                    {program.programOutcomes.map((outcome, index) => (
                       <li key={index}>{outcome}</li>
                     ))}
                   </ul>

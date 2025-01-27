@@ -60,7 +60,13 @@ export const SocialFeed = () => {
           full_name: post.profiles?.full_name || 'Anonymous',
           avatar_url: post.profiles?.avatar_url || ''
         },
-        comments: post.comments || [],
+        comments: (post.comments || []).map(comment => ({
+          ...comment,
+          profiles: {
+            full_name: comment.profiles?.full_name || 'Anonymous',
+            avatar_url: comment.profiles?.avatar_url || ''
+          }
+        })),
         is_liked: post.likes?.some(like => like.user_id === user?.id) || false,
         is_bookmarked: post.bookmarks?.some(bookmark => bookmark.user_id === user?.id) || false
       }));
