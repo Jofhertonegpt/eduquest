@@ -2,6 +2,8 @@ import { usePrograms } from '@/hooks/useCurriculum';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Badge } from '@/components/ui/badge';
+import { GraduationCap, Book, Target } from 'lucide-react';
 import type { ProgramInfo } from '@/types/curriculum-types';
 
 interface ProgramListProps {
@@ -20,33 +22,47 @@ export function ProgramList({ onProgramSelect }: ProgramListProps) {
   }
 
   return (
-    <ScrollArea className="h-[600px] rounded-md border p-4">
-      <div className="space-y-4">
+    <ScrollArea className="h-[calc(100vh-12rem)] rounded-md border">
+      <div className="p-4 space-y-4">
         {programs?.map((program) => (
           <Card 
             key={program.id}
-            className="p-4 hover:bg-accent cursor-pointer transition-colors"
-            onClick={() => onProgramSelect(program)}
+            className="p-6 hover:bg-accent cursor-pointer transition-colors"
           >
-            <h3 className="text-lg font-semibold">{program.name}</h3>
-            <p className="text-sm text-muted-foreground mb-4">{program.description}</p>
-            
-            {program.programOutcomes.length > 0 && (
-              <div className="mb-4">
-                <h4 className="font-medium mb-2">Program Outcomes:</h4>
-                <ul className="list-disc list-inside text-sm text-muted-foreground">
-                  {program.programOutcomes.map((outcome, index) => (
-                    <li key={index}>{outcome}</li>
-                  ))}
-                </ul>
+            <div className="flex flex-col space-y-4">
+              <div>
+                <h3 className="text-xl font-semibold flex items-center gap-2">
+                  <GraduationCap className="h-5 w-5" />
+                  {program.name}
+                </h3>
+                <p className="text-muted-foreground mt-2">{program.description}</p>
               </div>
-            )}
+              
+              {program.program_outcomes && program.program_outcomes.length > 0 && (
+                <div>
+                  <h4 className="font-medium mb-2 flex items-center gap-2">
+                    <Target className="h-4 w-4" />
+                    Program Outcomes
+                  </h4>
+                  <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
+                    {program.program_outcomes.map((outcome, index) => (
+                      <li key={index}>{outcome}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
 
-            <div className="flex items-center justify-between mt-4">
-              <span className="text-sm text-muted-foreground">{program.institution}</span>
-              <Button variant="outline" onClick={() => onProgramSelect(program)}>
-                View Program
-              </Button>
+              <div className="flex items-center justify-between mt-4">
+                <div className="flex items-center gap-2">
+                  <Badge variant="secondary" className="flex items-center gap-1">
+                    <Book className="h-3 w-3" />
+                    {program.institution}
+                  </Badge>
+                </div>
+                <Button onClick={() => onProgramSelect(program)}>
+                  View Program
+                </Button>
+              </div>
             </div>
           </Card>
         ))}

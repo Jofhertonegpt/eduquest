@@ -20,15 +20,11 @@ export function useDegrees(programId?: string) {
   return useQuery({
     queryKey: ['degrees', programId],
     queryFn: async () => {
-      const query = supabase
+      const { data, error } = await supabase
         .from('degrees')
-        .select('*');
+        .select('*')
+        .eq('program_id', programId);
       
-      if (programId) {
-        query.eq('program_id', programId);
-      }
-      
-      const { data, error } = await query;
       if (error) throw error;
       return data as Degree[];
     },
@@ -40,15 +36,11 @@ export function useCourses(degreeId?: string) {
   return useQuery({
     queryKey: ['courses', degreeId],
     queryFn: async () => {
-      const query = supabase
+      const { data, error } = await supabase
         .from('courses')
-        .select('*');
+        .select('*')
+        .eq('degree_id', degreeId);
       
-      if (degreeId) {
-        query.eq('degree_id', degreeId);
-      }
-      
-      const { data, error } = await query;
       if (error) throw error;
       return data as Course[];
     },
@@ -60,15 +52,11 @@ export function useModules(courseId?: string) {
   return useQuery({
     queryKey: ['modules', courseId],
     queryFn: async () => {
-      const query = supabase
+      const { data, error } = await supabase
         .from('course_modules')
-        .select('*');
+        .select('*')
+        .eq('course_id', courseId);
       
-      if (courseId) {
-        query.eq('course_id', courseId);
-      }
-      
-      const { data, error } = await query;
       if (error) throw error;
       return data as CourseModule[];
     },
