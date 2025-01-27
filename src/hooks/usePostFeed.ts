@@ -1,36 +1,32 @@
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/lib/supabase";
-import { Post, PostListType } from "@/types/social";
-import { toast } from "@/hooks/use-toast";
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/lib/supabase';
+import type { Post } from '@/types/social';
 
-export const usePostFeed = (type: PostListType, userId?: string) => {
+type FeedType = "for-you" | "following" | "media" | "likes";
+
+export const usePostFeed = (type: FeedType = "for-you", userId?: string) => {
   return useQuery({
-    queryKey: ["posts", type, userId],
+    queryKey: ['posts', type, userId],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
+      if (!user) throw new Error('Not authenticated');
 
       let query = supabase
-        .from("social_posts")
+        .from('social_posts')
         .select(`
           *,
-          profiles:profiles!user_id (
-            full_name,
-            avatar_url
-          ),
-          likes:social_likes(user_id),
-          comments:social_comments(id),
-          bookmarks:social_bookmarks(user_id)
+          profiles:user_id(*),
+          likes:social_likes(*),
+          comments:social_comments(*),
+          bookmarks:social_bookmarks(*)
         `)
-        .order("created_at", { ascending: false });
+        .order('created_at', { ascending: false });
 
-      if (userId) {
-        query = query.eq("user_id", userId);
-      } else if (type === "following") {
+      if (type === "following") {
         const { data: following } = await supabase
-          .from("social_follows")
-          .select("following_id")
-          .eq("follower_id", user.id);
+          .from('social_follows')
+          .select('following_id')
+          .eq('follower_id', userId || user.id);
         
         const followingIds = following?.map(f => f.following_id) || [];
         query = query.in("user_id", [user.id, ...followingIds]);

@@ -138,10 +138,12 @@ export const PostCard = ({
 
       <p className="whitespace-pre-wrap break-words">{post.content}</p>
 
-      <PostMedia 
-        mediaUrls={post.media_urls || []}
-        mediaMetadata={post.media_metadata}
-      />
+      {post.media_urls && post.media_urls.length > 0 && (
+        <PostMedia 
+          mediaUrls={post.media_urls}
+          mediaMetadata={post.media_metadata}
+        />
+      )}
 
       <PostActions
         isLiked={post.is_liked}
