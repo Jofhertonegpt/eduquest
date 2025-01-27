@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -14,11 +14,36 @@ import type { Curriculum } from "@/types/curriculum";
 export function CurriculumImport() {
   const [isLoading, setIsLoading] = useState(false);
   const [jsonInput, setJsonInput] = useState("");
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
 
+  useEffect(() => {
+    // Check authentication status when component mounts
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setIsAuthenticated(!!session);
+    });
+
+    // Subscribe to auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setIsAuthenticated(!!session);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
   const handleImport = async (curriculumData?: any) => {
     try {
+      if (!isAuthenticated) {
+        toast({
+          title: "Authentication Required",
+          description: "Please log in to import a curriculum",
+          variant: "destructive",
+        });
+        navigate("/login", { state: { returnTo: "/import" } });
+        return;
+      }
+
       setIsLoading(true);
       
       // Use provided data or parse JSON input
