@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { HeroButton } from "./HeroButton";
 import { useNavigate } from "react-router-dom";
+import type { HeroProps } from "@/types/home";
 
 export const Hero = ({ 
   title = "Transform Your Learning Journey",
