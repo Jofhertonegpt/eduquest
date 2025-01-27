@@ -12,6 +12,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import type { Curriculum } from "@/types/curriculum";
 
 interface Props {
@@ -103,91 +109,105 @@ const CurriculumImport = ({ onImport }: Props) => {
   const renderFileUpload = (fileType: keyof CurriculumFiles, label: string) => {
     const fileState = files[fileType];
     return (
-      <div 
-        className={`border-2 border-dashed rounded-lg p-4 mb-4 transition-colors ${
-          fileState.file ? 'border-green-500 bg-green-50' : 'border-gray-300'
-        }`}
-        onDragOver={(e) => e.preventDefault()}
-        onDrop={handleFileDrop(fileType)}
-      >
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <FileJson className="w-5 h-5 text-gray-500" />
-            <span className="font-medium">{label}</span>
+      <TooltipProvider>
+        <div 
+          className={`border-2 border-dashed rounded-lg p-4 mb-4 transition-colors ${
+            fileState.file ? 'border-green-500 bg-green-50' : 'border-gray-300'
+          }`}
+          onDragOver={(e) => e.preventDefault()}
+          onDrop={handleFileDrop(fileType)}
+        >
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <FileJson className="w-5 h-5 text-gray-500" />
+              <span className="font-medium">{label}</span>
+            </div>
+            {fileState.file ? (
+              <div className="flex items-center gap-2">
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="w-5 h-5 text-green-500" />
+                      <span className="text-sm text-green-600">{fileState.file.name}</span>
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>File uploaded successfully</p>
+                  </TooltipContent>
+                </Tooltip>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setFiles(prev => ({
+                    ...prev,
+                    [fileType]: initialFileState
+                  }))}
+                >
+                  Remove
+                </Button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2">
+                <input
+                  type="file"
+                  id={`file-${fileType}`}
+                  className="hidden"
+                  accept="application/json"
+                  onChange={handleFileSelect(fileType)}
+                />
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => document.getElementById(`file-${fileType}`)?.click()}
+                >
+                  Select File
+                </Button>
+              </div>
+            )}
           </div>
-          {fileState.file ? (
-            <div className="flex items-center gap-2">
-              <CheckCircle className="w-5 h-5 text-green-500" />
-              <span className="text-sm text-green-600">{fileState.file.name}</span>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setFiles(prev => ({
-                  ...prev,
-                  [fileType]: initialFileState
-                }))}
-              >
-                Remove
-              </Button>
-            </div>
-          ) : (
-            <div className="flex items-center gap-2">
-              <input
-                type="file"
-                id={`file-${fileType}`}
-                className="hidden"
-                accept="application/json"
-                onChange={handleFileSelect(fileType)}
-              />
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => document.getElementById(`file-${fileType}`)?.click()}
-              >
-                Select File
-              </Button>
-            </div>
-          )}
         </div>
-      </div>
+      </TooltipProvider>
     );
   };
 
   const handleImport = async () => {
-    // Implementation of combining and importing files
-    const combinedCurriculum = {
-      ...files.program.file,
-      courses: files.courses.file,
-      modules: files.modules.file,
-      resources: files.resources.file,
-      assignments: files.assignments.file,
-      quizzes: files.quizzes.file,
-    };
+    setIsUploading(true);
+    try {
+      // Implementation of combining and importing files
+      const combinedCurriculum = {
+        program: files.program.file,
+        courses: files.courses.file,
+        modules: files.modules.file,
+        resources: files.resources.file,
+        assignments: files.assignments.file,
+        quizzes: files.quizzes.file,
+      };
 
-    // Save to Supabase
-    const { data: savedCurriculum, error: saveError } = await supabase
-      .from('imported_curricula')
-      .insert({
-        curriculum: combinedCurriculum,
-        created_at: new Date().toISOString(),
-      })
-      .select()
-      .single();
+      const { data: savedCurriculum, error: saveError } = await supabase
+        .from('imported_curricula')
+        .insert({
+          curriculum: combinedCurriculum,
+          created_at: new Date().toISOString(),
+        })
+        .select()
+        .single();
 
-    if (saveError) {
+      if (saveError) throw saveError;
+
+      onImport(savedCurriculum);
+      toast({
+        title: "Success",
+        description: "Curriculum imported successfully",
+      });
+    } catch (error) {
       toast({
         title: "Error",
         description: "Failed to import curriculum",
         variant: "destructive",
       });
-      return;
+    } finally {
+      setIsUploading(false);
     }
-
-    onImport(savedCurriculum);
-    toast({
-      title: "Success",
-      description: "Curriculum imported successfully",
-    });
   };
 
   const allFilesUploaded = Object.values(files).every(f => f.file && f.isValid);
