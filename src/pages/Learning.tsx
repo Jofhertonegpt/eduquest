@@ -5,19 +5,17 @@ import { ModuleContent } from '@/components/learning/ModuleContent';
 import { CurriculumSelector } from '@/components/learning/CurriculumSelector';
 import { useCurriculum } from '@/hooks/use-curriculum';
 import { useProgress } from '@/hooks/use-progress';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { BookOpen, FileText, CheckCircle, Loader2 } from "lucide-react";
+import { BookOpen, Loader2 } from "lucide-react";
 import type { Module } from '@/types/curriculum';
 import { TooltipProvider } from '@/components/ui/tooltip';
-import { Skeleton } from '@/components/ui/skeleton';
 
 const LoadingSkeleton = () => (
   <div className="space-y-4">
-    <Skeleton className="h-12 w-full" />
+    <div className="h-12 w-full bg-muted animate-pulse rounded" />
     <div className="grid gap-4">
       {[1, 2, 3].map((i) => (
-        <Skeleton key={i} className="h-24 w-full" />
+        <div key={i} className="h-24 w-full bg-muted animate-pulse rounded" />
       ))}
     </div>
   </div>
@@ -82,54 +80,14 @@ const Learning = () => {
           {curriculumId ? (
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 animate-fade-in">
               <div className="lg:col-span-4 glass-panel rounded-xl">
-                <Tabs defaultValue="resources" className="w-full">
-                  <TabsList className="w-full mb-4">
-                    <TabsTrigger value="resources" className="flex items-center gap-2">
-                      <BookOpen className="w-4 h-4" />
-                      Resources
-                    </TabsTrigger>
-                    <TabsTrigger value="assignments" className="flex items-center gap-2">
-                      <FileText className="w-4 h-4" />
-                      Assignments
-                    </TabsTrigger>
-                    <TabsTrigger value="quizzes" className="flex items-center gap-2">
-                      <CheckCircle className="w-4 h-4" />
-                      Quizzes
-                    </TabsTrigger>
-                  </TabsList>
-
+                <ScrollArea className="h-[calc(100vh-16rem)]">
                   <Suspense fallback={<LoadingSkeleton />}>
-                    <TabsContent value="resources">
-                      <ScrollArea className="h-[calc(100vh-20rem)]">
-                        <ModuleList
-                          curriculumId={curriculumId}
-                          type="resource"
-                          onModuleSelect={handleModuleSelect}
-                        />
-                      </ScrollArea>
-                    </TabsContent>
-
-                    <TabsContent value="assignments">
-                      <ScrollArea className="h-[calc(100vh-20rem)]">
-                        <ModuleList
-                          curriculumId={curriculumId}
-                          type="assignment"
-                          onModuleSelect={handleModuleSelect}
-                        />
-                      </ScrollArea>
-                    </TabsContent>
-
-                    <TabsContent value="quizzes">
-                      <ScrollArea className="h-[calc(100vh-20rem)]">
-                        <ModuleList
-                          curriculumId={curriculumId}
-                          type="quiz"
-                          onModuleSelect={handleModuleSelect}
-                        />
-                      </ScrollArea>
-                    </TabsContent>
+                    <ModuleList
+                      curriculumId={curriculumId}
+                      onModuleSelect={handleModuleSelect}
+                    />
                   </Suspense>
-                </Tabs>
+                </ScrollArea>
               </div>
               
               <div className="lg:col-span-8">
