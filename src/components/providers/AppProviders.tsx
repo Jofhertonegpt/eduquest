@@ -9,7 +9,7 @@ export const AppProviders = ({ children }: { children: React.ReactNode }) => {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-        <TooltipProvider delayDuration={0}>
+        <TooltipProvider>
           {children}
           <Toaster />
         </TooltipProvider>
