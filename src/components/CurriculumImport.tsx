@@ -29,14 +29,24 @@ interface ValidationResult {
   errors: string[];
 }
 
+interface CurriculumFiles {
+  program?: any;
+  courses?: any;
+  modules?: any;
+  resources?: any;
+  assignments?: any;
+  quizzes?: any;
+}
+
 const CurriculumImport = ({ onImport }: Props) => {
   const { toast } = useToast();
   const [isDragging, setIsDragging] = useState(false);
   const [isValidating, setIsValidating] = useState(false);
   const [validationResult, setValidationResult] = useState<ValidationResult | null>(null);
   const [validationProgress, setValidationProgress] = useState(0);
+  const [curriculumFiles, setCurriculumFiles] = useState<CurriculumFiles>({});
 
-  const validateCurriculum = (data: any): ValidationResult => {
+  const validateCurriculum = (files: CurriculumFiles): ValidationResult => {
     const errors: string[] = [];
     const details = {
       courses: 0,
@@ -45,33 +55,44 @@ const CurriculumImport = ({ onImport }: Props) => {
       quizzes: 0,
     };
 
-    // Basic structure validation
-    if (!data.name) errors.push("Missing curriculum name");
-    if (!data.description) errors.push("Missing curriculum description");
-    if (!Array.isArray(data.degrees)) errors.push("Missing or invalid degrees array");
+    // Check if all required files are present
+    if (!files.program) errors.push("Missing program.json file");
+    if (!files.courses) errors.push("Missing courses.json file");
+    if (!files.modules) errors.push("Missing modules.json file");
+    if (!files.resources) errors.push("Missing resources.json file");
+    if (!files.assignments) errors.push("Missing assignments.json file");
+    if (!files.quizzes) errors.push("Missing quizzes.json file");
 
-    // Count items and validate structure
-    data.degrees?.forEach((degree: any, degreeIndex: number) => {
-      if (!degree.courses) {
-        errors.push(`Degree at index ${degreeIndex} is missing courses`);
-        return;
-      }
+    if (errors.length > 0) return { isValid: false, details, errors };
 
-      degree.courses.forEach((course: any) => {
-        details.courses++;
-        
-        course.modules?.forEach((module: any) => {
-          details.modules++;
-          details.assignments += module.assignments?.length || 0;
-          details.quizzes += module.quizzes?.length || 0;
+    // Validate program structure
+    if (!files.program.name) errors.push("Missing program name");
+    if (!files.program.description) errors.push("Missing program description");
+    if (!Array.isArray(files.program.degrees)) errors.push("Missing or invalid degrees array");
 
-          // Validate module structure
-          if (!module.learningObjectives?.length) {
-            errors.push(`Module "${module.title}" is missing learning objectives`);
-          }
-        });
+    // Count and validate courses
+    if (Array.isArray(files.courses)) {
+      details.courses = files.courses.length;
+      files.courses.forEach((course: any, index: number) => {
+        if (!course.title) errors.push(`Course at index ${index} is missing title`);
+        if (!course.modules) errors.push(`Course at index ${index} is missing modules`);
       });
-    });
+    }
+
+    // Count and validate modules
+    if (Array.isArray(files.modules)) {
+      details.modules = files.modules.length;
+      files.modules.forEach((module: any, index: number) => {
+        if (!module.title) errors.push(`Module at index ${index} is missing title`);
+        if (!module.learningObjectives?.length) {
+          errors.push(`Module "${module.title}" is missing learning objectives`);
+        }
+      });
+    }
+
+    // Count assignments and quizzes
+    details.assignments = Array.isArray(files.assignments) ? files.assignments.length : 0;
+    details.quizzes = Array.isArray(files.quizzes) ? files.quizzes.length : 0;
 
     return {
       isValid: errors.length === 0,
@@ -80,25 +101,42 @@ const CurriculumImport = ({ onImport }: Props) => {
     };
   };
 
-  const handleFileImport = async (file: File) => {
+  const handleFileImport = async (importedFiles: FileList) => {
     try {
       setIsValidating(true);
       setValidationProgress(0);
       
-      // Read file content
-      const text = await new Promise<string>((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = (e) => resolve(e.target?.result as string);
-        reader.onerror = reject;
-        reader.readAsText(file);
-      });
+      const newCurriculumFiles: CurriculumFiles = {};
       
-      setValidationProgress(30);
-      const rawCurriculum = JSON.parse(text);
+      // Read all files
+      for (let i = 0; i < importedFiles.length; i++) {
+        const file = importedFiles[i];
+        if (!file.name.endsWith('.json')) {
+          toast({
+            title: "Invalid File",
+            description: `${file.name} is not a JSON file`,
+            variant: "destructive",
+          });
+          continue;
+        }
+
+        const text = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = (e) => resolve(e.target?.result as string);
+          reader.onerror = reject;
+          reader.readAsText(file);
+        });
+
+        const fileType = file.name.replace('.json', '').toLowerCase();
+        newCurriculumFiles[fileType as keyof CurriculumFiles] = JSON.parse(text);
+        setValidationProgress((i + 1) * (30 / importedFiles.length));
+      }
+
+      setCurriculumFiles(newCurriculumFiles);
       
       // Validate curriculum structure
       setValidationProgress(60);
-      const validation = validateCurriculum(rawCurriculum);
+      const validation = validateCurriculum(newCurriculumFiles);
       setValidationResult(validation);
       
       if (!validation.isValid) {
@@ -117,12 +155,36 @@ const CurriculumImport = ({ onImport }: Props) => {
       if (userError) throw userError;
       if (!user) throw new Error("Not authenticated");
 
+      // Combine all files into a single curriculum object
+      const combinedCurriculum = {
+        ...newCurriculumFiles.program,
+        courses: newCurriculumFiles.courses.map((course: any) => ({
+          ...course,
+          modules: course.modules.map((moduleId: string) => {
+            const moduleData = newCurriculumFiles.modules.find((m: any) => m.id === moduleId);
+            if (!moduleData) return null;
+            return {
+              ...moduleData,
+              resources: moduleData.resources?.map((rid: string) => 
+                newCurriculumFiles.resources.find((r: any) => r.id === rid)
+              ).filter(Boolean),
+              assignments: moduleData.assignments?.map((aid: string) =>
+                newCurriculumFiles.assignments.find((a: any) => a.id === aid)
+              ).filter(Boolean),
+              quizzes: moduleData.quizzes?.map((qid: string) =>
+                newCurriculumFiles.quizzes.find((q: any) => q.id === qid)
+              ).filter(Boolean),
+            };
+          }).filter(Boolean),
+        })),
+      };
+
       // Save to Supabase
       const { data: savedCurriculum, error: saveError } = await supabase
         .from('imported_curricula')
         .insert({
           user_id: user.id,
-          curriculum: rawCurriculum,
+          curriculum: combinedCurriculum,
           created_at: new Date().toISOString(),
         })
         .select()
@@ -131,7 +193,7 @@ const CurriculumImport = ({ onImport }: Props) => {
       if (saveError) throw saveError;
 
       setValidationProgress(100);
-      onImport(rawCurriculum);
+      onImport(combinedCurriculum);
       toast({
         title: "Success",
         description: "Curriculum imported successfully",
@@ -152,15 +214,9 @@ const CurriculumImport = ({ onImport }: Props) => {
     e.preventDefault();
     setIsDragging(false);
     
-    const file = e.dataTransfer.files[0];
-    if (file && file.type === "application/json") {
-      handleFileImport(file);
-    } else {
-      toast({
-        title: "Error",
-        description: "Please provide a JSON file",
-        variant: "destructive",
-      });
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+      handleFileImport(files);
     }
   };
 
@@ -182,32 +238,32 @@ const CurriculumImport = ({ onImport }: Props) => {
             <div className="w-full max-w-xs mx-auto space-y-2">
               <Progress value={validationProgress} />
               <p className="text-sm text-muted-foreground text-center">
-                Validating curriculum...
+                Validating curriculum files...
               </p>
             </div>
           </div>
         ) : (
           <>
             <Upload className="w-12 h-12 mx-auto mb-4 text-gray-400" />
-            <h3 className="text-lg font-semibold mb-2">Import Curriculum</h3>
+            <h3 className="text-lg font-semibold mb-2">Import Curriculum Files</h3>
             <p className="text-sm text-muted-foreground mb-4">
-              Drag and drop your JSON curriculum file here
+              Drag and drop your curriculum JSON files here (program.json, courses.json, etc.)
             </p>
             <input
               type="file"
               id="file-input"
               className="hidden"
+              multiple
               accept="application/json"
               onChange={(e) => {
-                const file = e.target.files?.[0];
-                if (file) handleFileImport(file);
+                if (e.target.files?.length) handleFileImport(e.target.files);
               }}
             />
             <Button
               variant="outline"
               onClick={() => document.getElementById("file-input")?.click()}
             >
-              Select File
+              Select Files
             </Button>
           </>
         )}
@@ -226,7 +282,7 @@ const CurriculumImport = ({ onImport }: Props) => {
             </CardTitle>
             <CardDescription>
               {validationResult.isValid 
-                ? "Your curriculum file is valid and ready to import"
+                ? "Your curriculum files are valid and ready to import"
                 : "Please fix the following issues before importing"}
             </CardDescription>
           </CardHeader>
