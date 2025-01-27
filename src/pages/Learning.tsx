@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { BookOpen, FileText, CheckCircle } from "lucide-react";
 import type { Module } from '@/types/curriculum';
+import { Suspense } from 'react';
 
 const Learning = () => {
   const [selectedModule, setSelectedModule] = useState<Module | null>(null);
@@ -69,49 +70,53 @@ const Learning = () => {
                   </TabsTrigger>
                 </TabsList>
 
-                <TabsContent value="resources">
-                  <ScrollArea className="h-[calc(100vh-20rem)]">
-                    <ModuleList
-                      curriculumId={curriculumId}
-                      type="resource"
-                      onModuleSelect={handleModuleSelect}
-                    />
-                  </ScrollArea>
-                </TabsContent>
+                <Suspense fallback={<div>Loading modules...</div>}>
+                  <TabsContent value="resources">
+                    <ScrollArea className="h-[calc(100vh-20rem)]">
+                      <ModuleList
+                        curriculumId={curriculumId}
+                        type="resource"
+                        onModuleSelect={handleModuleSelect}
+                      />
+                    </ScrollArea>
+                  </TabsContent>
 
-                <TabsContent value="assignments">
-                  <ScrollArea className="h-[calc(100vh-20rem)]">
-                    <ModuleList
-                      curriculumId={curriculumId}
-                      type="assignment"
-                      onModuleSelect={handleModuleSelect}
-                    />
-                  </ScrollArea>
-                </TabsContent>
+                  <TabsContent value="assignments">
+                    <ScrollArea className="h-[calc(100vh-20rem)]">
+                      <ModuleList
+                        curriculumId={curriculumId}
+                        type="assignment"
+                        onModuleSelect={handleModuleSelect}
+                      />
+                    </ScrollArea>
+                  </TabsContent>
 
-                <TabsContent value="quizzes">
-                  <ScrollArea className="h-[calc(100vh-20rem)]">
-                    <ModuleList
-                      curriculumId={curriculumId}
-                      type="quiz"
-                      onModuleSelect={handleModuleSelect}
-                    />
-                  </ScrollArea>
-                </TabsContent>
+                  <TabsContent value="quizzes">
+                    <ScrollArea className="h-[calc(100vh-20rem)]">
+                      <ModuleList
+                        curriculumId={curriculumId}
+                        type="quiz"
+                        onModuleSelect={handleModuleSelect}
+                      />
+                    </ScrollArea>
+                  </TabsContent>
+                </Suspense>
               </Tabs>
             </div>
             
             <div className="lg:col-span-8">
-              {selectedModule ? (
-                <ModuleContent module={selectedModule} />
-              ) : (
-                <div className="flex items-center justify-center h-[calc(100vh-20rem)] glass-panel rounded-xl p-8 text-muted-foreground">
-                  <div className="text-center">
-                    <BookOpen className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                    <p className="text-lg">Select a module to begin learning</p>
+              <Suspense fallback={<div>Loading module content...</div>}>
+                {selectedModule ? (
+                  <ModuleContent module={selectedModule} />
+                ) : (
+                  <div className="flex items-center justify-center h-[calc(100vh-20rem)] glass-panel rounded-xl p-8 text-muted-foreground">
+                    <div className="text-center">
+                      <BookOpen className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                      <p className="text-lg">Select a module to begin learning</p>
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
+              </Suspense>
             </div>
           </div>
         ) : (
