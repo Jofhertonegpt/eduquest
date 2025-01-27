@@ -663,6 +663,27 @@ export type Database = {
           },
         ]
       }
+      school_members: {
+        Row: {
+          created_at: string
+          id: string
+          school_id: string
+          student_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          school_id: string
+          student_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          school_id?: string
+          student_id?: string
+        }
+        Relationships: []
+      }
       social_bookmarks: {
         Row: {
           created_at: string | null
