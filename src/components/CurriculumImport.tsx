@@ -44,7 +44,7 @@ const initialFileState: FileState = {
   isValid: false,
 };
 
-const CurriculumImport = ({ onImport }: Props) => {
+export const CurriculumImport = ({ onImport }: Props) => {
   const { toast } = useToast();
   const [files, setFiles] = useState<CurriculumFiles>({
     program: initialFileState,
@@ -173,7 +173,6 @@ const CurriculumImport = ({ onImport }: Props) => {
   const handleImport = async () => {
     setIsUploading(true);
     try {
-      // Implementation of combining and importing files
       const combinedCurriculum = {
         program: files.program.file,
         courses: files.courses.file,
