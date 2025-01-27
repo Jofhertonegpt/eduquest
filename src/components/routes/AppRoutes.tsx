@@ -8,21 +8,15 @@ import Settings from "@/pages/Settings";
 import Login from "@/pages/Login";
 import Signup from "@/pages/Signup";
 import Creator from "@/pages/Creator";
+import Index from "@/pages/Index";
 
 export const AppRoutes = () => {
   return (
     <Routes>
-      {/* Redirect root to login or dashboard based on auth status */}
-      <Route 
-        path="/" 
-        element={
-          <ProtectedRoute>
-            <Navigate to="/dashboard" replace />
-          </ProtectedRoute>
-        } 
-      />
+      {/* Public landing page */}
+      <Route path="/" element={<Index />} />
 
-      {/* Public routes */}
+      {/* Public authentication routes */}
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
 
@@ -87,7 +81,8 @@ export const AppRoutes = () => {
         }
       />
 
-      <Route path="*" element={<Navigate to="/login" replace />} />
+      {/* Catch all unmatched routes */}
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 };
