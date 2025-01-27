@@ -71,6 +71,14 @@ export const ModuleContent = ({ module }: ModuleContentProps) => {
     localStorage.setItem(`module-progress-${module.id}`, JSON.stringify(finalProgress));
   };
 
+  if (!module) {
+    return (
+      <div className="p-8 text-center">
+        <p className="text-muted-foreground">Select a module to begin</p>
+      </div>
+    );
+  }
+
   return (
     <div className="glass-panel rounded-xl p-6 animate-fade-in">
       <div className="mb-6">
@@ -129,20 +137,22 @@ export const ModuleContent = ({ module }: ModuleContentProps) => {
         <TabsList className="mb-4">
           <TabsTrigger value="resources" className="flex items-center gap-2">
             <BookOpen className="w-4 h-4" />
-            Resources
+            Resources ({module.resources.length})
           </TabsTrigger>
           <TabsTrigger value="assignments" className="flex items-center gap-2">
             <FileText className="w-4 h-4" />
-            Assignments
+            Assignments ({module.assignments.length})
           </TabsTrigger>
           <TabsTrigger value="quizzes" className="flex items-center gap-2">
             <CheckCircle className="w-4 h-4" />
-            Quizzes
+            Quizzes ({module.quizzes.length})
           </TabsTrigger>
-          <TabsTrigger value="coding" className="flex items-center gap-2">
-            <Code className="w-4 h-4" />
-            Practice
-          </TabsTrigger>
+          {module.resources.some(r => r.type === 'code') && (
+            <TabsTrigger value="coding" className="flex items-center gap-2">
+              <Code className="w-4 h-4" />
+              Practice
+            </TabsTrigger>
+          )}
         </TabsList>
 
         <TabsContent value="resources" className="mt-4 space-y-6">

@@ -31,6 +31,14 @@ export const ModuleList = ({ curriculumId, type, onModuleSelect }: ModuleListPro
     return <ModuleListSkeleton />;
   }
 
+  if (!modules?.length) {
+    return (
+      <div className="p-8 text-center text-muted-foreground">
+        <p>No modules available</p>
+      </div>
+    );
+  }
+
   return (
     <Tabs defaultValue="resources" className="w-full">
       <TabsList className="w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
