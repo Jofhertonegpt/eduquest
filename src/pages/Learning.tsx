@@ -1,5 +1,5 @@
 import { useState, Suspense } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Navigate } from 'react-router-dom';
 import { ModuleList } from '@/components/curriculum/ModuleList';
 import { ModuleContent } from '@/components/learning/ModuleContent';
 import { CurriculumSelector } from '@/components/learning/CurriculumSelector';
@@ -24,10 +24,10 @@ const LoadingSkeleton = () => (
 const EmptyState = () => (
   <div className="flex items-center justify-center h-[calc(100vh-20rem)] glass-panel rounded-xl p-8 text-muted-foreground">
     <div className="text-center">
-      <BookOpen className="w-12 h-12 mx-auto mb-4 opacity-50 animate-pulse" />
-      <p className="text-lg">Select a module to begin learning</p>
+      <BookOpen className="w-12 h-12 mx-auto mb-4 opacity-50" />
+      <p className="text-lg">No Curriculum Available</p>
       <p className="text-sm text-muted-foreground mt-2">
-        Choose from the available modules on the left to start your learning journey
+        Please import a curriculum from the Import page to start learning
       </p>
     </div>
   </div>
@@ -39,6 +39,11 @@ const Learning = () => {
   const { curricula, isLoading } = useCurriculum();
   const { updateProgress } = useProgress(curriculumId);
 
+  // Redirect to import if no curriculum is available
+  if (!isLoading && (!curricula || curricula.length === 0)) {
+    return <Navigate to="/import" replace />;
+  }
+
   const handleModuleSelect = async (module: Module) => {
     setSelectedModule(module);
     if (curriculumId) {
@@ -47,10 +52,6 @@ const Learning = () => {
         courseId: module.id,
       });
     }
-  };
-
-  const handleCurriculumChange = (id: string) => {
-    setSelectedModule(null);
   };
 
   if (isLoading) {
@@ -68,46 +69,37 @@ const Learning = () => {
     <TooltipProvider>
       <div className="container mx-auto px-4 py-8 min-h-[calc(100vh-4rem)]">
         <div className="flex flex-col space-y-6">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b animate-fade-in">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b">
             <h1 className="text-3xl font-bold">Learning</h1>
             <CurriculumSelector
               curricula={curricula}
               currentCurriculumId={curriculumId}
-              onCurriculumChange={handleCurriculumChange}
+              onCurriculumChange={(id) => setSelectedModule(null)}
             />
           </div>
 
-          {curriculumId ? (
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 animate-fade-in">
-              <div className="lg:col-span-4">
-                <div className="sticky top-4">
-                  <Suspense fallback={<LoadingSkeleton />}>
-                    <ModuleList
-                      curriculumId={curriculumId}
-                      onModuleSelect={handleModuleSelect}
-                    />
-                  </Suspense>
-                </div>
-              </div>
-              
-              <div className="lg:col-span-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <div className="lg:col-span-4">
+              <div className="sticky top-4">
                 <Suspense fallback={<LoadingSkeleton />}>
-                  {selectedModule ? (
-                    <ModuleContent module={selectedModule} />
-                  ) : (
-                    <EmptyState />
-                  )}
+                  <ModuleList
+                    curriculumId={curriculumId}
+                    onModuleSelect={handleModuleSelect}
+                  />
                 </Suspense>
               </div>
             </div>
-          ) : (
-            <div className="text-center py-12 animate-fade-in">
-              <h2 className="text-2xl font-semibold mb-4">Welcome to Learning</h2>
-              <p className="text-muted-foreground mb-8">
-                Select a curriculum to start your learning journey
-              </p>
+            
+            <div className="lg:col-span-8">
+              <Suspense fallback={<LoadingSkeleton />}>
+                {selectedModule ? (
+                  <ModuleContent module={selectedModule} />
+                ) : (
+                  <EmptyState />
+                )}
+              </Suspense>
             </div>
-          )}
+          </div>
         </div>
       </div>
     </TooltipProvider>

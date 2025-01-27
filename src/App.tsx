@@ -4,6 +4,7 @@ import { ProtectedRoute } from "@/components/routes/ProtectedRoute";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import Navigation from "./components/Navigation";
 import Dashboard from "./pages/Dashboard";
+import Import from "./pages/Import";
 import Learning from "./pages/Learning";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
@@ -22,6 +23,17 @@ const AppRoutes = () => {
             <Navigation />
             <div className="container mx-auto px-4 py-4 md:py-8">
               <Dashboard />
+            </div>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/import"
+        element={
+          <ProtectedRoute>
+            <Navigation />
+            <div className="container mx-auto px-4 py-4 md:py-8">
+              <Import />
             </div>
           </ProtectedRoute>
         }
