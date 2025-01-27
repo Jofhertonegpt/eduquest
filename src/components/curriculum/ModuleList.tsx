@@ -12,7 +12,7 @@ import type { ModuleListProps } from "@/types/learning-types";
 const ModuleListSkeleton = () => (
   <div className="space-y-4">
     {[1, 2, 3].map((i) => (
-      <div key={i} className="p-4 border rounded-lg">
+      <div key={i} className="p-4 border rounded-lg bg-card">
         <Skeleton className="h-6 w-3/4 mb-2" />
         <Skeleton className="h-4 w-full mb-4" />
         <div className="flex gap-2">
@@ -33,7 +33,7 @@ export const ModuleList = ({ curriculumId, type, onModuleSelect }: ModuleListPro
 
   return (
     <Tabs defaultValue="resources" className="w-full">
-      <TabsList className="w-full">
+      <TabsList className="w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <TabsTrigger value="resources" className="flex items-center gap-2">
           <BookOpen className="w-4 h-4" />
           Resources
@@ -48,7 +48,7 @@ export const ModuleList = ({ curriculumId, type, onModuleSelect }: ModuleListPro
         </TabsTrigger>
       </TabsList>
 
-      <TabsContent value="resources">
+      <TabsContent value="resources" className="mt-4">
         <ModuleList.Content
           modules={filterModulesByType(modules, 'resource')}
           onModuleSelect={onModuleSelect}
@@ -56,7 +56,7 @@ export const ModuleList = ({ curriculumId, type, onModuleSelect }: ModuleListPro
         />
       </TabsContent>
 
-      <TabsContent value="assignments">
+      <TabsContent value="assignments" className="mt-4">
         <ModuleList.Content
           modules={filterModulesByType(modules, 'assignment')}
           onModuleSelect={onModuleSelect}
@@ -64,7 +64,7 @@ export const ModuleList = ({ curriculumId, type, onModuleSelect }: ModuleListPro
         />
       </TabsContent>
 
-      <TabsContent value="quizzes">
+      <TabsContent value="quizzes" className="mt-4">
         <ModuleList.Content
           modules={filterModulesByType(modules, 'quiz')}
           onModuleSelect={onModuleSelect}
@@ -86,7 +86,7 @@ ModuleList.Content = function ModuleListContent({
 }) {
   if (!modules?.length) {
     return (
-      <div className="p-8 text-center text-muted-foreground">
+      <div className="p-8 text-center text-muted-foreground bg-card/50 rounded-lg border border-border/50">
         <div className="mb-4">
           <FileText className="w-12 h-12 mx-auto opacity-50" />
         </div>
@@ -96,8 +96,8 @@ ModuleList.Content = function ModuleListContent({
   }
 
   return (
-    <ScrollArea className="h-[600px] rounded-md border p-4">
-      <div className="space-y-4">
+    <ScrollArea className="h-[calc(100vh-12rem)] rounded-md">
+      <div className="space-y-4 p-4">
         {modules.map((module) => (
           <ModuleCard
             key={module.content.id}

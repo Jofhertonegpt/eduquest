@@ -79,15 +79,15 @@ const Learning = () => {
 
           {curriculumId ? (
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 animate-fade-in">
-              <div className="lg:col-span-4 glass-panel rounded-xl">
-                <ScrollArea className="h-[calc(100vh-16rem)]">
+              <div className="lg:col-span-4">
+                <div className="sticky top-4">
                   <Suspense fallback={<LoadingSkeleton />}>
                     <ModuleList
                       curriculumId={curriculumId}
                       onModuleSelect={handleModuleSelect}
                     />
                   </Suspense>
-                </ScrollArea>
+                </div>
               </div>
               
               <div className="lg:col-span-8">
