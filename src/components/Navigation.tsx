@@ -12,6 +12,7 @@ import {
   Home,
   Settings,
   User,
+  PenTool,
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
@@ -49,12 +50,19 @@ const Navigation = () => {
       disabled: false,
     },
     {
+      to: "/creator",
+      icon: PenTool,
+      label: "Creator",
+      ariaLabel: "Curriculum Creator",
+      disabled: false,
+    },
+    ...(hasCurriculum ? [{
       to: "/learning",
       icon: BookOpen,
       label: "Learning",
       ariaLabel: "Access Learning",
-      disabled: !hasCurriculum,
-    },
+      disabled: false,
+    }] : []),
     {
       to: "/profile",
       icon: User,

@@ -9,6 +9,7 @@ import Settings from "@/pages/Settings";
 import Login from "@/pages/Login";
 import Signup from "@/pages/Signup";
 import JoinSchool from "@/pages/JoinSchool";
+import Creator from "@/pages/Creator";
 
 export const AppRoutes = () => {
   return (
@@ -47,6 +48,18 @@ export const AppRoutes = () => {
             <>
               <Navigation />
               <Import />
+            </>
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/creator"
+        element={
+          <ProtectedRoute>
+            <>
+              <Navigation />
+              <Creator />
             </>
           </ProtectedRoute>
         }
