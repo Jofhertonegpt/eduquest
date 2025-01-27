@@ -2,6 +2,15 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import type { Module } from "@/types/curriculum";
 
+interface CurriculumModule {
+  id: string;
+  curriculum_id: string;
+  content: Module;
+  created_at: string;
+  updated_at: string;
+  module_type: string;
+}
+
 export const useCurriculumQueries = (curriculumId?: string) => {
   const queryClient = useQueryClient();
 
@@ -21,11 +30,11 @@ export const useCurriculumQueries = (curriculumId?: string) => {
         .order("created_at");
       
       if (error) throw error;
-      return data;
+      return data as CurriculumModule[];
     },
     enabled: !!curriculumId,
+    gcTime: 30 * 60 * 1000, // Keep in cache for 30 minutes
     staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes
-    cacheTime: 30 * 60 * 1000, // Keep in cache for 30 minutes
   });
 
   // Prefetch module content when hovering over module
@@ -40,7 +49,7 @@ export const useCurriculumQueries = (curriculumId?: string) => {
           .single();
         
         if (error) throw error;
-        return data;
+        return data as { content: Module };
       },
       staleTime: 5 * 60 * 1000,
     });
@@ -68,10 +77,10 @@ export const useModuleContent = (moduleId?: string) => {
         .single();
       
       if (error) throw error;
-      return data;
+      return data as { content: Module };
     },
     enabled: !!moduleId,
+    gcTime: 30 * 60 * 1000,
     staleTime: 5 * 60 * 1000,
-    cacheTime: 30 * 60 * 1000,
   });
 };
