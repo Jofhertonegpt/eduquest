@@ -9,6 +9,44 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      assignment_feedback: {
+        Row: {
+          assignment_id: string | null
+          created_at: string | null
+          feedback: string
+          grade: number | null
+          id: string
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          assignment_id?: string | null
+          created_at?: string | null
+          feedback: string
+          grade?: number | null
+          id?: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          assignment_id?: string | null
+          created_at?: string | null
+          feedback?: string
+          grade?: number | null
+          id?: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "assignment_feedback_assignment_id_fkey"
+            columns: ["assignment_id"]
+            isOneToOne: false
+            referencedRelation: "assignments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       assignments: {
         Row: {
           created_at: string | null
@@ -946,6 +984,33 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      study_plans: {
+        Row: {
+          content: Json
+          generated_at: string | null
+          id: string
+          metadata: Json | null
+          status: string | null
+          user_id: string | null
+        }
+        Insert: {
+          content: Json
+          generated_at?: string | null
+          id?: string
+          metadata?: Json | null
+          status?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          content?: Json
+          generated_at?: string | null
+          id?: string
+          metadata?: Json | null
+          status?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
       }
     }
     Views: {
