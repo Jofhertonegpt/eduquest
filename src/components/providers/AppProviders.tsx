@@ -11,7 +11,7 @@ export const AppProviders = ({ children }: { children: React.ReactNode }) => {
     <BrowserRouter>
       <QueryClientProvider client={queryClient}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <TooltipProvider>
+          <TooltipProvider delayDuration={0}>
             {children}
             <Toaster />
           </TooltipProvider>
