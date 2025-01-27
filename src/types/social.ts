@@ -6,11 +6,11 @@ export interface Post {
   media_urls?: string[];
   file_urls?: string[];
   media_metadata?: any[];
-  school_id?: string; // Added for school posts
-  profiles?: {
-    full_name: string | null;
-    avatar_url: string | null;
-  };
+  school_id?: string;
+  profiles?: Profile;
+  comments?: Comment[];
+  likes?: Like[];
+  bookmarks?: Bookmark[];
   is_liked?: boolean;
   is_bookmarked?: boolean;
   likes_count: number;
@@ -18,17 +18,27 @@ export interface Post {
   shares_count?: number;
 }
 
+export interface Profile {
+  id?: string;
+  full_name: string | null;
+  avatar_url: string | null;
+}
+
 export interface Comment {
   id: string;
   content: string;
   created_at: string;
-  created_by: string;
+  user_id: string;
   post_id: string;
-  profiles: {
-    id: string;
-    full_name: string | null;
-    avatar_url: string | null;
-  };
+  profiles?: Profile;
+}
+
+export interface Like {
+  user_id: string;
+}
+
+export interface Bookmark {
+  user_id: string;
 }
 
 export interface PostAnalytics {

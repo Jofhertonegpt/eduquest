@@ -3,29 +3,10 @@ import { usePostFeed } from '@/hooks/usePostFeed';
 import { PostCard } from '../post/PostCard';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/lib/supabase';
-import type { Profile } from '@/types/social';
-
-interface Post {
-  id: string;
-  content: string;
-  created_at: string;
-  user_id: string;
-  media_urls: string[];
-  likes_count: number;
-  comments_count: number;
-  profiles?: Profile;
-  comments?: Array<{
-    id: string;
-    content: string;
-    created_at: string;
-    profiles?: Profile;
-  }>;
-  likes?: Array<{ user_id: string }>;
-  bookmarks?: Array<{ user_id: string }>;
-}
+import type { Post, Profile } from '@/types/social';
 
 export function SocialFeed() {
-  const { data: posts, isLoading } = usePostFeed();
+  const { data: posts, isLoading } = usePostFeed("for-you");
   const [user, setUser] = useState<{ id: string } | null>(null);
   const { toast } = useToast();
 
@@ -65,7 +46,12 @@ export function SocialFeed() {
   return (
     <div className="space-y-6">
       {transformedPosts?.map((post) => (
-        <PostCard key={post.id} post={post} currentUser={user} />
+        <PostCard 
+          key={post.id} 
+          post={post}
+          onLike={() => {}}
+          onComment={() => {}}
+        />
       ))}
     </div>
   );
