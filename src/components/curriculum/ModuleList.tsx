@@ -1,4 +1,3 @@
-import { useCurriculumModules } from "@/hooks/useCurriculumModules";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BookOpen, FileText, CheckCircle } from "lucide-react";
@@ -24,7 +23,7 @@ const ModuleListSkeleton = () => (
   </div>
 );
 
-export const ModuleList = ({ curriculumId, type, onModuleSelect }: ModuleListProps) => {
+export const ModuleList = ({ curriculumId, onModuleSelect }: ModuleListProps) => {
   const { modules, modulesLoading, prefetchModuleContent } = useCurriculumQueries(curriculumId);
 
   if (modulesLoading) {
@@ -39,26 +38,30 @@ export const ModuleList = ({ curriculumId, type, onModuleSelect }: ModuleListPro
     );
   }
 
+  const resourceModules = filterModulesByType(modules, 'resource');
+  const assignmentModules = filterModulesByType(modules, 'assignment');
+  const quizModules = filterModulesByType(modules, 'quiz');
+
   return (
     <Tabs defaultValue="resources" className="w-full">
       <TabsList className="w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <TabsTrigger value="resources" className="flex items-center gap-2">
           <BookOpen className="w-4 h-4" />
-          Resources
+          Resources ({resourceModules.length})
         </TabsTrigger>
         <TabsTrigger value="assignments" className="flex items-center gap-2">
           <FileText className="w-4 h-4" />
-          Assignments
+          Assignments ({assignmentModules.length})
         </TabsTrigger>
         <TabsTrigger value="quizzes" className="flex items-center gap-2">
           <CheckCircle className="w-4 h-4" />
-          Quizzes
+          Quizzes ({quizModules.length})
         </TabsTrigger>
       </TabsList>
 
       <TabsContent value="resources" className="mt-4">
         <ModuleList.Content
-          modules={filterModulesByType(modules, 'resource')}
+          modules={resourceModules}
           onModuleSelect={onModuleSelect}
           onModuleHover={prefetchModuleContent}
         />
@@ -66,7 +69,7 @@ export const ModuleList = ({ curriculumId, type, onModuleSelect }: ModuleListPro
 
       <TabsContent value="assignments" className="mt-4">
         <ModuleList.Content
-          modules={filterModulesByType(modules, 'assignment')}
+          modules={assignmentModules}
           onModuleSelect={onModuleSelect}
           onModuleHover={prefetchModuleContent}
         />
@@ -74,7 +77,7 @@ export const ModuleList = ({ curriculumId, type, onModuleSelect }: ModuleListPro
 
       <TabsContent value="quizzes" className="mt-4">
         <ModuleList.Content
-          modules={filterModulesByType(modules, 'quiz')}
+          modules={quizModules}
           onModuleSelect={onModuleSelect}
           onModuleHover={prefetchModuleContent}
         />
