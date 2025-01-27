@@ -25,6 +25,10 @@ export const ModuleList = ({ curriculumId, type, onModuleSelect }: ModuleListPro
     );
   }
 
+  const filterModulesByType = (modules: any[], type: string) => {
+    return modules?.filter(m => m.module_type === type) || [];
+  };
+
   return (
     <Tabs defaultValue="resources" className="w-full">
       <TabsList className="w-full">
@@ -44,7 +48,7 @@ export const ModuleList = ({ curriculumId, type, onModuleSelect }: ModuleListPro
 
       <TabsContent value="resources">
         <ModuleList.Content
-          modules={modules?.filter(m => m.content.type === 'resource')}
+          modules={filterModulesByType(modules, 'resource')}
           onModuleSelect={onModuleSelect}
           onModuleHover={prefetchModuleContent}
         />
@@ -52,7 +56,7 @@ export const ModuleList = ({ curriculumId, type, onModuleSelect }: ModuleListPro
 
       <TabsContent value="assignments">
         <ModuleList.Content
-          modules={modules?.filter(m => m.content.type === 'assignment')}
+          modules={filterModulesByType(modules, 'assignment')}
           onModuleSelect={onModuleSelect}
           onModuleHover={prefetchModuleContent}
         />
@@ -60,7 +64,7 @@ export const ModuleList = ({ curriculumId, type, onModuleSelect }: ModuleListPro
 
       <TabsContent value="quizzes">
         <ModuleList.Content
-          modules={modules?.filter(m => m.content.type === 'quiz')}
+          modules={filterModulesByType(modules, 'quiz')}
           onModuleSelect={onModuleSelect}
           onModuleHover={prefetchModuleContent}
         />
