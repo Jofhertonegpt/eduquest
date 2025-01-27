@@ -19,7 +19,7 @@ export const useProgress = (curriculumId?: string) => {
         .select('*')
         .eq('user_id', user.id)
         .eq('curriculum_id', curriculumId)
-        .single();
+        .maybeSingle();
 
       if (error && error.code !== 'PGRST116') throw error;
       return data;
@@ -48,7 +48,7 @@ export const useProgress = (curriculumId?: string) => {
           updated_at: new Date().toISOString()
         })
         .select()
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
       return data;

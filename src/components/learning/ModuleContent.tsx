@@ -158,7 +158,7 @@ export const ModuleContent = ({ module }: ModuleContentProps) => {
                       </CardDescription>
                     </div>
                     {progress.completedResources.includes(resource.id) && (
-                      <Badge variant="success">
+                      <Badge variant="secondary" className="flex items-center gap-1">
                         <CheckCircle className="w-4 h-4 mr-1" />
                         Completed
                       </Badge>
