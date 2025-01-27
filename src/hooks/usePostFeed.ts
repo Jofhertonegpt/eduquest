@@ -34,28 +34,12 @@ export const usePostFeed = (type: PostListType, userId?: string) => {
         
         const followingIds = following?.map(f => f.following_id) || [];
         query = query.in("user_id", [user.id, ...followingIds]);
-      } else if (type === "media") {
-        query = query.not("media_urls", "eq", "{}");
-      } else if (type === "likes") {
-        const { data: likedPosts } = await supabase
-          .from("social_likes")
-          .select("post_id")
-          .eq("user_id", userId || user.id);
-        
-        const likedPostIds = likedPosts?.map(like => like.post_id) || [];
-        query = query.in("id", likedPostIds);
       }
 
       const { data, error } = await query;
       if (error) throw error;
 
-      return data.map(post => ({
-        ...post,
-        likes_count: post.likes?.length || 0,
-        comments_count: post.comments?.length || 0,
-        is_liked: post.likes?.some(like => like.user_id === user.id) || false,
-        is_bookmarked: post.bookmarks?.some(bookmark => bookmark.user_id === user.id) || false,
-      })) as Post[];
+      return data as Post[];
     },
   });
 };
