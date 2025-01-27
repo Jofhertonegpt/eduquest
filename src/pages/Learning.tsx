@@ -5,8 +5,9 @@ import { ModuleContent } from '@/components/learning/ModuleContent';
 import { CurriculumSelector } from '@/components/learning/CurriculumSelector';
 import { useCurriculum } from '@/hooks/use-curriculum';
 import { useProgress } from '@/hooks/use-progress';
-import { Button } from '@/components/ui/button';
-import { ArrowLeft } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { BookOpen, FileText, CheckCircle } from "lucide-react";
 import type { Module } from '@/types/curriculum';
 
 const Learning = () => {
@@ -20,15 +21,13 @@ const Learning = () => {
     if (curriculumId) {
       await updateProgress.mutateAsync({
         moduleId: module.id,
-        courseId: module.id, // This should be the actual course ID in a real implementation
+        courseId: module.id,
       });
     }
   };
 
   const handleCurriculumChange = (id: string) => {
-    // Reset selected module when curriculum changes
     setSelectedModule(null);
-    // Handle curriculum change (you might want to add navigation here)
   };
 
   if (isLoading) {
@@ -54,11 +53,54 @@ const Learning = () => {
         {curriculumId && (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
             <div className="lg:col-span-4">
-              <ModuleList
-                curriculumId={curriculumId}
-                onModuleSelect={handleModuleSelect}
-              />
+              <Tabs defaultValue="resources" className="w-full">
+                <TabsList className="w-full">
+                  <TabsTrigger value="resources" className="flex items-center gap-2">
+                    <BookOpen className="w-4 h-4" />
+                    Resources
+                  </TabsTrigger>
+                  <TabsTrigger value="assignments" className="flex items-center gap-2">
+                    <FileText className="w-4 h-4" />
+                    Assignments
+                  </TabsTrigger>
+                  <TabsTrigger value="quizzes" className="flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4" />
+                    Quizzes
+                  </TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="resources">
+                  <ScrollArea className="h-[600px]">
+                    <ModuleList
+                      curriculumId={curriculumId}
+                      type="resource"
+                      onModuleSelect={handleModuleSelect}
+                    />
+                  </ScrollArea>
+                </TabsContent>
+
+                <TabsContent value="assignments">
+                  <ScrollArea className="h-[600px]">
+                    <ModuleList
+                      curriculumId={curriculumId}
+                      type="assignment"
+                      onModuleSelect={handleModuleSelect}
+                    />
+                  </ScrollArea>
+                </TabsContent>
+
+                <TabsContent value="quizzes">
+                  <ScrollArea className="h-[600px]">
+                    <ModuleList
+                      curriculumId={curriculumId}
+                      type="quiz"
+                      onModuleSelect={handleModuleSelect}
+                    />
+                  </ScrollArea>
+                </TabsContent>
+              </Tabs>
             </div>
+            
             <div className="lg:col-span-8">
               {selectedModule ? (
                 <ModuleContent module={selectedModule} />
