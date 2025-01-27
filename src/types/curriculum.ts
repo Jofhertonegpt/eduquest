@@ -1,4 +1,5 @@
-export type DegreeType = 'associates' | 'bachelors' | 'masters' | 'doctorate' | 'certificate';
+export type DegreeType = 'associates' | 'bachelors' | 'masters' | 'doctorate' | 'certificate' | 'undergraduate';
+
 export type DifficultyLevel = 'beginner' | 'intermediate' | 'advanced' | 'expert';
 export type ResourceType = 'video' | 'pdf' | 'epub' | 'article' | 'document' | 'code';
 

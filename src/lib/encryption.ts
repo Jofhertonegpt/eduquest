@@ -1,4 +1,16 @@
 import { z } from "zod";
+import CryptoJS from 'crypto-js';
+
+const ENCRYPTION_KEY = 'your-secret-key'; // In production, this should be an environment variable
+
+export const encryptData = (data: string): string => {
+  return CryptoJS.AES.encrypt(data, ENCRYPTION_KEY).toString();
+};
+
+export const decryptData = (encryptedData: string): string => {
+  const bytes = CryptoJS.AES.decrypt(encryptedData, ENCRYPTION_KEY);
+  return bytes.toString(CryptoJS.enc.Utf8);
+};
 
 export const curriculumSchema = z.object({
   name: z.string(),
@@ -9,7 +21,7 @@ export const curriculumSchema = z.object({
   degrees: z.array(z.object({
     id: z.string(),
     title: z.string(),
-    type: z.string(), // Removed enum restriction to allow "undergraduate"
+    type: z.string(), // Changed from enum to string to allow "undergraduate"
     description: z.string(),
     requiredCredits: z.number(),
     metadata: z.object({
@@ -18,8 +30,8 @@ export const curriculumSchema = z.object({
       department: z.string()
     }),
     courses: z.array(z.union([
-      z.string(), // Allow string course IDs
-      z.object({ // Also allow full course objects
+      z.string(),
+      z.object({
         id: z.string(),
         title: z.string(),
         description: z.string(),
