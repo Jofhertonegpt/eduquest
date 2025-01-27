@@ -7,32 +7,16 @@ import {
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import {
-  BookOpen,
   Download,
   Home,
   Settings,
   User,
   PenTool,
 } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/lib/supabase";
 
 const Navigation = () => {
   const location = useLocation();
   const isMobile = useIsMobile();
-  
-  // Check if user has any imported curricula
-  const { data: curricula } = useQuery({
-    queryKey: ['imported_curricula'],
-    queryFn: async () => {
-      const { data } = await supabase
-        .from('imported_curricula')
-        .select('*');
-      return data || [];
-    }
-  });
-
-  const hasCurriculum = (curricula && curricula.length > 0) || false;
 
   const links = [
     {
@@ -56,13 +40,6 @@ const Navigation = () => {
       ariaLabel: "Curriculum Creator",
       disabled: false,
     },
-    ...(hasCurriculum ? [{
-      to: "/learning",
-      icon: BookOpen,
-      label: "Learning",
-      ariaLabel: "Access Learning",
-      disabled: false,
-    }] : []),
     {
       to: "/profile",
       icon: User,
@@ -105,9 +82,7 @@ const Navigation = () => {
                 </Link>
               </TooltipTrigger>
               <TooltipContent>
-                {disabled && label === "Learning" 
-                  ? "Import a curriculum first to access learning"
-                  : ariaLabel}
+                {ariaLabel}
               </TooltipContent>
             </Tooltip>
           ))}
