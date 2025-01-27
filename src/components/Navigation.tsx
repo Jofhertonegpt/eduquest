@@ -7,11 +7,11 @@ import {
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import {
-  Download,
   Home,
   Settings,
   User,
   PenTool,
+  Download,
 } from "lucide-react";
 
 const Navigation = () => {

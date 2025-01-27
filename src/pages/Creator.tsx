@@ -1,13 +1,16 @@
+import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Download } from "lucide-react";
 import { useState } from "react";
 
 const Creator = () => {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -20,6 +23,14 @@ const Creator = () => {
       <div className="flex flex-col space-y-6 max-w-2xl mx-auto">
         <div className="flex items-center justify-between">
           <h1 className="text-3xl font-bold">Curriculum Creator</h1>
+          <Button 
+            onClick={() => navigate('/import')}
+            variant="outline"
+            className="flex items-center gap-2"
+          >
+            <Download className="w-4 h-4" />
+            Import Existing
+          </Button>
         </div>
         
         <Card className="p-6">
