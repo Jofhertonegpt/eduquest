@@ -148,7 +148,7 @@ export const validateAndTransformCurriculum = (rawData: any): Curriculum => {
     degrees: data.degrees.map(degree => ({
       id: degree.id || crypto.randomUUID(),
       title: degree.title,
-      type: degree.type,
+      type: degree.type as any, // Allow any string type for degree type
       description: degree.description,
       requiredCredits: degree.requiredCredits,
       courses: degree.courses.map(course => {
