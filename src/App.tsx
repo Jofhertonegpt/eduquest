@@ -14,8 +14,8 @@ import JoinSchool from "@/pages/JoinSchool";
 
 function App() {
   return (
-    <TooltipProvider delayDuration={0}>
-      <Router>
+    <Router>
+      <TooltipProvider delayDuration={0}>
         <Routes>
           {/* Redirect root to login or dashboard based on auth status */}
           <Route 
@@ -94,8 +94,8 @@ function App() {
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
         <Toaster />
-      </Router>
-    </TooltipProvider>
+      </TooltipProvider>
+    </Router>
   );
 }
 

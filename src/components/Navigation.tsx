@@ -1,6 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { useCurriculum } from "@/hooks/use-curriculum";
 import {
   Tooltip,
   TooltipContent,
@@ -14,11 +13,25 @@ import {
   Settings,
   User,
 } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/lib/supabase";
 
 const Navigation = () => {
   const location = useLocation();
   const isMobile = useIsMobile();
-  const { hasCurriculum } = useCurriculum();
+  
+  // Check if user has any imported curricula
+  const { data: curricula } = useQuery({
+    queryKey: ['imported_curricula'],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('imported_curricula')
+        .select('*');
+      return data || [];
+    }
+  });
+
+  const hasCurriculum = (curricula && curricula.length > 0) || false;
 
   const links = [
     {
@@ -59,9 +72,7 @@ const Navigation = () => {
   ];
 
   return (
-    <nav
-      className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-sm border-b"
-    >
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-sm border-b">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-around md:justify-start gap-1 md:gap-6 h-16">
           {links.map(({ to, icon: Icon, label, ariaLabel, disabled }) => (
