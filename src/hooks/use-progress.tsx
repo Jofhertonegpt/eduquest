@@ -25,6 +25,9 @@ export const useProgress = (curriculumId?: string) => {
       return data;
     },
     enabled: !!curriculumId,
+    staleTime: 5 * 60 * 1000, // Data remains fresh for 5 minutes
+    gcTime: 30 * 60 * 1000, // Keep in cache for 30 minutes
+    retry: 2,
   });
 
   const updateProgress = useMutation({
@@ -63,6 +66,7 @@ export const useProgress = (curriculumId?: string) => {
       });
     },
     onError: (error) => {
+      console.error('Progress update error:', error);
       toast({
         title: "Error",
         description: error instanceof Error ? error.message : "Failed to update progress",

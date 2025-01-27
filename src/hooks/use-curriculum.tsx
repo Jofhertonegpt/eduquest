@@ -27,6 +27,9 @@ export const useCurriculum = () => {
         curriculum: JSON.parse(decryptData(curr.curriculum))
       }));
     },
+    staleTime: 5 * 60 * 1000, // Data remains fresh for 5 minutes
+    gcTime: 30 * 60 * 1000, // Keep in cache for 30 minutes
+    retry: 2,
   });
 
   const importCurriculum = useMutation({
@@ -34,11 +37,13 @@ export const useCurriculum = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
+      const curriculumJson = JSON.parse(JSON.stringify(curriculum));
+
       const { data, error } = await supabase
         .from('imported_curricula')
         .insert({
           user_id: user.id,
-          curriculum: JSON.stringify(curriculum),
+          curriculum: curriculumJson,
           created_at: new Date().toISOString()
         })
         .select()
@@ -55,6 +60,7 @@ export const useCurriculum = () => {
       });
     },
     onError: (error) => {
+      console.error('Import error:', error);
       toast({
         title: "Error",
         description: error instanceof Error ? error.message : "Failed to import curriculum",
@@ -80,6 +86,7 @@ export const useCurriculum = () => {
       });
     },
     onError: (error) => {
+      console.error('Delete error:', error);
       toast({
         title: "Error",
         description: error instanceof Error ? error.message : "Failed to delete curriculum",

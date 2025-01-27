@@ -33,8 +33,9 @@ export const useCurriculumQueries = (curriculumId?: string) => {
       return data as CurriculumModule[];
     },
     enabled: !!curriculumId,
-    gcTime: 30 * 60 * 1000, // Keep in cache for 30 minutes
     staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes
+    gcTime: 30 * 60 * 1000, // Keep in cache for 30 minutes
+    retry: 2,
   });
 
   // Prefetch module content when hovering over module
@@ -46,7 +47,7 @@ export const useCurriculumQueries = (curriculumId?: string) => {
           .from("curriculum_modules")
           .select("content")
           .eq("id", moduleId)
-          .single();
+          .maybeSingle();
         
         if (error) throw error;
         return data as { content: Module };
@@ -74,13 +75,14 @@ export const useModuleContent = (moduleId?: string) => {
         .from("curriculum_modules")
         .select("content")
         .eq("id", moduleId)
-        .single();
+        .maybeSingle();
       
       if (error) throw error;
       return data as { content: Module };
     },
     enabled: !!moduleId,
-    gcTime: 30 * 60 * 1000,
     staleTime: 5 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+    retry: 2,
   });
 };
