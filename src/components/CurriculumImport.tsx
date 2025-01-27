@@ -44,7 +44,7 @@ const initialFileState: FileState = {
   isValid: false,
 };
 
-export const CurriculumImport = ({ onImport }: Props) => {
+export function CurriculumImport({ onImport }: Props) {
   const { toast } = useToast();
   const [files, setFiles] = useState<CurriculumFiles>({
     program: initialFileState,
@@ -239,6 +239,6 @@ export const CurriculumImport = ({ onImport }: Props) => {
       </Card>
     </div>
   );
-};
+}
 
 export default CurriculumImport;
