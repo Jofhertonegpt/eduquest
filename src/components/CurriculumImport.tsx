@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { validateAndTransformCurriculum } from "@/lib/curriculumValidation";
 import { supabase } from "@/integrations/supabase/client";
+import type { Json } from "@/lib/database.types";
 import type { Curriculum } from "@/types/curriculum";
 
 export function CurriculumImport() {
@@ -30,12 +30,15 @@ export function CurriculumImport() {
         throw new Error("Not authenticated");
       }
 
+      // Convert curriculum to JSON type expected by Supabase
+      const curriculumJson: Json = validatedCurriculum as unknown as Json;
+
       // Insert curriculum
       const { data, error } = await supabase
         .from("imported_curricula")
         .insert({
           user_id: user.id,
-          curriculum: validatedCurriculum,
+          curriculum: curriculumJson,
           created_at: new Date().toISOString(),
         })
         .select()
