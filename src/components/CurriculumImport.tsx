@@ -127,11 +127,14 @@ export function CurriculumImport() {
       
       if (!user) throw new Error("Not authenticated");
 
+      // Convert the curriculum to a plain object that matches the Json type
+      const curriculumJson = JSON.parse(JSON.stringify(validatedCurriculum)) as Json;
+
       const { data, error } = await supabase
         .from("imported_curricula")
         .insert({
           user_id: user.id,
-          curriculum: validatedCurriculum as Json,
+          curriculum: curriculumJson,
           created_at: new Date().toISOString(),
         })
         .select()
