@@ -5,7 +5,6 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import Navigation from "./components/Navigation";
 import Dashboard from "./pages/Dashboard";
 import Learning from "./pages/Learning";
-import CurriculumImporter from "./pages/CurriculumImporter";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 import Login from "./pages/Login";
@@ -28,25 +27,7 @@ const AppRoutes = () => {
         }
       />
       <Route
-        path="/curriculum-import"
-        element={
-          <ProtectedRoute>
-            <Navigation />
-            <CurriculumImporter />
-          </ProtectedRoute>
-        }
-      />
-      <Route
         path="/learning"
-        element={
-          <ProtectedRoute>
-            <Navigation />
-            <Learning />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/learning/:curriculumId"
         element={
           <ProtectedRoute>
             <Navigation />
