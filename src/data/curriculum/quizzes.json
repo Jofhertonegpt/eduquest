@@ -1,0 +1,87 @@
+[
+  {
+    "id": "phil-quiz-1",
+    "title": "Greek Philosophy Basics",
+    "description": "Short quiz on Socratic method and major Pre-Socratic themes.",
+    "questions": [
+      {
+        "id": "phil-quiz-q1",
+        "type": "multiple-choice",
+        "title": "Who is considered the 'father of Western philosophy'?",
+        "description": "Commonly credited figure in Greek philosophy.",
+        "points": 5,
+        "options": ["Socrates", "Aristotle", "Plato", "Pythagoras"],
+        "correctAnswer": 0
+      },
+      {
+        "id": "phil-quiz-q2",
+        "type": "true-false",
+        "title": "Parmenides believed in constant change as the ultimate reality.",
+        "description": "Assess knowledge of Parmenides' stance.",
+        "points": 5,
+        "correctAnswer": false
+      }
+    ]
+  },
+  {
+    "id": "psych-quiz-1",
+    "title": "Personality Basics Quiz",
+    "description": "Multiple-choice items testing knowledge of the Big Five and basic trait theory.",
+    "questions": [
+      {
+        "id": "psych-quiz1-q1",
+        "type": "multiple-choice",
+        "title": "Which of the following is part of the Big Five?",
+        "description": "Recognizing key personality traits.",
+        "points": 5,
+        "options": [
+          "Honesty-Humility",
+          "Conscientiousness",
+          "Psychoticism",
+          "Artisticness"
+        ],
+        "correctAnswer": 1
+      }
+    ]
+  },
+  {
+    "id": "webdev-quiz-1",
+    "title": "Front-End Fundamentals Quiz",
+    "description": "Check knowledge of HTML tags, CSS selectors, basic JavaScript syntax.",
+    "questions": [
+      {
+        "id": "webdev-quiz1-q1",
+        "type": "multiple-choice",
+        "title": "Which HTML element is used for the largest heading?",
+        "description": "Basic HTML knowledge.",
+        "points": 5,
+        "options": ["<h1>", "<h6>", "<p>", "<header>"],
+        "correctAnswer": 0
+      },
+      {
+        "id": "webdev-quiz1-q2",
+        "type": "short-answer",
+        "title": "Explain how CSS specificity works.",
+        "description": "1-2 sentences summarizing the concept.",
+        "points": 5,
+        "sampleAnswer": "CSS specificity determines which styles are applied when multiple rules target the same element."
+      }
+    ]
+  },
+  {
+    "id": "neuro-quiz-1",
+    "title": "Brain Structures Quiz",
+    "description": "Multiple-choice on the major lobes and subcortical areas.",
+    "questions": [
+      {
+        "id": "neuro-quiz1-q1",
+        "type": "multiple-choice",
+        "title": "Which lobe is primarily responsible for visual processing?",
+        "description": "Core cortical function knowledge.",
+        "points": 5,
+        "options": ["Frontal Lobe", "Temporal Lobe", "Occipital Lobe", "Parietal Lobe"],
+        "correctAnswer": 2
+      }
+    ]
+  }
+]

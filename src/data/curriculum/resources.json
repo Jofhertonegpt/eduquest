@@ -1,0 +1,47 @@
+[
+  {
+    "id": "phil-res-1",
+    "title": "Open Yale Course: Introduction to Ancient Greek Philosophy",
+    "type": "video",
+    "content": "Series of lectures examining early Greek philosophers",
+    "duration": "Multiple lectures (~45 min each)",
+    "url": "https://www.youtube.com/playlist?list=PLD12A2C2BA88A6E0C",
+    "embedType": "youtube"
+  },
+  {
+    "id": "psych-res-1",
+    "title": "Jordan Peterson: Personality and Its Transformations",
+    "type": "video",
+    "content": "Open YouTube lecture series on personality psychology",
+    "duration": "Multiple lectures (~1.5 hours each)",
+    "url": "https://www.youtube.com/playlist?list=PL22J3VaeABQApSdW7Y6wq9bIw05cl2h-B",
+    "embedType": "youtube"
+  },
+  {
+    "id": "webdev-res-1",
+    "title": "Harvard CS50 Web Programming Playlist",
+    "type": "video",
+    "content": "Lectures on HTML, CSS, and introductory JavaScript",
+    "duration": "Multiple lectures (~1 hour each)",
+    "url": "https://www.youtube.com/playlist?list=PLhQjrBD2T3828ZVcVzEIhsHVgjANGZveu",
+    "embedType": "youtube"
+  },
+  {
+    "id": "neuro-res-1",
+    "title": "Andrew Huberman Lab: Brain Anatomy Basics",
+    "type": "video",
+    "content": "Talks about key anatomical regions and their functions",
+    "duration": "Multiple episodes (~1 hour each)",
+    "url": "https://www.youtube.com/@hubermanlab",
+    "embedType": "youtube"
+  },
+  {
+    "id": "neuro-res-2",
+    "title": "MIT OpenCourseWare: Intro to Neuroscience",
+    "type": "video",
+    "content": "Lecture series on fundamental neuroanatomy, typical undergrad level",
+    "duration": "Multiple lectures (~1 hour each)",
+    "url": "https://www.youtube.com/c/mitocw",
+    "embedType": "youtube"
+  }
+]

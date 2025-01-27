@@ -1,0 +1,98 @@
+[
+  {
+    "id": "phil-module-1",
+    "title": "Ancient Foundations & Socratic Dialogue",
+    "description": "Explore early Greek philosophy, Socratic questioning, and the birth of Western thought.",
+    "credits": 1,
+    "metadata": {
+      "estimatedTime": 180,
+      "difficulty": "beginner",
+      "prerequisites": []
+    },
+    "learningObjectives": [
+      {
+        "id": "phil-obj-1",
+        "description": "Recognize key ideas from Pre-Socratics, Socrates, and Plato",
+        "assessmentCriteria": [
+          "Explain the Socratic Method",
+          "Discuss how Plato's Theory of Forms influenced later thought"
+        ]
+      }
+    ],
+    "resources": ["phil-res-1"],
+    "assignments": ["phil-assign-1", "phil-assign-2"],
+    "quizzes": ["phil-quiz-1"]
+  },
+  {
+    "id": "psych-module-1",
+    "title": "Foundations of Personality: Big Five & Basic Theories",
+    "description": "Explore the Big Five model, trait theories, and Jordan Peterson's approach to personality.",
+    "credits": 1,
+    "metadata": {
+      "estimatedTime": 180,
+      "difficulty": "beginner",
+      "prerequisites": []
+    },
+    "learningObjectives": [
+      {
+        "id": "psych-obj-1",
+        "description": "Identify core personality traits and discuss the role of genetics vs. environment",
+        "assessmentCriteria": [
+          "Explain the Big Five traits",
+          "Describe research on heritability of personality"
+        ]
+      }
+    ],
+    "resources": ["psych-res-1"],
+    "assignments": ["psych-assign-1"],
+    "quizzes": ["psych-quiz-1"]
+  },
+  {
+    "id": "webdev-module-1",
+    "title": "Front-End Basics: HTML, CSS, and Basic JavaScript",
+    "description": "Establish a solid foundation in front-end web development, referencing Harvard CS50 Web resources.",
+    "credits": 2,
+    "metadata": {
+      "estimatedTime": 240,
+      "difficulty": "beginner",
+      "prerequisites": []
+    },
+    "learningObjectives": [
+      {
+        "id": "webdev-obj-1",
+        "description": "Build static, responsive websites using semantic HTML, CSS layouts, and simple JavaScript",
+        "assessmentCriteria": [
+          "Create multi-page sites with consistent design",
+          "Demonstrate basic DOM manipulation"
+        ]
+      }
+    ],
+    "resources": ["webdev-res-1"],
+    "assignments": ["webdev-assign-1", "webdev-assign-2"],
+    "quizzes": ["webdev-quiz-1"]
+  },
+  {
+    "id": "neuro-module-1",
+    "title": "Neuroanatomy & Brain Regions",
+    "description": "Overview of major brain structures, referencing Huberman Lab foundational talks and MIT OpenCourseWare.",
+    "credits": 1,
+    "metadata": {
+      "estimatedTime": 180,
+      "difficulty": "beginner",
+      "prerequisites": []
+    },
+    "learningObjectives": [
+      {
+        "id": "neuro-obj-1",
+        "description": "Identify main regions of the brain and outline their primary functions",
+        "assessmentCriteria": [
+          "Label cortical lobes, cerebellum, and subcortical structures",
+          "Discuss the roles of hippocampus and amygdala"
+        ]
+      }
+    ],
+    "resources": ["neuro-res-1", "neuro-res-2"],
+    "assignments": ["neuro-assign-1", "neuro-assign-2"],
+    "quizzes": ["neuro-quiz-1"]
+  }
+]
