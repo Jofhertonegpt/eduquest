@@ -1,142 +1,129 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import React from "react";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
 import { Button } from "@/components/ui/button";
-import { Info, Copy } from "lucide-react";
+import { Info } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { sampleCurriculum } from "@/data/sampleCurriculum";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import defaultCurriculum from "@/data/curriculum/program.json";
+import defaultCourses from "@/data/curriculum/courses.json";
+import defaultModules from "@/data/curriculum/modules.json";
+import defaultQuizzes from "@/data/curriculum/quizzes.json";
+import defaultAssignments from "@/data/curriculum/assignments.json";
+import defaultResources from "@/data/curriculum/resources.json";
 
-export const CurriculumFormatInfo = () => {
+export function CurriculumFormatInfo() {
   const { toast } = useToast();
 
-  const copyFormatToClipboard = async () => {
-    try {
-      await navigator.clipboard.writeText(JSON.stringify(sampleCurriculum, null, 2));
-      toast({
-        title: "Format copied!",
-        description: "The curriculum format has been copied to your clipboard.",
-      });
-    } catch (err) {
-      toast({
-        title: "Failed to copy",
-        description: "Please try copying manually.",
-        variant: "destructive",
-      });
-    }
+  const copyExampleFormat = (data: any, type: string) => {
+    navigator.clipboard.writeText(JSON.stringify(data, null, 2));
+    toast({
+      title: "Copied to clipboard",
+      description: `${type} format has been copied to your clipboard.`,
+    });
   };
 
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button variant="outline" size="icon">
+    <HoverCard>
+      <HoverCardTrigger asChild>
+        <Button variant="ghost" size="icon">
           <Info className="h-4 w-4" />
+          <span className="sr-only">JSON Format FAQ</span>
         </Button>
-      </DialogTrigger>
-      <DialogContent className="max-w-4xl h-[80vh]">
-        <DialogHeader>
-          <DialogTitle>JSON Format FAQ:</DialogTitle>
-        </DialogHeader>
-        <Tabs defaultValue="overview" className="h-full">
-          <TabsList>
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="structure">Structure</TabsTrigger>
-            <TabsTrigger value="example">Example</TabsTrigger>
-          </TabsList>
-          
-          <ScrollArea className="h-[calc(80vh-10rem)] mt-4">
-            <TabsContent value="overview" className="space-y-4">
-              <div className="prose dark:prose-invert max-w-none">
-                <h3>What are the required JSON files?</h3>
-                <p>
-                  The curriculum system requires multiple JSON files that work together to create a complete
-                  learning experience. Each file serves a specific purpose:
-                </p>
-                
-                <h4>Required Files:</h4>
-                <ul>
-                  <li>
-                    <strong>Curriculum JSON</strong> - Contains the main program information and structure
-                  </li>
-                  <li>
-                    <strong>Courses JSON</strong> - Defines the courses within the program
-                  </li>
-                  <li>
-                    <strong>Modules JSON</strong> - Contains the learning modules for each course
-                  </li>
-                  <li>
-                    <strong>Quizzes JSON</strong> - Defines assessment questions and answers
-                  </li>
-                  <li>
-                    <strong>Assignments JSON</strong> - Contains practical assignments and projects
-                  </li>
-                  <li>
-                    <strong>Resources JSON</strong> - Lists learning materials and references
-                  </li>
-                </ul>
-
-                <h4>Key Features:</h4>
-                <ul>
-                  <li>Each file must be valid JSON format</li>
-                  <li>IDs must be unique across all files</li>
-                  <li>References between files use these unique IDs</li>
-                  <li>All required fields must be present</li>
-                </ul>
-              </div>
-            </TabsContent>
-
-            <TabsContent value="structure" className="space-y-4">
-              <div className="prose dark:prose-invert max-w-none">
-                <h3>JSON Structure Requirements</h3>
-                <div className="space-y-4">
-                  <div className="rounded-lg bg-muted p-4">
-                    <h4 className="font-semibold mb-2">Curriculum JSON:</h4>
-                    <ul className="list-disc list-inside space-y-2">
-                      <li>name (string) - Program name</li>
-                      <li>description (string) - Program overview</li>
-                      <li>degrees (array) - List of degree programs</li>
-                      <li>institution (string) - Institution name</li>
-                    </ul>
-                  </div>
-
-                  <div className="rounded-lg bg-muted p-4">
-                    <h4 className="font-semibold mb-2">Courses JSON:</h4>
-                    <ul className="list-disc list-inside space-y-2">
-                      <li>id (string) - Unique course identifier</li>
-                      <li>title (string) - Course name</li>
-                      <li>description (string) - Course description</li>
-                      <li>credits (number) - Course credit value</li>
-                      <li>level (string) - Course difficulty level</li>
-                    </ul>
-                  </div>
-
-                  <div className="rounded-lg bg-muted p-4">
-                    <h4 className="font-semibold mb-2">Modules JSON:</h4>
-                    <ul className="list-disc list-inside space-y-2">
-                      <li>id (string) - Unique module identifier</li>
-                      <li>courseId (string) - Reference to parent course</li>
-                      <li>title (string) - Module name</li>
-                      <li>description (string) - Module content</li>
-                      <li>resources (array) - Learning materials</li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </TabsContent>
-
-            <TabsContent value="example" className="space-y-4">
-              <div className="flex justify-end mb-4">
-                <Button onClick={copyFormatToClipboard} className="gap-2">
-                  <Copy className="h-4 w-4" />
-                  Copy Example
+      </HoverCardTrigger>
+      <HoverCardContent className="w-96 p-4">
+        <h3 className="font-semibold mb-2">JSON Format FAQ:</h3>
+        <div className="space-y-4 text-sm">
+          <div>
+            <p className="font-medium mb-1">Required JSON Files:</p>
+            <ul className="list-disc pl-4 space-y-2">
+              <li>
+                <span className="font-medium">Program JSON:</span>
+                <br />
+                Contains basic program information and degree structure
+                <Button
+                  variant="link"
+                  className="px-0 h-auto py-0 text-xs"
+                  onClick={() => copyExampleFormat(defaultCurriculum, "Program")}
+                >
+                  Copy example
                 </Button>
-              </div>
-              <pre className="p-4 bg-muted rounded-lg text-sm overflow-auto">
-                {JSON.stringify(sampleCurriculum, null, 2)}
-              </pre>
-            </TabsContent>
-          </ScrollArea>
-        </Tabs>
-      </DialogContent>
-    </Dialog>
+              </li>
+              <li>
+                <span className="font-medium">Courses JSON:</span>
+                <br />
+                Defines course details and metadata
+                <Button
+                  variant="link"
+                  className="px-0 h-auto py-0 text-xs"
+                  onClick={() => copyExampleFormat(defaultCourses, "Courses")}
+                >
+                  Copy example
+                </Button>
+              </li>
+              <li>
+                <span className="font-medium">Modules JSON:</span>
+                <br />
+                Contains module content and learning objectives
+                <Button
+                  variant="link"
+                  className="px-0 h-auto py-0 text-xs"
+                  onClick={() => copyExampleFormat(defaultModules, "Modules")}
+                >
+                  Copy example
+                </Button>
+              </li>
+              <li>
+                <span className="font-medium">Quizzes JSON:</span>
+                <br />
+                Defines quiz questions and answers
+                <Button
+                  variant="link"
+                  className="px-0 h-auto py-0 text-xs"
+                  onClick={() => copyExampleFormat(defaultQuizzes, "Quizzes")}
+                >
+                  Copy example
+                </Button>
+              </li>
+              <li>
+                <span className="font-medium">Assignments JSON:</span>
+                <br />
+                Contains assignment details and requirements
+                <Button
+                  variant="link"
+                  className="px-0 h-auto py-0 text-xs"
+                  onClick={() => copyExampleFormat(defaultAssignments, "Assignments")}
+                >
+                  Copy example
+                </Button>
+              </li>
+              <li>
+                <span className="font-medium">Resources JSON:</span>
+                <br />
+                Lists learning resources and materials
+                <Button
+                  variant="link"
+                  className="px-0 h-auto py-0 text-xs"
+                  onClick={() => copyExampleFormat(defaultResources, "Resources")}
+                >
+                  Copy example
+                </Button>
+              </li>
+            </ul>
+          </div>
+          <div>
+            <p className="font-medium mb-1">Tips:</p>
+            <ul className="list-disc pl-4">
+              <li>Each file must be valid JSON format</li>
+              <li>IDs should be unique across all files</li>
+              <li>Files are linked through their respective IDs</li>
+              <li>Click "Copy example" to see the expected format</li>
+            </ul>
+          </div>
+        </div>
+      </HoverCardContent>
+    </HoverCard>
   );
-};
+}
