@@ -137,7 +137,7 @@ export const validateAndTransformCurriculum = (rawData: any): Curriculum => {
   const validationResult = curriculumSchema.safeParse(rawData);
   
   if (!validationResult.success) {
-    throw new Error("Invalid curriculum format: " + validationResult.error.message);
+    throw new Error("Invalid curriculum format: " + JSON.stringify(validationResult.error.errors, null, 2));
   }
 
   const { data } = validationResult;
@@ -151,14 +151,28 @@ export const validateAndTransformCurriculum = (rawData: any): Curriculum => {
       type: degree.type,
       description: degree.description,
       requiredCredits: degree.requiredCredits,
-      courses: degree.courses.map(course => ({
-        id: course.id || crypto.randomUUID(),
-        title: course.title,
-        description: course.description,
-        credits: course.credits,
-        level: course.level,
-        modules: course.modules.map(validateAndTransformModule)
-      }))
+      courses: degree.courses.map(course => {
+        if (typeof course === 'string') {
+          // If course is a string ID, create a minimal course object
+          return {
+            id: course,
+            title: '',
+            description: '',
+            credits: 0,
+            level: 'introductory',
+            modules: []
+          };
+        }
+        // If it's already a course object, use it directly
+        return {
+          id: course.id,
+          title: course.title,
+          description: course.description,
+          credits: course.credits,
+          level: course.level,
+          modules: course.modules || []
+        };
+      })
     }))
   };
 };
