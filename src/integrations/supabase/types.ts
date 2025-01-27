@@ -684,6 +684,82 @@ export type Database = {
         }
         Relationships: []
       }
+      school_posts: {
+        Row: {
+          comments_count: number | null
+          content: string
+          created_at: string | null
+          created_by: string
+          id: string
+          likes_count: number | null
+          school_id: string
+        }
+        Insert: {
+          comments_count?: number | null
+          content: string
+          created_at?: string | null
+          created_by: string
+          id?: string
+          likes_count?: number | null
+          school_id: string
+        }
+        Update: {
+          comments_count?: number | null
+          content?: string
+          created_at?: string | null
+          created_by?: string
+          id?: string
+          likes_count?: number | null
+          school_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fk_school_posts_profiles"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "school_posts_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "school_posts_school_id_fkey"
+            columns: ["school_id"]
+            isOneToOne: false
+            referencedRelation: "schools"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      schools: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          logo_url: string | null
+          name: string
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          logo_url?: string | null
+          name: string
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          logo_url?: string | null
+          name?: string
+        }
+        Relationships: []
+      }
       social_bookmarks: {
         Row: {
           created_at: string | null
