@@ -9,6 +9,7 @@ import Login from "@/pages/Login";
 import Signup from "@/pages/Signup";
 import Creator from "@/pages/Creator";
 import Index from "@/pages/Index";
+import Learning from "@/pages/Learning";
 
 export const AppRoutes = () => {
   return (
@@ -40,6 +41,18 @@ export const AppRoutes = () => {
             <>
               <Navigation />
               <Import />
+            </>
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/learning/:id"
+        element={
+          <ProtectedRoute>
+            <>
+              <Navigation />
+              <Learning />
             </>
           </ProtectedRoute>
         }
