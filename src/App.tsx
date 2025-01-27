@@ -6,11 +6,11 @@ import React from 'react';
 function App() {
   return (
     <React.StrictMode>
-      <Router>
-        <AppProviders>
+      <AppProviders>
+        <Router>
           <AppRoutes />
-        </AppProviders>
-      </Router>
+        </Router>
+      </AppProviders>
     </React.StrictMode>
   );
 }
