@@ -1,12 +1,13 @@
 import { useState, Suspense } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { ModuleList } from '@/components/curriculum/ModuleList';
 import { ModuleContent } from '@/components/learning/ModuleContent';
 import { CurriculumSelector } from '@/components/learning/CurriculumSelector';
 import { useCurriculum } from '@/hooks/use-curriculum';
 import { useProgress } from '@/hooks/use-progress';
+import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { BookOpen, Loader2 } from "lucide-react";
+import { BookOpen, Loader2, Plus } from "lucide-react";
 import type { Module } from '@/types/curriculum';
 import { TooltipProvider } from '@/components/ui/tooltip';
 
@@ -22,13 +23,20 @@ const LoadingSkeleton = () => (
 );
 
 const EmptyState = () => (
-  <div className="flex items-center justify-center h-[calc(100vh-20rem)] glass-panel rounded-xl p-8 text-muted-foreground">
-    <div className="text-center">
-      <BookOpen className="w-12 h-12 mx-auto mb-4 opacity-50 animate-pulse" />
-      <p className="text-lg">Select a module to begin learning</p>
-      <p className="text-sm text-muted-foreground mt-2">
-        Choose from the available modules on the left to start your learning journey
+  <div className="flex items-center justify-center h-[calc(100vh-20rem)] glass-panel rounded-xl p-8 text-center">
+    <div className="max-w-md">
+      <BookOpen className="w-12 h-12 mx-auto mb-4 opacity-50" />
+      <h2 className="text-2xl font-semibold mb-2">No Curriculum Selected</h2>
+      <p className="text-muted-foreground mb-6">
+        Import a curriculum or select an existing one to start learning
       </p>
+      <Button 
+        onClick={() => window.location.href = '/curriculum-import'}
+        className="gap-2"
+      >
+        <Plus className="w-4 h-4" />
+        Import Curriculum
+      </Button>
     </div>
   </div>
 );
@@ -38,6 +46,7 @@ const Learning = () => {
   const { curriculumId } = useParams();
   const { curricula, isLoading } = useCurriculum();
   const { updateProgress } = useProgress(curriculumId);
+  const navigate = useNavigate();
 
   const handleModuleSelect = async (module: Module) => {
     setSelectedModule(module);
@@ -50,7 +59,12 @@ const Learning = () => {
   };
 
   const handleCurriculumChange = (id: string) => {
-    setSelectedModule(null);
+    if (id === 'new') {
+      navigate('/curriculum-import');
+    } else {
+      navigate(`/learning/${id}`);
+      setSelectedModule(null);
+    }
   };
 
   if (isLoading) {
@@ -101,12 +115,7 @@ const Learning = () => {
               </div>
             </div>
           ) : (
-            <div className="text-center py-12 animate-fade-in">
-              <h2 className="text-2xl font-semibold mb-4">Welcome to Learning</h2>
-              <p className="text-muted-foreground mb-8">
-                Select a curriculum to start your learning journey
-              </p>
-            </div>
+            <EmptyState />
           )}
         </div>
       </div>
