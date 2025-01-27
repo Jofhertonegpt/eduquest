@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BookOpen, FileText, CheckCircle } from "lucide-react";
 import type { Module } from "@/types/curriculum";
+import { useCurriculumQueries } from "@/hooks/useCurriculumQueries";
 
 interface ModuleListProps {
   curriculumId: string;
@@ -14,9 +15,9 @@ interface ModuleListProps {
 }
 
 export const ModuleList = ({ curriculumId, type, onModuleSelect }: ModuleListProps) => {
-  const { data: modules, isLoading } = useCurriculumModules(curriculumId, type);
+  const { modules, modulesLoading, prefetchModuleContent } = useCurriculumQueries(curriculumId);
 
-  if (isLoading) {
+  if (modulesLoading) {
     return (
       <div className="flex items-center justify-center p-8">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
@@ -45,6 +46,7 @@ export const ModuleList = ({ curriculumId, type, onModuleSelect }: ModuleListPro
         <ModuleList.Content
           modules={modules?.filter(m => m.content.type === 'resource')}
           onModuleSelect={onModuleSelect}
+          onModuleHover={prefetchModuleContent}
         />
       </TabsContent>
 
@@ -52,6 +54,7 @@ export const ModuleList = ({ curriculumId, type, onModuleSelect }: ModuleListPro
         <ModuleList.Content
           modules={modules?.filter(m => m.content.type === 'assignment')}
           onModuleSelect={onModuleSelect}
+          onModuleHover={prefetchModuleContent}
         />
       </TabsContent>
 
@@ -59,6 +62,7 @@ export const ModuleList = ({ curriculumId, type, onModuleSelect }: ModuleListPro
         <ModuleList.Content
           modules={modules?.filter(m => m.content.type === 'quiz')}
           onModuleSelect={onModuleSelect}
+          onModuleHover={prefetchModuleContent}
         />
       </TabsContent>
     </Tabs>
@@ -67,10 +71,12 @@ export const ModuleList = ({ curriculumId, type, onModuleSelect }: ModuleListPro
 
 ModuleList.Content = function ModuleListContent({ 
   modules, 
-  onModuleSelect 
+  onModuleSelect,
+  onModuleHover 
 }: { 
   modules?: { content: Module }[];
   onModuleSelect: (module: Module) => void;
+  onModuleHover: (moduleId: string) => void;
 }) {
   if (!modules?.length) {
     return (
@@ -88,6 +94,7 @@ ModuleList.Content = function ModuleListContent({
             key={module.content.id} 
             className="p-4 hover:bg-accent cursor-pointer transition-colors"
             onClick={() => onModuleSelect(module.content)}
+            onMouseEnter={() => onModuleHover(module.content.id)}
           >
             <h3 className="text-lg font-semibold">
               {module.content.title || "Untitled Module"}
