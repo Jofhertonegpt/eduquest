@@ -43,7 +43,9 @@ const AppRoutes = () => {
         element={
           <ProtectedRoute>
             <Navigation />
-            <Learning />
+            <div className="container mx-auto px-4 py-4 md:py-8">
+              <Learning />
+            </div>
           </ProtectedRoute>
         }
       />
@@ -52,7 +54,9 @@ const AppRoutes = () => {
         element={
           <ProtectedRoute>
             <Navigation />
-            <Profile />
+            <div className="container mx-auto px-4 py-4 md:py-8">
+              <Profile />
+            </div>
           </ProtectedRoute>
         }
       />
