@@ -34,7 +34,7 @@ export const CurriculumFormatInfo = () => {
       </DialogTrigger>
       <DialogContent className="max-w-4xl h-[80vh]">
         <DialogHeader>
-          <DialogTitle>Enhanced Curriculum Format Guide</DialogTitle>
+          <DialogTitle>JSON Format FAQ:</DialogTitle>
         </DialogHeader>
         <Tabs defaultValue="overview" className="h-full">
           <TabsList>
@@ -46,68 +46,77 @@ export const CurriculumFormatInfo = () => {
           <ScrollArea className="h-[calc(80vh-10rem)] mt-4">
             <TabsContent value="overview" className="space-y-4">
               <div className="prose dark:prose-invert max-w-none">
-                <h3>What is a Curriculum?</h3>
+                <h3>What are the required JSON files?</h3>
                 <p>
-                  A curriculum is a structured educational program that consists of programs, 
-                  courses, and modules. Each component is designed to provide a comprehensive 
-                  learning experience with clear objectives and outcomes.
+                  The curriculum system requires multiple JSON files that work together to create a complete
+                  learning experience. Each file serves a specific purpose:
                 </p>
                 
-                <h4>Key Components:</h4>
+                <h4>Required Files:</h4>
                 <ul>
                   <li>
-                    <strong>Programs</strong> - The highest level of organization, representing complete
-                    educational paths (e.g., Computer Science, Business Administration)
+                    <strong>Curriculum JSON</strong> - Contains the main program information and structure
                   </li>
                   <li>
-                    <strong>Courses</strong> - Major subjects or areas of study within a program
+                    <strong>Courses JSON</strong> - Defines the courses within the program
                   </li>
                   <li>
-                    <strong>Modules</strong> - Specific units of learning within courses
+                    <strong>Modules JSON</strong> - Contains the learning modules for each course
+                  </li>
+                  <li>
+                    <strong>Quizzes JSON</strong> - Defines assessment questions and answers
+                  </li>
+                  <li>
+                    <strong>Assignments JSON</strong> - Contains practical assignments and projects
+                  </li>
+                  <li>
+                    <strong>Resources JSON</strong> - Lists learning materials and references
                   </li>
                 </ul>
 
-                <h4>Learning Features:</h4>
+                <h4>Key Features:</h4>
                 <ul>
-                  <li>Interactive assessments and quizzes</li>
-                  <li>Multimedia resources (videos, documents, code examples)</li>
-                  <li>Progress tracking and achievements</li>
-                  <li>Clear learning objectives and outcomes</li>
+                  <li>Each file must be valid JSON format</li>
+                  <li>IDs must be unique across all files</li>
+                  <li>References between files use these unique IDs</li>
+                  <li>All required fields must be present</li>
                 </ul>
               </div>
             </TabsContent>
 
             <TabsContent value="structure" className="space-y-4">
               <div className="prose dark:prose-invert max-w-none">
-                <h3>Program Structure</h3>
+                <h3>JSON Structure Requirements</h3>
                 <div className="space-y-4">
                   <div className="rounded-lg bg-muted p-4">
-                    <h4 className="font-semibold mb-2">Required Fields:</h4>
+                    <h4 className="font-semibold mb-2">Curriculum JSON:</h4>
                     <ul className="list-disc list-inside space-y-2">
-                      <li>name (string) - Program title</li>
+                      <li>name (string) - Program name</li>
                       <li>description (string) - Program overview</li>
-                      <li>programOutcomes (string[]) - Expected learning outcomes</li>
-                      <li>institution (string) - Institution offering the program</li>
+                      <li>degrees (array) - List of degree programs</li>
+                      <li>institution (string) - Institution name</li>
                     </ul>
                   </div>
 
                   <div className="rounded-lg bg-muted p-4">
-                    <h4 className="font-semibold mb-2">Course Structure:</h4>
+                    <h4 className="font-semibold mb-2">Courses JSON:</h4>
                     <ul className="list-disc list-inside space-y-2">
+                      <li>id (string) - Unique course identifier</li>
                       <li>title (string) - Course name</li>
-                      <li>description (string) - Course overview</li>
-                      <li>credits (number) - Course credits</li>
+                      <li>description (string) - Course description</li>
+                      <li>credits (number) - Course credit value</li>
                       <li>level (string) - Course difficulty level</li>
                     </ul>
                   </div>
 
                   <div className="rounded-lg bg-muted p-4">
-                    <h4 className="font-semibold mb-2">Module Components:</h4>
+                    <h4 className="font-semibold mb-2">Modules JSON:</h4>
                     <ul className="list-disc list-inside space-y-2">
-                      <li>Resources (videos, documents, code)</li>
-                      <li>Assessments with rubrics</li>
-                      <li>Interactive quizzes</li>
-                      <li>Learning objectives</li>
+                      <li>id (string) - Unique module identifier</li>
+                      <li>courseId (string) - Reference to parent course</li>
+                      <li>title (string) - Module name</li>
+                      <li>description (string) - Module content</li>
+                      <li>resources (array) - Learning materials</li>
                     </ul>
                   </div>
                 </div>
