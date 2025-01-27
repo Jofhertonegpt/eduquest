@@ -94,6 +94,41 @@ export type Database = {
           },
         ]
       }
+      curriculum_modules: {
+        Row: {
+          content: Json
+          created_at: string | null
+          curriculum_id: string | null
+          id: string
+          module_type: string
+          updated_at: string | null
+        }
+        Insert: {
+          content: Json
+          created_at?: string | null
+          curriculum_id?: string | null
+          id?: string
+          module_type: string
+          updated_at?: string | null
+        }
+        Update: {
+          content?: Json
+          created_at?: string | null
+          curriculum_id?: string | null
+          id?: string
+          module_type?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "curriculum_modules_curriculum_id_fkey"
+            columns: ["curriculum_id"]
+            isOneToOne: false
+            referencedRelation: "imported_curricula"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       curriculum_progress: {
         Row: {
           active_course_id: string | null
