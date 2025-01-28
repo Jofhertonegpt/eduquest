@@ -250,12 +250,13 @@ export const JofhSchool = () => {
                                 } as MultipleChoiceQuestion;
                               }
                               if (q.type === 'coding') {
+                                const codingQ = q as unknown as CodingQuestion;
                                 return {
-                                  ...q,
+                                  ...codingQ,
                                   type: 'coding' as const,
-                                  initialCode: q.initialCode || '',
-                                  testCases: q.testCases || []
-                                };
+                                  initialCode: codingQ.initialCode || '',
+                                  testCases: codingQ.testCases || []
+                                } as CodingQuestion;
                               }
                               return {
                                 ...q,
