@@ -50,7 +50,7 @@ export const JofhSchool = () => {
         // Here you would implement actual code verification
         return true;
       case 'multiple-choice':
-        return answer === question.correctOption;
+        return answer === (question as MultipleChoiceQuestion).correctAnswer;
       case 'true-false':
         return answer === question.correctAnswer;
       default:
@@ -97,8 +97,12 @@ export const JofhSchool = () => {
                           ...module,
                           metadata: {
                             ...module.metadata,
-                            difficulty: module.metadata.difficulty as 'beginner' | 'intermediate' | 'advanced'
-                          }
+                            difficulty: module.metadata.difficulty as DifficultyLevel
+                          },
+                          resources: module.resources.map(r => ({
+                            ...r,
+                            type: r.type as ResourceType
+                          }))
                         })}
                       >
                         {module.title}
@@ -178,7 +182,7 @@ export const JofhSchool = () => {
                   {selectedModule.resources.map((resource) => (
                     <Card key={resource.id} className="p-6 mb-4">
                       <h3 className="text-xl font-semibold mb-4">{resource.title}</h3>
-                      {(resource.type as 'video' | 'document' | 'code' | 'link') === 'code' && 
+                      {(resource.type as ResourceType) === 'code' &&
                        'code' in resource && resource.code && (
                         <div className="h-[400px] border rounded-lg overflow-hidden">
                           <MonacoEditor
