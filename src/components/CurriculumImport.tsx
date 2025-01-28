@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { validateAndTransformCurriculum } from "@/lib/curriculumValidation";
 import { supabase } from "@/lib/supabase";
@@ -13,7 +12,8 @@ import defaultCourses from "@/data/curriculum/New defaults/courses.json";
 import { CurriculumFormatInfo } from "@/components/learning/CurriculumFormatInfo";
 import type { Json } from "@/lib/database.types";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Info } from "lucide-react";
+import { Info, ArrowLeft, ArrowRight } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
 
 interface JsonInputs {
   curriculum: string;
@@ -58,6 +58,7 @@ const jsonPlaceholders = {
 };
 
 export function CurriculumImport() {
+  const [currentStep, setCurrentStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [jsonInputs, setJsonInputs] = useState<JsonInputs>({
     curriculum: "",
@@ -103,7 +104,6 @@ export function CurriculumImport() {
       
       let dataToImport;
       if (useDefault) {
-        // Use the new default curriculum data
         dataToImport = {
           ...defaultProgram,
           courses: defaultCourses,
@@ -154,9 +154,65 @@ export function CurriculumImport() {
     }
   };
 
+  const nextStep = () => {
+    if (currentStep < 3) {
+      setCurrentStep(prev => prev + 1);
+    }
+  };
+
+  const prevStep = () => {
+    if (currentStep > 1) {
+      setCurrentStep(prev => prev - 1);
+    }
+  };
+
+  const renderStepContent = () => {
+    switch (currentStep) {
+      case 1:
+        return (
+          <div className="space-y-4">
+            <Label htmlFor="curriculum-json">Program Structure</Label>
+            <Textarea
+              id="curriculum-json"
+              placeholder={jsonPlaceholders.curriculum}
+              value={jsonInputs.curriculum}
+              onChange={(e) => handleInputChange("curriculum", e.target.value)}
+              className="min-h-[300px] font-mono"
+            />
+          </div>
+        );
+      case 2:
+        return (
+          <div className="space-y-4">
+            <Label htmlFor="courses-json">Course Definitions</Label>
+            <Textarea
+              id="courses-json"
+              placeholder={jsonPlaceholders.courses}
+              value={jsonInputs.courses}
+              onChange={(e) => handleInputChange("courses", e.target.value)}
+              className="min-h-[300px] font-mono"
+            />
+          </div>
+        );
+      case 3:
+        return (
+          <div className="space-y-4">
+            <Label htmlFor="modules-json">Module Details</Label>
+            <Textarea
+              id="modules-json"
+              placeholder={jsonPlaceholders.modules}
+              value={jsonInputs.modules}
+              onChange={(e) => handleInputChange("modules", e.target.value)}
+              className="min-h-[300px] font-mono"
+            />
+          </div>
+        );
+    }
+  };
+
   return (
     <Card className="p-6">
-      <div className="space-y-4">
+      <div className="space-y-6">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-semibold">Import Curriculum</h2>
           <CurriculumFormatInfo />
@@ -165,47 +221,58 @@ export function CurriculumImport() {
         <Alert className="mb-4">
           <Info className="h-4 w-4" />
           <AlertDescription>
-            Each tab contains a minimal template with required fields. Additional fields can be added as needed.
+            Follow the step-by-step process to import your curriculum. Each step contains a template with required fields.
           </AlertDescription>
         </Alert>
 
-        <Tabs defaultValue="curriculum" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="curriculum">Curriculum</TabsTrigger>
-            <TabsTrigger value="courses">Courses</TabsTrigger>
-            <TabsTrigger value="modules">Modules</TabsTrigger>
-          </TabsList>
+        <div className="space-y-6">
+          <div className="space-y-2">
+            <div className="flex justify-between text-sm text-muted-foreground">
+              <span>Step {currentStep} of 3</span>
+              <span>{Math.round((currentStep / 3) * 100)}%</span>
+            </div>
+            <Progress value={(currentStep / 3) * 100} className="h-2" />
+          </div>
 
-          {Object.keys(jsonInputs).map((key) => (
-            <TabsContent key={key} value={key} className="space-y-2">
-              <Label htmlFor={`${key}-json`} className="capitalize">{key} JSON</Label>
-              <Textarea
-                id={`${key}-json`}
-                placeholder={jsonPlaceholders[key as keyof JsonInputs]}
-                value={jsonInputs[key as keyof JsonInputs]}
-                onChange={(e) => handleInputChange(key as keyof JsonInputs, e.target.value)}
-                className="min-h-[400px] font-mono"
-              />
-            </TabsContent>
-          ))}
-        </Tabs>
+          {renderStepContent()}
 
-        <div className="flex gap-4">
-          <Button 
-            onClick={() => handleImport()} 
-            disabled={isLoading || !jsonInputs.curriculum}
-            className="flex-1"
-          >
-            {isLoading ? "Importing..." : "Import Custom Curriculum"}
-          </Button>
-          <Button 
-            onClick={() => handleImport(true)}
-            disabled={isLoading}
-            variant="secondary"
-            className="flex-1"
-          >
-            Use Default Curriculum
-          </Button>
+          <div className="flex justify-between pt-4">
+            <Button
+              onClick={prevStep}
+              disabled={currentStep === 1}
+              variant="outline"
+              className="flex items-center gap-2"
+            >
+              <ArrowLeft className="h-4 w-4" /> Previous
+            </Button>
+
+            <div className="flex gap-2">
+              <Button
+                onClick={() => handleImport(true)}
+                variant="secondary"
+                disabled={isLoading}
+              >
+                Use Default
+              </Button>
+
+              {currentStep === 3 ? (
+                <Button
+                  onClick={() => handleImport()}
+                  disabled={isLoading || !jsonInputs.curriculum}
+                  className="flex items-center gap-2"
+                >
+                  {isLoading ? "Importing..." : "Import Curriculum"}
+                </Button>
+              ) : (
+                <Button
+                  onClick={nextStep}
+                  className="flex items-center gap-2"
+                >
+                  Next <ArrowRight className="h-4 w-4" />
+                </Button>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </Card>
