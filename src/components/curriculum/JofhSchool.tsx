@@ -36,9 +36,9 @@ export const JofhSchool = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pt-16">
       {/* Welcome Section */}
-      <div className="bg-pink-50 p-8 rounded-lg mb-8">
+      <div className="bg-pink-50 p-8 rounded-lg mb-8 max-w-7xl mx-auto mt-8">
         <div className="flex items-center gap-8">
           <div>
             <h1 className="text-2xl font-bold text-pink-500 mb-2">Welcome back!</h1>
@@ -52,7 +52,7 @@ export const JofhSchool = () => {
         </div>
       </div>
 
-      <div className="container mx-auto p-4 space-y-8">
+      <div className="container mx-auto p-4 space-y-8 max-w-7xl">
         {/* Latest Results */}
         <div className="space-y-4">
           <div className="flex justify-between items-center">
