@@ -134,3 +134,11 @@ export interface Assignment {
     }[];
   };
 }
+
+export interface Question {
+  id: string;
+  title: string;
+  description: string;
+  points: number;
+  type: string;
+}

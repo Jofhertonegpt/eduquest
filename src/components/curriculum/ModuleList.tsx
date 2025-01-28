@@ -6,7 +6,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import type { ModuleListProps } from "@/types/learning-types";
-import type { Module, ModuleData } from "@/types/curriculum";
+import type { Module } from "@/types/curriculum";
 
 const ModuleListSkeleton = () => (
   <div className="space-y-4">
@@ -57,7 +57,7 @@ export const ModuleList = ({ curriculumId, onModuleSelect }: ModuleListProps) =>
 
   // Group modules by course using module_data
   const courseGroups = modules.reduce((acc, module) => {
-    const moduleData = module.module_data as ModuleData;
+    const moduleData = module.module_data as any;
     const courseId = moduleData?.courseId || 'uncategorized';
     if (!acc[courseId]) {
       acc[courseId] = [];
