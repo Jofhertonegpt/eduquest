@@ -13,7 +13,7 @@ import type { Course, Module, Quiz, CodingQuestion } from '@/types/curriculum';
 export const JofhSchool = () => {
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const [selectedModule, setSelectedModule] = useState<Module | null>(null);
-  const [answers, setAnswers] = useState<Record<string, any>>({});
+  const [answers, setAnswers] = useState<Record<string, string | number | boolean>>({});
   const { toast } = useToast();
 
   useEffect(() => {
@@ -37,14 +37,14 @@ export const JofhSchool = () => {
     localStorage.setItem('quizAnswers', JSON.stringify(answers));
   }, [answers]);
 
-  const handleAnswerSubmit = (questionId: string, answer: any) => {
+  const handleAnswerSubmit = (questionId: string, answer: string | number | boolean) => {
     setAnswers(prev => ({
       ...prev,
       [questionId]: answer
     }));
   };
 
-  const verifyAnswer = (question: any, answer: any) => {
+  const verifyAnswer = (question: Quiz['questions'][0], answer: string | number | boolean) => {
     if (question.type === 'coding') {
       // Here you would implement actual code verification
       return true;
@@ -65,7 +65,11 @@ export const JofhSchool = () => {
                 className={`w-full justify-start ${
                   selectedCourse?.id === course.id ? 'bg-primary/10' : ''
                 }`}
-                onClick={() => setSelectedCourse(course)}
+                onClick={() => setSelectedCourse({
+                  ...course,
+                  category: 'general' as const,
+                  duration: '16 weeks' as const
+                })}
               >
                 {course.title}
               </Button>
@@ -82,7 +86,13 @@ export const JofhSchool = () => {
                         className={`w-full justify-start ${
                           selectedModule?.id === module.id ? 'bg-primary/5' : ''
                         }`}
-                        onClick={() => setSelectedModule(module)}
+                        onClick={() => setSelectedModule({
+                          ...module,
+                          metadata: {
+                            ...module.metadata,
+                            difficulty: module.metadata.difficulty as 'beginner' | 'intermediate' | 'advanced'
+                          }
+                        })}
                       >
                         {module.title}
                       </Button>
