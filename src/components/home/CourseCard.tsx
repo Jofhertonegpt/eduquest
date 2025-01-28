@@ -4,13 +4,15 @@ import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card"
 import { Button } from "@/components/ui/button";
 import { Clock } from "lucide-react";
 import type { CourseCard as CourseCardType } from "@/types/home";
+import type { Module } from "@/types/curriculum";
 
 interface CourseCardProps {
   course: CourseCardType;
+  modules: Module[];
   index: number;
 }
 
-export const CourseCard = ({ course, index }: CourseCardProps) => {
+export const CourseCard = ({ course, modules, index }: CourseCardProps) => {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -26,6 +28,13 @@ export const CourseCard = ({ course, index }: CourseCardProps) => {
         </CardHeader>
         <CardContent>
           <p className="text-muted-foreground">{course.description}</p>
+          <div className="mt-4 space-y-2">
+            {modules?.map(module => (
+              <div key={module.id} className="text-sm">
+                {module.title}
+              </div>
+            ))}
+          </div>
         </CardContent>
         <CardFooter className="flex items-center justify-between">
           <div className="flex items-center text-sm text-muted-foreground">

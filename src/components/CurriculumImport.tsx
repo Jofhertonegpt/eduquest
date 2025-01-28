@@ -2,8 +2,8 @@ import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/lib/supabase";
 import { validateAndTransformCurriculum } from "@/lib/curriculumValidation";
-import { defaultProgram } from "@/data/program.json";
-import { defaultCourses } from "@/data/curriculum/New defaults/courses.json";
+import { defaultProgram } from "@/data/program";
+import { defaultCourses } from "@/data/curriculum/New defaults/courses";
 
 export const CurriculumImport = () => {
   const { toast } = useToast();
