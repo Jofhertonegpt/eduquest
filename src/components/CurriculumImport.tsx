@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/lib/supabase";
 import { validateAndTransformCurriculum } from "@/lib/curriculumValidation";
-import type { CodingQuestion } from "@/types/curriculum";
+import type { CodingQuestion, MultipleChoiceQuestion } from "@/types/curriculum";
 import programData from "@/data/curriculum/New defaults/program.json";
 import coursesData from "@/data/curriculum/New defaults/courses.json";
 import modulesData from "@/data/curriculum/New defaults/modules.json";
