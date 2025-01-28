@@ -42,6 +42,10 @@ export const ImportedCurriculaList = () => {
     );
   }
 
+  const handleViewCurriculum = (curriculumId: string) => {
+    navigate(`/learning/${curriculumId}`);
+  };
+
   return (
     <ScrollArea className="h-[400px] rounded-md border">
       <div className="p-4 space-y-4">
@@ -62,7 +66,7 @@ export const ImportedCurriculaList = () => {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => navigate(`/learning/${curr.id}`)}
+                    onClick={() => handleViewCurriculum(curr.id)}
                   >
                     View
                   </Button>
