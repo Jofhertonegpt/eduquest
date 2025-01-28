@@ -73,19 +73,28 @@ export function useCourses(degreeId: string | undefined) {
   });
 }
 
-export function useModules(courseId: string | undefined) {
+export function useModules(curriculumId: string | undefined) {
   return useQuery({
-    queryKey: ['modules', courseId],
+    queryKey: ['modules', curriculumId],
     queryFn: async () => {
-      if (!courseId) return [];
+      if (!curriculumId) return [];
+      
+      console.log('Fetching modules for curriculum:', curriculumId);
       
       const { data, error } = await supabase
         .from('curriculum_modules')
         .select('*')
+        .eq('curriculum_id', curriculumId)
         .eq('module_type', 'module')
+        .eq('module_status', 'active')
         .order('display_order', { ascending: true });
       
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching modules:', error);
+        throw error;
+      }
+      
+      console.log('Fetched modules:', data);
       
       return data.map(module => ({
         id: module.id,
@@ -97,6 +106,6 @@ export function useModules(courseId: string | undefined) {
         learningObjectives: module.module_data?.learningObjectives || []
       })) as CourseModule[];
     },
-    enabled: !!courseId
+    enabled: !!curriculumId
   });
 }
