@@ -1,12 +1,11 @@
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { ChevronRight, ChevronDown } from "lucide-react";
-import type { Module } from "@/types/curriculum";
+import { ChevronRight, ChevronDown, BookOpen, FileText, CheckCircle } from "lucide-react";
 import { useCurriculumQueries } from "@/hooks/useCurriculumQueries";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ModuleCard } from "@/components/learning/ModuleCard";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useState } from "react";
-import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
 import type { ModuleListProps } from "@/types/learning-types";
 
 const ModuleListSkeleton = () => (
@@ -28,9 +27,6 @@ export const ModuleList = ({ curriculumId, onModuleSelect }: ModuleListProps) =>
   const { modules, modulesLoading, modulesError } = useCurriculumQueries(curriculumId);
   const [expandedCourses, setExpandedCourses] = useState<string[]>([]);
 
-  console.log("ModuleList received curriculumId:", curriculumId);
-  console.log("Modules data in component:", modules);
-
   if (modulesLoading) {
     return <ModuleListSkeleton />;
   }
@@ -46,7 +42,7 @@ export const ModuleList = ({ curriculumId, onModuleSelect }: ModuleListProps) =>
   if (!modules?.length) {
     return (
       <div className="p-8 text-center text-muted-foreground">
-        <p>No modules available for curriculum ID: {curriculumId}</p>
+        <p>No modules available for this curriculum</p>
       </div>
     );
   }
@@ -69,6 +65,19 @@ export const ModuleList = ({ curriculumId, onModuleSelect }: ModuleListProps) =>
     return acc;
   }, {} as Record<string, typeof modules>);
 
+  const getModuleTypeIcon = (type?: string) => {
+    switch (type) {
+      case 'resource':
+        return <BookOpen className="w-4 h-4" />;
+      case 'assignment':
+        return <FileText className="w-4 h-4" />;
+      case 'quiz':
+        return <CheckCircle className="w-4 h-4" />;
+      default:
+        return <BookOpen className="w-4 h-4" />;
+    }
+  };
+
   return (
     <ScrollArea className="h-[calc(100vh-12rem)]">
       <div className="p-4 space-y-4">
@@ -87,15 +96,20 @@ export const ModuleList = ({ curriculumId, onModuleSelect }: ModuleListProps) =>
               <span className="font-medium">
                 {courseId === 'uncategorized' ? 'General Modules' : `Course ${courseId}`}
               </span>
+              <Badge variant="secondary" className="ml-2">
+                {courseModules.length}
+              </Badge>
             </CollapsibleTrigger>
             <CollapsibleContent className="pl-6 mt-2 space-y-2">
               {courseModules.map((module) => (
-                <ModuleCard
+                <div
                   key={module.content.id}
-                  module={module.content}
+                  className="flex items-center gap-2 p-2 hover:bg-accent rounded-lg cursor-pointer"
                   onClick={() => onModuleSelect(module.content)}
-                  onHover={() => {}}
-                />
+                >
+                  {getModuleTypeIcon(module.content.type)}
+                  <span>{module.content.title}</span>
+                </div>
               ))}
             </CollapsibleContent>
           </Collapsible>
