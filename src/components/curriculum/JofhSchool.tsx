@@ -21,12 +21,18 @@ export const JofhSchool = () => {
         <div className="space-y-4">
           <h2 className="text-xl font-semibold">Courses</h2>
           {coursesData.map((course) => (
-            <Card key={course.id} className="p-4 cursor-pointer hover:bg-gray-50"
-                  onClick={() => setSelectedCourse({
-                    ...course,
-                    category: 'general',
-                    duration: '16 weeks'
-                  } as Course)}>
+            <Card 
+              key={course.id} 
+              className={`p-4 cursor-pointer transition-all duration-200 ${
+                selectedCourse?.id === course.id 
+                  ? 'border-primary bg-primary/5' 
+                  : 'hover:bg-gray-50 hover:shadow-md'
+              }`}
+              onClick={() => setSelectedCourse({
+                ...course,
+                category: 'general',
+                duration: '16 weeks'
+              } as Course)}>
               <h3 className="font-medium">{course.title}</h3>
               <p className="text-sm text-gray-600">{course.description}</p>
             </Card>
