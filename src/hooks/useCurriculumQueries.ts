@@ -21,7 +21,10 @@ export const useCurriculumQueries = (curriculumId?: string) => {
   } = useQuery({
     queryKey: ["curriculum-modules", curriculumId],
     queryFn: async () => {
-      if (!curriculumId) return null;
+      if (!curriculumId) {
+        console.log("No curriculum ID provided");
+        return null;
+      }
       
       console.log("Fetching modules for curriculum:", curriculumId);
       
@@ -34,6 +37,24 @@ export const useCurriculumQueries = (curriculumId?: string) => {
       if (error) {
         console.error("Error fetching modules:", error);
         throw error;
+      }
+
+      if (!data || data.length === 0) {
+        console.log("No modules found for curriculum:", curriculumId);
+        // Check if the curriculum exists
+        const { data: curriculum, error: currError } = await supabase
+          .from("imported_curricula")
+          .select("curriculum")
+          .eq("id", curriculumId)
+          .single();
+
+        if (currError) {
+          console.error("Error checking curriculum:", currError);
+        } else if (!curriculum) {
+          console.log("Curriculum not found:", curriculumId);
+        } else {
+          console.log("Curriculum exists but has no modules:", curriculum);
+        }
       }
 
       console.log("Raw modules data:", data);
