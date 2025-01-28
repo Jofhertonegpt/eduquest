@@ -25,7 +25,15 @@ export function CurriculumImport() {
         template_type: 'program',
         content: {
           ...defaultProgram,
-          courses: defaultCourses,
+          courses: defaultCourses.map(course => ({
+            id: course.id,
+            title: course.title,
+            description: course.description,
+            credits: course.credits,
+            level: course.level,
+            metadata: course.metadata,
+            modules: course.modules || []
+          }))
         },
         is_default: true,
       });
