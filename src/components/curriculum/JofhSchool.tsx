@@ -43,8 +43,16 @@ export const JofhSchool = () => {
         <h2 className="text-2xl font-bold mb-4">{course.title}</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {course.modules.map(moduleId => {
-            const module = modulesData.find(m => m.id === moduleId);
-            if (!module) return null;
+            const foundModule = modulesData.find(m => m.id === moduleId);
+            if (!foundModule) return null;
+            // Cast the module to match our type definitions
+            const module: Module = {
+              ...foundModule,
+              metadata: {
+                ...foundModule.metadata,
+                difficulty: foundModule.metadata.difficulty as "beginner" | "intermediate" | "advanced"
+              }
+            };
             return (
               <Card key={module.id} className="p-4 cursor-pointer hover:bg-secondary/50" onClick={() => setSelectedModule(module)}>
                 <h3 className="text-lg font-semibold">{module.title}</h3>
