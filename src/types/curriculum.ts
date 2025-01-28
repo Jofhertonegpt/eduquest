@@ -38,15 +38,6 @@ export interface Quiz {
   questions: Array<Question>;
 }
 
-// Update Question type to be a union of all possible question types
-export type Question = 
-  | MultipleChoiceQuestion 
-  | TrueFalseQuestion 
-  | ShortAnswerQuestion 
-  | EssayQuestion 
-  | CodingQuestion 
-  | PresentationQuestion 
-  | DiagramQuestion;
 export type ResourceType = 'video' | 'pdf' | 'epub' | 'article' | 'document' | 'code';
 export type CourseLevel = 'introductory' | 'intermediate' | 'advanced';
 
