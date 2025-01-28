@@ -22,7 +22,11 @@ export const JofhSchool = () => {
           <h2 className="text-xl font-semibold">Courses</h2>
           {coursesData.map((course) => (
             <Card key={course.id} className="p-4 cursor-pointer hover:bg-gray-50"
-                  onClick={() => setSelectedCourse(course)}>
+                  onClick={() => setSelectedCourse({
+                    ...course,
+                    category: 'general',
+                    duration: '16 weeks'
+                  } as Course)}>
               <h3 className="font-medium">{course.title}</h3>
               <p className="text-sm text-gray-600">{course.description}</p>
             </Card>
@@ -39,7 +43,13 @@ export const JofhSchool = () => {
               
               return (
                 <Card key={module.id} className="p-4 cursor-pointer hover:bg-gray-50"
-                      onClick={() => setSelectedModule(module)}>
+                      onClick={() => setSelectedModule({
+                        ...module,
+                        metadata: {
+                          ...module.metadata,
+                          difficulty: module.metadata.difficulty as 'beginner' | 'intermediate' | 'advanced'
+                        }
+                      } as Module)}>
                   <h3 className="font-medium">{module.title}</h3>
                   <p className="text-sm text-gray-600">{module.description}</p>
                 </Card>
