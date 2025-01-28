@@ -1,7 +1,13 @@
+export type DegreeType = 'associates' | 'bachelors' | 'masters' | 'doctorate' | 'certificate' | 'undergraduate' | string;
+export type DifficultyLevel = 'beginner' | 'intermediate' | 'advanced' | 'expert';
+export type ResourceType = 'video' | 'pdf' | 'epub' | 'article' | 'document' | 'code';
+export type CourseLevel = 'introductory' | 'intermediate' | 'advanced';
+export type ModuleType = 'resource' | 'assignment' | 'quiz';
+
 export interface Resource {
   id: string;
   title: string;
-  type: 'video' | 'document' | 'article' | 'code';
+  type: ResourceType;
   content: string;
   duration?: string;
   url?: string;
@@ -120,7 +126,7 @@ export interface Module {
   title: string;
   description: string;
   credits: number;
-  type?: 'resource' | 'assignment' | 'quiz';
+  type?: ModuleType;
   courseId?: string;
   metadata: {
     estimatedTime: number;
