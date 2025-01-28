@@ -6,6 +6,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import type { ModuleListProps } from "@/types/learning-types";
+import type { Module } from "@/types/curriculum";
 
 const ModuleListSkeleton = () => (
   <div className="space-y-4">
@@ -100,16 +101,19 @@ export const ModuleList = ({ curriculumId, onModuleSelect }: ModuleListProps) =>
               </Badge>
             </CollapsibleTrigger>
             <CollapsibleContent className="pl-6 mt-2 space-y-2">
-              {courseModules.map((module) => (
-                <div
-                  key={module.id}
-                  className="flex items-center gap-2 p-2 hover:bg-accent rounded-lg cursor-pointer"
-                  onClick={() => onModuleSelect(module.module_data)}
-                >
-                  {getModuleTypeIcon(module.module_data?.type)}
-                  <span>{module.module_data?.title}</span>
-                </div>
-              ))}
+              {courseModules.map((module) => {
+                const moduleData = module.module_data as Module;
+                return (
+                  <div
+                    key={moduleData.id}
+                    className="flex items-center gap-2 p-2 hover:bg-accent rounded-lg cursor-pointer"
+                    onClick={() => onModuleSelect(moduleData)}
+                  >
+                    {getModuleTypeIcon(moduleData.type)}
+                    <span>{moduleData.title}</span>
+                  </div>
+                );
+              })}
             </CollapsibleContent>
           </Collapsible>
         ))}

@@ -1,8 +1,8 @@
 export type DegreeType = 'associates' | 'bachelors' | 'masters' | 'doctorate' | 'certificate' | 'undergraduate' | string;
+
 export type DifficultyLevel = 'beginner' | 'intermediate' | 'advanced' | 'expert';
 export type ResourceType = 'video' | 'pdf' | 'epub' | 'article' | 'document' | 'code';
 export type CourseLevel = 'introductory' | 'intermediate' | 'advanced';
-export type ModuleType = 'resource' | 'assignment' | 'quiz';
 
 export interface JsonInputs {
   curriculum: string;
@@ -132,7 +132,7 @@ export interface Module {
   title: string;
   description: string;
   credits: number;
-  type?: ModuleType;
+  type?: 'resource' | 'assignment' | 'quiz';
   courseId?: string;
   metadata: {
     estimatedTime: number;
