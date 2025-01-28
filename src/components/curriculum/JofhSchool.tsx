@@ -45,11 +45,18 @@ export const JofhSchool = () => {
   };
 
   const verifyAnswer = (question: Quiz['questions'][0], answer: string | number | boolean) => {
-    if (question.type === 'coding') {
-      // Here you would implement actual code verification
-      return true;
+    switch (question.type) {
+      case 'coding':
+        // Here you would implement actual code verification
+        return true;
+      case 'multiple-choice':
+        return answer === question.correctOption;
+      case 'true-false':
+        return answer === question.correctAnswer;
+      default:
+        // For essay, short-answer, etc., return true as they need manual grading
+        return true;
     }
-    return answer === question.correctAnswer;
   };
 
   return (
@@ -171,7 +178,8 @@ export const JofhSchool = () => {
                   {selectedModule.resources.map((resource) => (
                     <Card key={resource.id} className="p-6 mb-4">
                       <h3 className="text-xl font-semibold mb-4">{resource.title}</h3>
-                      {resource.type === 'code' && resource.code && (
+                      {(resource.type as 'video' | 'document' | 'code' | 'link') === 'code' && 
+                       'code' in resource && resource.code && (
                         <div className="h-[400px] border rounded-lg overflow-hidden">
                           <MonacoEditor
                             initialValue={resource.code.initialCode}
