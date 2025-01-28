@@ -68,7 +68,7 @@ export const JofhSchool = () => {
                 </div>
                 <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
                   <div 
-                    className="h-full bg-primary rounded-full transition-all"
+                    className="h-full bg-blue-600 rounded-full transition-all"
                     style={{ width: `${result.progress}%` }}
                   />
                 </div>
@@ -133,14 +133,18 @@ export const JofhSchool = () => {
                     <h3 className="font-medium">{course.title}</h3>
                     <p className="text-sm text-gray-600 mt-1">{course.description}</p>
                   </div>
-                  <div className="px-2 py-1 bg-primary/10 rounded text-xs font-medium">
-                    {course.level}
+                  <div className="px-2 py-1 bg-gray-100 rounded text-xs font-medium text-gray-600">
+                    {course.level.toLowerCase()}
                   </div>
                 </div>
-                <div className="flex items-center gap-2 text-xs text-gray-500">
-                  <span>{course.metadata.instructor}</span>
+                <div className="flex items-center gap-2 text-xs text-gray-500 mt-4">
+                  <div className="flex items-center gap-1">
+                    <span className="font-medium">{course.metadata.instructor}</span>
+                  </div>
                   <span>•</span>
-                  <span>{course.metadata.meetingTimes}</span>
+                  <div className="flex items-center gap-1">
+                    <span>{course.metadata.meetingTimes}</span>
+                  </div>
                 </div>
               </Card>
             ))}
