@@ -4,6 +4,12 @@ export type ResourceType = 'video' | 'pdf' | 'epub' | 'article' | 'document' | '
 export type CourseLevel = 'introductory' | 'intermediate' | 'advanced';
 export type ModuleType = 'resource' | 'assignment' | 'quiz';
 
+export interface JsonInputs {
+  curriculum: string;
+  courses: string;
+  modules: string;
+}
+
 export interface Resource {
   id: string;
   title: string;
@@ -164,10 +170,4 @@ export interface Curriculum {
   name: string;
   description: string;
   degrees: Degree[];
-}
-
-export interface JsonInputs {
-  curriculum: string;
-  courses: string;
-  modules: string;
 }
