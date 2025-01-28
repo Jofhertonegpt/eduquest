@@ -32,10 +32,26 @@ export const AppearanceSettings = () => {
           </Button>
           <Button
             variant={theme === "system" ? "default" : "outline"}
-            className="h-24 col-span-1 md:col-span-2"
+            className="h-24"
             onClick={() => setTheme("system")}
           >
             System
+          </Button>
+          <Button
+            variant={theme === "rainbow" ? "default" : "outline"}
+            className="h-24 relative overflow-hidden"
+            style={{
+              background: theme === "rainbow" 
+                ? "linear-gradient(45deg, #ff0000, #ff8000, #ffff00, #00ff00, #0000ff, #8000ff)"
+                : undefined,
+              backgroundSize: "300% 300%",
+              animation: theme === "rainbow" ? "gradient 10s ease infinite" : undefined
+            }}
+            onClick={() => setTheme("rainbow")}
+          >
+            <span className={theme === "rainbow" ? "text-white font-bold" : undefined}>
+              Rainbow
+            </span>
           </Button>
         </div>
       </div>
