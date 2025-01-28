@@ -23,14 +23,20 @@ export const useCurriculumQueries = (curriculumId?: string) => {
     queryFn: async () => {
       if (!curriculumId) return null;
       
+      console.log("Fetching modules for curriculum:", curriculumId);
+      
       const { data, error } = await supabase
         .from("curriculum_modules")
         .select("*")
         .eq("curriculum_id", curriculumId)
         .order("created_at");
       
-      if (error) throw error;
-      console.log("Fetched modules:", data); // Debug log
+      if (error) {
+        console.error("Error fetching modules:", error);
+        throw error;
+      }
+
+      console.log("Raw modules data:", data);
       return data as CurriculumModule[];
     },
     enabled: !!curriculumId,

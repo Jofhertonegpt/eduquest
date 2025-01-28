@@ -28,6 +28,9 @@ export const ModuleList = ({ curriculumId, onModuleSelect }: ModuleListProps) =>
   const { modules, modulesLoading, modulesError } = useCurriculumQueries(curriculumId);
   const [expandedCourses, setExpandedCourses] = useState<string[]>([]);
 
+  console.log("ModuleList received curriculumId:", curriculumId);
+  console.log("Modules data in component:", modules);
+
   if (modulesLoading) {
     return <ModuleListSkeleton />;
   }
@@ -43,7 +46,7 @@ export const ModuleList = ({ curriculumId, onModuleSelect }: ModuleListProps) =>
   if (!modules?.length) {
     return (
       <div className="p-8 text-center text-muted-foreground">
-        <p>No modules available</p>
+        <p>No modules available for curriculum ID: {curriculumId}</p>
       </div>
     );
   }
