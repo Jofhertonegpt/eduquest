@@ -194,8 +194,18 @@ export const JofhSchool = () => {
         <Navigation />
       </div>
       <div className="flex pt-16">
+        {/* Welcome Message */}
+        <div className="fixed top-16 left-64 right-0 bg-pink-50 p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-2xl font-semibold text-pink-500">Welcome back!</h2>
+              <p className="text-gray-600">You've learned 40% of your goal this week! Keep it up!</p>
+            </div>
+            <img src="/student-learning.svg" alt="Student learning" className="h-32" />
+          </div>
+        </div>
         {/* Course Sidebar */}
-        <div className="w-64 border-r min-h-screen p-4 space-y-4 overflow-y-auto fixed left-0 top-16 bottom-0">
+        <div className="w-64 border-r min-h-screen p-4 space-y-8 overflow-y-auto fixed left-0 top-16 bottom-0 bg-white">
           <h2 className="text-xl font-semibold mb-4">Courses</h2>
           {coursesData.map((course) => (
             <div key={course.id} className="space-y-2">
@@ -303,7 +313,7 @@ export const JofhSchool = () => {
         </div>
 
         {/* Main Content */}
-        <div className="flex-1 p-8 ml-64">
+        <div className="flex-1 p-8 ml-64 mt-32">
           {selectedModule ? (
             <div className="space-y-8">
               <div className="flex justify-between items-center">
