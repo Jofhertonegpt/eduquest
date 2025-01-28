@@ -5,7 +5,7 @@ import { ModuleList } from "@/components/curriculum/ModuleList";
 import { ModuleContent } from "@/components/learning/ModuleContent";
 import { useProgress } from "@/hooks/use-progress";
 import { useCurriculumQueries } from "@/hooks/useCurriculumQueries";
-import type { Module } from "@/types/curriculum";
+import type { Module, ModuleData } from "@/types/curriculum";
 
 const Learning = () => {
   const { id } = useParams();
@@ -16,9 +16,10 @@ const Learning = () => {
   // Load last active module from progress
   useEffect(() => {
     if (progress?.active_module_id && modules) {
-      const lastActiveModule = modules.find(
-        m => (m.module_data as Module)?.id === progress.active_module_id
-      );
+      const lastActiveModule = modules.find(m => {
+        const moduleData = m.module_data as ModuleData;
+        return moduleData?.id === progress.active_module_id;
+      });
       if (lastActiveModule) {
         setSelectedModule(lastActiveModule.module_data as Module);
       }

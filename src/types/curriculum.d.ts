@@ -10,6 +10,26 @@ export interface JsonInputs {
   modules: string;
 }
 
+export interface ModuleData {
+  id: string;
+  courseId?: string;
+  title: string;
+  description: string;
+  type?: 'resource' | 'assignment' | 'quiz';
+  credits: number;
+  metadata: {
+    estimatedTime: number;
+    difficulty: DifficultyLevel;
+    prerequisites: string[];
+    tags: string[];
+    skills: string[];
+  };
+  learningObjectives: LearningObjective[];
+  resources: Resource[];
+  assignments: Assignment[];
+  quizzes: Quiz[];
+}
+
 export interface Resource {
   id: string;
   title: string;
@@ -127,24 +147,13 @@ export interface Assignment {
   };
 }
 
-export interface Module {
-  id: string;
-  title: string;
-  description: string;
-  credits: number;
-  type?: 'resource' | 'assignment' | 'quiz';
-  courseId?: string;
-  metadata: {
-    estimatedTime: number;
-    difficulty: DifficultyLevel;
-    prerequisites: string[];
-    tags: string[];
-    skills: string[];
-  };
-  learningObjectives: LearningObjective[];
-  resources: Resource[];
-  assignments: Assignment[];
-  quizzes: Quiz[];
+export interface Module extends ModuleData {
+  module_status?: string;
+  module_type?: string;
+  content?: any;
+  curriculum_id?: string;
+  display_order?: number;
+  version?: number;
 }
 
 export interface Course {
