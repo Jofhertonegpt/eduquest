@@ -225,25 +225,37 @@ export type Database = {
           content: Json
           created_at: string | null
           curriculum_id: string | null
+          display_order: number | null
           id: string
+          is_draft: boolean | null
           module_type: string
+          parent_id: string | null
           updated_at: string | null
+          version: number | null
         }
         Insert: {
           content: Json
           created_at?: string | null
           curriculum_id?: string | null
+          display_order?: number | null
           id?: string
+          is_draft?: boolean | null
           module_type: string
+          parent_id?: string | null
           updated_at?: string | null
+          version?: number | null
         }
         Update: {
           content?: Json
           created_at?: string | null
           curriculum_id?: string | null
+          display_order?: number | null
           id?: string
+          is_draft?: boolean | null
           module_type?: string
+          parent_id?: string | null
           updated_at?: string | null
+          version?: number | null
         }
         Relationships: [
           {
@@ -251,6 +263,13 @@ export type Database = {
             columns: ["curriculum_id"]
             isOneToOne: false
             referencedRelation: "imported_curricula"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "curriculum_modules_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "curriculum_modules"
             referencedColumns: ["id"]
           },
         ]
@@ -441,8 +460,10 @@ export type Database = {
           module_id: string | null
           points: number | null
           questions: Json[] | null
+          status: string | null
           title: string
           updated_at: string | null
+          version: number | null
         }
         Insert: {
           created_at?: string | null
@@ -452,8 +473,10 @@ export type Database = {
           module_id?: string | null
           points?: number | null
           questions?: Json[] | null
+          status?: string | null
           title: string
           updated_at?: string | null
+          version?: number | null
         }
         Update: {
           created_at?: string | null
@@ -463,8 +486,10 @@ export type Database = {
           module_id?: string | null
           points?: number | null
           questions?: Json[] | null
+          status?: string | null
           title?: string
           updated_at?: string | null
+          version?: number | null
         }
         Relationships: [
           {
@@ -483,8 +508,10 @@ export type Database = {
           id: string
           module_id: string | null
           questions: Json[] | null
+          status: string | null
           title: string
           updated_at: string | null
+          version: number | null
         }
         Insert: {
           created_at?: string | null
@@ -492,8 +519,10 @@ export type Database = {
           id?: string
           module_id?: string | null
           questions?: Json[] | null
+          status?: string | null
           title: string
           updated_at?: string | null
+          version?: number | null
         }
         Update: {
           created_at?: string | null
@@ -501,8 +530,10 @@ export type Database = {
           id?: string
           module_id?: string | null
           questions?: Json[] | null
+          status?: string | null
           title?: string
           updated_at?: string | null
+          version?: number | null
         }
         Relationships: [
           {

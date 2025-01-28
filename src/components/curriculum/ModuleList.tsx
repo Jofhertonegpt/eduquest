@@ -1,12 +1,15 @@
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BookOpen, FileText, CheckCircle } from "lucide-react";
+import { BookOpen, FileText, CheckCircle, ChevronRight, ChevronDown } from "lucide-react";
 import type { Module } from "@/types/curriculum";
 import { useCurriculumQueries } from "@/hooks/useCurriculumQueries";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ModuleCard } from "@/components/learning/ModuleCard";
 import { filterModulesByType } from "@/utils/learning-utils";
 import type { ModuleListProps } from "@/types/learning-types";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { useState } from "react";
+import { cn } from "@/lib/utils";
 
 const ModuleListSkeleton = () => (
   <div className="space-y-4">
@@ -25,6 +28,7 @@ const ModuleListSkeleton = () => (
 
 export const ModuleList = ({ curriculumId, onModuleSelect }: ModuleListProps) => {
   const { modules, modulesLoading, prefetchModuleContent } = useCurriculumQueries(curriculumId);
+  const [expandedCourses, setExpandedCourses] = useState<string[]>([]);
 
   if (modulesLoading) {
     return <ModuleListSkeleton />;
@@ -38,51 +42,57 @@ export const ModuleList = ({ curriculumId, onModuleSelect }: ModuleListProps) =>
     );
   }
 
-  const resourceModules = filterModulesByType(modules, 'resource');
-  const assignmentModules = filterModulesByType(modules, 'assignment');
-  const quizModules = filterModulesByType(modules, 'quiz');
+  const toggleCourse = (courseId: string) => {
+    setExpandedCourses(prev => 
+      prev.includes(courseId) 
+        ? prev.filter(id => id !== courseId)
+        : [...prev, courseId]
+    );
+  };
+
+  // Group modules by course
+  const courseGroups = modules.reduce((acc, module) => {
+    const courseId = module.content.courseId || 'uncategorized';
+    if (!acc[courseId]) {
+      acc[courseId] = [];
+    }
+    acc[courseId].push(module);
+    return acc;
+  }, {} as Record<string, typeof modules>);
 
   return (
-    <Tabs defaultValue="resources" className="w-full">
-      <TabsList className="w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <TabsTrigger value="resources" className="flex items-center gap-2">
-          <BookOpen className="w-4 h-4" />
-          Resources ({resourceModules.length})
-        </TabsTrigger>
-        <TabsTrigger value="assignments" className="flex items-center gap-2">
-          <FileText className="w-4 h-4" />
-          Assignments ({assignmentModules.length})
-        </TabsTrigger>
-        <TabsTrigger value="quizzes" className="flex items-center gap-2">
-          <CheckCircle className="w-4 h-4" />
-          Quizzes ({quizModules.length})
-        </TabsTrigger>
-      </TabsList>
-
-      <TabsContent value="resources" className="mt-4">
-        <ModuleList.Content
-          modules={resourceModules}
-          onModuleSelect={onModuleSelect}
-          onModuleHover={prefetchModuleContent}
-        />
-      </TabsContent>
-
-      <TabsContent value="assignments" className="mt-4">
-        <ModuleList.Content
-          modules={assignmentModules}
-          onModuleSelect={onModuleSelect}
-          onModuleHover={prefetchModuleContent}
-        />
-      </TabsContent>
-
-      <TabsContent value="quizzes" className="mt-4">
-        <ModuleList.Content
-          modules={quizModules}
-          onModuleSelect={onModuleSelect}
-          onModuleHover={prefetchModuleContent}
-        />
-      </TabsContent>
-    </Tabs>
+    <ScrollArea className="h-[calc(100vh-12rem)]">
+      <div className="p-4 space-y-4">
+        {Object.entries(courseGroups).map(([courseId, courseModules]) => (
+          <Collapsible
+            key={courseId}
+            open={expandedCourses.includes(courseId)}
+            onOpenChange={() => toggleCourse(courseId)}
+          >
+            <CollapsibleTrigger className="flex items-center w-full p-2 hover:bg-accent rounded-lg">
+              {expandedCourses.includes(courseId) ? (
+                <ChevronDown className="w-4 h-4 mr-2" />
+              ) : (
+                <ChevronRight className="w-4 h-4 mr-2" />
+              )}
+              <span className="font-medium">
+                {courseId === 'uncategorized' ? 'General Modules' : `Course ${courseId}`}
+              </span>
+            </CollapsibleTrigger>
+            <CollapsibleContent className="pl-6 mt-2 space-y-2">
+              {courseModules.map((module) => (
+                <ModuleCard
+                  key={module.content.id}
+                  module={module.content}
+                  onClick={() => onModuleSelect(module.content)}
+                  onHover={() => prefetchModuleContent(module.content.id)}
+                />
+              ))}
+            </CollapsibleContent>
+          </Collapsible>
+        ))}
+      </div>
+    </ScrollArea>
   );
 };
 
@@ -107,17 +117,15 @@ ModuleList.Content = function ModuleListContent({
   }
 
   return (
-    <ScrollArea className="h-[calc(100vh-12rem)] rounded-md">
-      <div className="space-y-4 p-4">
-        {modules.map((module) => (
-          <ModuleCard
-            key={module.content.id}
-            module={module.content}
-            onClick={() => onModuleSelect(module.content)}
-            onHover={() => onModuleHover(module.content.id)}
-          />
-        ))}
-      </div>
-    </ScrollArea>
+    <div className="space-y-4">
+      {modules.map((module) => (
+        <ModuleCard
+          key={module.content.id}
+          module={module.content}
+          onClick={() => onModuleSelect(module.content)}
+          onHover={() => onModuleHover(module.content.id)}
+        />
+      ))}
+    </div>
   );
 };

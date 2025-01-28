@@ -30,7 +30,7 @@ const Learning = () => {
     if (id) {
       await updateProgress.mutateAsync({
         moduleId: module.id,
-        courseId: module.id // Using module.id as courseId for now
+        courseId: module.id
       });
     }
   };
@@ -51,8 +51,11 @@ const Learning = () => {
 
   return (
     <div className="container mx-auto p-6">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="md:col-span-1">
+      <div className="grid grid-cols-12 gap-6">
+        <div className="col-span-3 bg-card rounded-lg border">
+          <div className="p-4 border-b">
+            <h2 className="text-lg font-semibold">Modules</h2>
+          </div>
           {id && (
             <ModuleList
               curriculumId={id}
@@ -60,7 +63,7 @@ const Learning = () => {
             />
           )}
         </div>
-        <div className="md:col-span-2">
+        <div className="col-span-9">
           {selectedModule ? (
             <ModuleContent module={selectedModule} />
           ) : (
