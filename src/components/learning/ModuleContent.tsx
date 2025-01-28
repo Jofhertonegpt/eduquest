@@ -2,14 +2,14 @@ import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { BookOpen, FileText, CheckCircle, Clock, Target, Code } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { BookOpen, FileText, CheckCircle, Clock, Target } from "lucide-react";
 import type { Module } from "@/types/curriculum";
-import { ResourceViewer } from "./ResourceViewer";
-import { QuizPlayer } from "./QuizPlayer";
-import CodeEditor from "@/components/CodeEditor";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import { ResourceSection } from "./content/ResourceSection";
+import { QuizSection } from "./content/QuizSection";
+import { AssignmentSection } from "./content/AssignmentSection";
 
 interface ModuleContentProps {
   module: Module;
@@ -119,14 +119,12 @@ export const ModuleContent = ({ module }: ModuleContentProps) => {
 
         {module.learningObjectives?.length > 0 && (
           <Card className="mb-6 hover:shadow-md transition-shadow">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+            <div className="p-4">
+              <h3 className="flex items-center gap-2 font-semibold">
                 <Target className="w-5 h-5 text-primary" />
                 Learning Objectives
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ul className="space-y-2">
+              </h3>
+              <ul className="mt-2 space-y-2">
                 {module.learningObjectives.map((objective) => (
                   <li key={objective.id} className="flex items-start gap-2">
                     <CheckCircle className="w-4 h-4 mt-1 text-green-500" />
@@ -134,7 +132,7 @@ export const ModuleContent = ({ module }: ModuleContentProps) => {
                   </li>
                 ))}
               </ul>
-            </CardContent>
+            </div>
           </Card>
         )}
       </div>
@@ -153,137 +151,29 @@ export const ModuleContent = ({ module }: ModuleContentProps) => {
             <CheckCircle className="w-4 h-4" />
             Quizzes ({module.quizzes?.length || 0})
           </TabsTrigger>
-          {module.resources?.some(r => r.type === 'code') && (
-            <TabsTrigger value="coding" className="flex items-center gap-2">
-              <Code className="w-4 h-4" />
-              Practice
-            </TabsTrigger>
-          )}
         </TabsList>
 
         <TabsContent value="resources" className="mt-4 space-y-6">
-          {!module.resources?.length ? (
-            <Card className="p-6 text-center">
-              <CardDescription>No resources available for this module</CardDescription>
-            </Card>
-          ) : (
-            <div className="space-y-6">
-              {module.resources.map((resource) => (
-                <Card key={resource.id} className="hover:shadow-md transition-shadow">
-                  <CardHeader>
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <CardTitle>{resource.title}</CardTitle>
-                        <CardDescription>
-                          {resource.type} • {resource.duration || "No duration"}
-                        </CardDescription>
-                      </div>
-                      {progress.completedResources.includes(resource.id) && (
-                        <Badge variant="secondary" className="flex items-center gap-1">
-                          <CheckCircle className="w-4 h-4 mr-1" />
-                          Completed
-                        </Badge>
-                      )}
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <ResourceViewer 
-                      resource={resource} 
-                      onComplete={() => handleResourceComplete(resource.id)}
-                    />
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          )}
+          <ResourceSection
+            resources={module.resources}
+            completedResources={progress.completedResources}
+            onResourceComplete={handleResourceComplete}
+          />
         </TabsContent>
 
         <TabsContent value="quizzes" className="mt-4">
-          {!module.quizzes?.length ? (
-            <Card className="p-6 text-center">
-              <CardDescription>No quizzes available for this module</CardDescription>
-            </Card>
-          ) : (
-            <div className="space-y-4">
-              {module.quizzes.map((quiz) => (
-                <Card key={quiz.id}>
-                  <CardContent className="pt-6">
-                    <QuizPlayer quiz={quiz} onComplete={handleQuizComplete} />
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          )}
+          <QuizSection
+            quizzes={module.quizzes}
+            completedQuizzes={progress.completedQuizzes}
+            onQuizComplete={handleQuizComplete}
+          />
         </TabsContent>
 
         <TabsContent value="assignments" className="mt-4">
-          {!module.assignments?.length ? (
-            <Card className="p-6 text-center">
-              <CardDescription>No assignments available for this module</CardDescription>
-            </Card>
-          ) : (
-            <div className="space-y-4">
-              {module.assignments.map((assignment) => (
-                <Card key={assignment.id} className="hover:shadow-md transition-shadow">
-                  <CardHeader>
-                    <CardTitle>{assignment.title}</CardTitle>
-                    <CardDescription>{assignment.description}</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex justify-between text-sm mb-4">
-                      <span className="flex items-center gap-1">
-                        <Clock className="w-4 h-4" />
-                        Due: {new Date(assignment.dueDate).toLocaleDateString()}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <Target className="w-4 h-4" />
-                        {assignment.points} points
-                      </span>
-                    </div>
-                    {assignment.rubric && (
-                      <div className="mt-4">
-                        <h4 className="font-semibold mb-2">Grading Rubric</h4>
-                        <ul className="space-y-2">
-                          {assignment.rubric.criteria.map((criterion, index) => (
-                            <li key={index} className="flex justify-between p-2 bg-muted rounded-lg">
-                              <span>{criterion.name}</span>
-                              <span className="font-medium">{criterion.points} pts</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-                    <div className="mt-4">
-                      <CodeEditor />
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          )}
-        </TabsContent>
-
-        <TabsContent value="coding" className="mt-4">
-          {!module.resources?.some(r => r.type === 'code') ? (
-            <Card className="p-6 text-center">
-              <CardDescription>No coding exercises available for this module</CardDescription>
-            </Card>
-          ) : (
-            <div className="space-y-4">
-              {module.resources
-                .filter((resource) => resource.type === 'code')
-                .map((resource) => (
-                  <Card key={resource.id} className="hover:shadow-md transition-shadow">
-                    <CardHeader>
-                      <CardTitle>{resource.title}</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <CodeEditor />
-                    </CardContent>
-                  </Card>
-                ))}
-            </div>
-          )}
+          <AssignmentSection
+            assignments={module.assignments}
+            completedAssignments={progress.completedAssignments}
+          />
         </TabsContent>
       </Tabs>
     </div>
