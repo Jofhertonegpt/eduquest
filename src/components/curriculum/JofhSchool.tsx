@@ -8,7 +8,15 @@ import { X } from 'lucide-react';
 import programData from '@/data/curriculum/New defaults/program.json';
 import coursesData from '@/data/curriculum/New defaults/courses.json';
 import modulesData from '@/data/curriculum/New defaults/modules.json';
-import type { Course, Module, Quiz, CodingQuestion } from '@/types/curriculum';
+import type { 
+  Course, 
+  Module, 
+  Quiz, 
+  CodingQuestion, 
+  MultipleChoiceQuestion,
+  DifficultyLevel,
+  ResourceType
+} from '@/types/curriculum';
 
 export const JofhSchool = () => {
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
