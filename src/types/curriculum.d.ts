@@ -12,9 +12,9 @@ export interface JsonInputs {
 export interface ModuleMetadata {
   estimatedTime: number;
   difficulty: DifficultyLevel;
-  prerequisites: string[];
-  tags: string[];
-  skills: string[];
+  prerequisites?: string[];
+  tags?: string[];
+  skills?: string[];
 }
 
 export interface CourseMetadata {
@@ -30,6 +30,12 @@ export interface DegreeMetadata {
   department: string;
 }
 
+export interface LearningObjective {
+  id: string;
+  description: string;
+  assessmentCriteria: string[];
+}
+
 export interface ModuleData {
   id: string;
   title: string;
@@ -37,58 +43,7 @@ export interface ModuleData {
   type?: 'resource' | 'assignment' | 'quiz';
   courseId?: string;
   metadata?: ModuleMetadata;
-  learningObjectives?: {
-    id: string;
-    description: string;
-    assessmentCriteria: string[];
-  }[];
-}
-
-export interface CourseModule {
-  id: string;
-  courseId: string;
-  title: string;
-  description: string;
-  credits: number;
-  metadata: ModuleMetadata;
-  learningObjectives: {
-    id: string;
-    description: string;
-    assessmentCriteria: string[];
-  }[];
-}
-
-export interface Module extends ModuleData {
-  credits: number;
-  resources: Resource[];
-  assignments: Assignment[];
-  quizzes: Quiz[];
-  module_status?: string;
-  module_type?: string;
-  content?: any;
-  curriculum_id?: string;
-  display_order?: number;
-  version?: number;
-}
-
-export interface Course {
-  id: string;
-  title: string;
-  description: string;
-  credits: number;
-  level: CourseLevel;
-  metadata: CourseMetadata;
-  modules: Module[];
-}
-
-export interface Degree {
-  id: string;
-  title: string;
-  type: DegreeType;
-  description: string;
-  requiredCredits: number;
-  metadata: DegreeMetadata;
-  courses: Course[];
+  learningObjectives?: LearningObjective[];
 }
 
 export interface Resource {
@@ -105,6 +60,37 @@ export interface Resource {
     testCases: {
       input: string;
       expectedOutput: string;
+    }[];
+  };
+}
+
+export interface Question {
+  id: string;
+  title: string;
+  description: string;
+  points: number;
+  type: 'multiple-choice' | 'essay' | 'coding' | 'true-false' | 'short-answer' | 'matching';
+  options?: string[];
+  correctAnswer?: number | boolean;
+  allowMultiple?: boolean;
+  minWords?: number;
+  maxWords?: number;
+  initialCode?: string;
+  testCases?: {
+    input: string;
+    expectedOutput: string;
+  }[];
+  sampleAnswer?: string;
+  keywords?: string[];
+  pairs?: {
+    left: string;
+    right: string;
+  }[];
+  rubric?: {
+    criteria: {
+      name: string;
+      description: string;
+      points: number;
     }[];
   };
 }
@@ -135,17 +121,45 @@ export interface Assignment {
   };
 }
 
-export interface Question {
+export interface Module extends ModuleData {
+  credits: number;
+  resources: Resource[];
+  assignments: Assignment[];
+  quizzes: Quiz[];
+  module_status?: string;
+  module_type?: string;
+  content?: any;
+  curriculum_id?: string;
+  display_order?: number;
+  version?: number;
+}
+
+export interface Course {
   id: string;
   title: string;
   description: string;
-  points: number;
-  type: string;
+  credits: number;
+  level: CourseLevel;
+  metadata: CourseMetadata;
+  modules: string[] | Module[];
+}
+
+export interface Degree {
+  id: string;
+  title: string;
+  type: DegreeType;
+  description: string;
+  requiredCredits: number;
+  metadata: DegreeMetadata;
+  courses: string[] | Course[];
 }
 
 export interface Curriculum {
   id?: string;
   name: string;
   description: string;
+  programOutcomes?: string[];
+  institution?: string;
+  complianceStandards?: string[];
   degrees: Degree[];
 }
