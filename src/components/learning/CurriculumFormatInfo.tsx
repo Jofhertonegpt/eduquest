@@ -149,18 +149,6 @@ export function CurriculumFormatInfo() {
                     Break down each course into specific learning modules.
                   </p>
                 </li>
-                <li>
-                  <p className="font-medium">Add Assessments</p>
-                  <p className="text-sm text-muted-foreground">
-                    Create quizzes and assignments for each module.
-                  </p>
-                </li>
-                <li>
-                  <p className="font-medium">Include Learning Resources</p>
-                  <p className="text-sm text-muted-foreground">
-                    Add supporting materials like videos, documents, or links.
-                  </p>
-                </li>
               </ol>
               
               <div className="mt-6 p-4 bg-muted rounded-lg">
