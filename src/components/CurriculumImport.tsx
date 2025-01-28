@@ -8,9 +8,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { validateAndTransformCurriculum } from "@/lib/curriculumValidation";
 import { supabase } from "@/lib/supabase";
-import defaultCurriculum from "@/data/curriculum/program.json";
-import defaultCourses from "@/data/curriculum/courses.json";
-import defaultModules from "@/data/curriculum/modules.json";
+import defaultProgram from "@/data/curriculum/New defaults/program.json";
+import defaultCourses from "@/data/curriculum/New defaults/courses.json";
 import { CurriculumFormatInfo } from "@/components/learning/CurriculumFormatInfo";
 import type { Json } from "@/lib/database.types";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -104,10 +103,10 @@ export function CurriculumImport() {
       
       let dataToImport;
       if (useDefault) {
+        // Use the new default curriculum data
         dataToImport = {
-          ...defaultCurriculum,
+          ...defaultProgram,
           courses: defaultCourses,
-          modules: defaultModules,
         };
       } else {
         dataToImport = {
