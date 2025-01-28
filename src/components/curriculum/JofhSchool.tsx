@@ -54,7 +54,8 @@ export const JofhSchool = () => {
               },
               resources: foundModule.resources.map(resource => ({
                 ...resource,
-                type: resource.type as "video" | "pdf" | "epub" | "article" | "document" | "code"
+                type: resource.type as "video" | "pdf" | "epub" | "article" | "document" | "code",
+                embedType: resource.embedType as "youtube"
               }))
             };
             return (
