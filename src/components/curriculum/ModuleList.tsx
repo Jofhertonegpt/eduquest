@@ -6,7 +6,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import type { ModuleListProps } from "@/types/learning-types";
-import type { Module } from "@/types/curriculum";
+import type { ModuleData } from "@/types/curriculum";
 
 const ModuleListSkeleton = () => (
   <div className="space-y-4">
@@ -23,8 +23,8 @@ const ModuleListSkeleton = () => (
   </div>
 );
 
-export const ModuleList = ({ curriculumId, onModuleSelect }: ModuleListProps) => {
-  const { modules, modulesLoading, modulesError } = useCurriculumQueries(curriculumId);
+export const ModuleList = ({ curriculumId, modules, onModuleSelect }: ModuleListProps) => {
+  const { modulesLoading, modulesError } = useCurriculumQueries(curriculumId);
   const [expandedCourses, setExpandedCourses] = useState<string[]>([]);
 
   if (modulesLoading) {
@@ -57,14 +57,14 @@ export const ModuleList = ({ curriculumId, onModuleSelect }: ModuleListProps) =>
 
   // Group modules by course using module_data
   const courseGroups = modules.reduce((acc, module) => {
-    const moduleData = module.module_data as any;
+    const moduleData = module.module_data as ModuleData;
     const courseId = moduleData?.courseId || 'uncategorized';
     if (!acc[courseId]) {
       acc[courseId] = [];
     }
     acc[courseId].push(moduleData);
     return acc;
-  }, {} as Record<string, Module[]>);
+  }, {} as Record<string, ModuleData[]>);
 
   const getModuleTypeIcon = (type?: string) => {
     switch (type) {

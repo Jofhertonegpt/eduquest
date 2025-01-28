@@ -19,8 +19,8 @@ export interface ModuleData {
     estimatedTime: number;
     difficulty: DifficultyLevel;
     prerequisites: string[];
-    tags?: string[];
-    skills?: string[];
+    tags: string[];
+    skills: string[];
   };
   learningObjectives?: {
     id: string;
@@ -62,7 +62,6 @@ export interface Module extends ModuleData {
 
 export interface Course {
   id: string;
-  degreeId: string;
   title: string;
   description: string;
   credits: number;
@@ -78,7 +77,6 @@ export interface Course {
 
 export interface Degree {
   id: string;
-  programId: string;
   title: string;
   type: DegreeType;
   description: string;
@@ -141,4 +139,11 @@ export interface Question {
   description: string;
   points: number;
   type: string;
+}
+
+export interface Curriculum {
+  id?: string;
+  name: string;
+  description: string;
+  degrees: Degree[];
 }
