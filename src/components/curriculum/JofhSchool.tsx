@@ -194,42 +194,6 @@ export const JofhSchool = () => {
         <Navigation />
       </div>
       <div className="flex pt-16">
-        {/* Welcome Message */}
-        <div className="fixed top-16 left-64 right-0 bg-pink-50 p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-2xl font-semibold text-pink-500">Welcome back!</h2>
-              <p className="text-gray-600">You've learned 40% of your goal this week! Keep it up!</p>
-            </div>
-            <div className="flex items-center gap-4">
-              <div className="space-y-4">
-                <div className="flex items-center gap-2">
-                  <div className="w-32 h-2 bg-gray-200 rounded-full overflow-hidden">
-                    <div className="h-full bg-blue-500 rounded-full" style={{ width: '44%' }} />
-                  </div>
-                  <span className="text-sm text-gray-600">Vocabulary</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-32 h-2 bg-gray-200 rounded-full overflow-hidden">
-                    <div className="h-full bg-green-500 rounded-full" style={{ width: '28%' }} />
-                  </div>
-                  <span className="text-sm text-gray-600">Grammar</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-32 h-2 bg-gray-200 rounded-full overflow-hidden">
-                    <div className="h-full bg-purple-500 rounded-full" style={{ width: '76%' }} />
-                  </div>
-                  <span className="text-sm text-gray-600">Listening</span>
-                </div>
-              </div>
-              <div className="h-32 w-32 flex items-end justify-between">
-                {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day, idx) => (
-                  <div key={day} className="w-3 bg-blue-500 rounded-t" style={{ height: `${[60, 40, 80, 30, 70, 50, 90][idx]}%` }} />
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
         {/* Course Sidebar */}
         <div className="w-64 border-r min-h-screen p-4 space-y-8 overflow-y-auto fixed left-0 top-16 bottom-0 bg-white">
           <h2 className="text-xl font-semibold mb-4">Courses</h2>
@@ -339,7 +303,7 @@ export const JofhSchool = () => {
         </div>
 
         {/* Main Content */}
-        <div className="flex-1 p-8 ml-64 mt-32">
+        <div className="flex-1 p-8 ml-64">
           {selectedModule ? (
             <div className="space-y-8">
               <div className="flex justify-between items-center">
