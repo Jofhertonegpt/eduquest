@@ -4,7 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
-import type { Degree, Course, CourseModule } from '@/types/curriculum-types';
+import type { Degree, Course, CourseModule } from '@/types/curriculum';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
@@ -21,6 +21,31 @@ export function CurriculumViewer({ programId }: CurriculumViewerProps) {
   const { data: degrees, isLoading: loadingDegrees } = useDegrees(programId);
   const { data: courses, isLoading: loadingCourses } = useCourses(selectedDegree?.id);
   const { data: modules, isLoading: loadingModules } = useModules(selectedCourse?.id);
+
+  const handleDegreeSelect = (degree: Degree) => {
+    setSelectedDegree({
+      ...degree,
+      courses: [],
+      metadata: degree.metadata || {
+        academicYear: '',
+        deliveryFormat: '',
+        department: ''
+      }
+    });
+  };
+
+  const handleCourseSelect = (course: Course) => {
+    setSelectedCourse({
+      ...course,
+      modules: [],
+      metadata: course.metadata || {
+        instructor: '',
+        meetingTimes: '',
+        tags: [],
+        skills: []
+      }
+    });
+  };
 
   useEffect(() => {
     const initializeModules = async () => {
@@ -46,7 +71,7 @@ export function CurriculumViewer({ programId }: CurriculumViewerProps) {
               module_data: module,
               module_status: 'active',
               display_order: index,
-              content: module // Keep for backward compatibility
+              content: module
             })));
 
           if (insertError) {
@@ -95,13 +120,13 @@ export function CurriculumViewer({ programId }: CurriculumViewerProps) {
                 <Card
                   key={degree.id}
                   className="p-4 hover:bg-accent cursor-pointer transition-colors"
-                  onClick={() => setSelectedDegree(degree)}
+                  onClick={() => handleDegreeSelect(degree)}
                 >
                   <h3 className="text-lg font-semibold">{degree.title}</h3>
                   <p className="text-sm text-muted-foreground mb-2">{degree.description}</p>
                   <div className="flex items-center justify-between mt-4">
                     <span className="text-sm">Credits: {degree.requiredCredits}</span>
-                    <Button variant="outline" onClick={() => setSelectedDegree(degree)}>
+                    <Button variant="outline" onClick={() => handleDegreeSelect(degree)}>
                       View Courses
                     </Button>
                   </div>
@@ -118,13 +143,13 @@ export function CurriculumViewer({ programId }: CurriculumViewerProps) {
                 <Card
                   key={course.id}
                   className="p-4 hover:bg-accent cursor-pointer transition-colors"
-                  onClick={() => setSelectedCourse(course)}
+                  onClick={() => handleCourseSelect(course)}
                 >
                   <h3 className="text-lg font-semibold">{course.title}</h3>
                   <p className="text-sm text-muted-foreground mb-2">{course.description}</p>
                   <div className="flex items-center justify-between mt-4">
                     <span className="text-sm">Credits: {course.credits}</span>
-                    <Button variant="outline" onClick={() => setSelectedCourse(course)}>
+                    <Button variant="outline" onClick={() => handleCourseSelect(course)}>
                       View Modules
                     </Button>
                   </div>
@@ -141,14 +166,14 @@ export function CurriculumViewer({ programId }: CurriculumViewerProps) {
                 <Card
                   key={module.id}
                   className="p-4 hover:bg-accent cursor-pointer transition-colors"
-                  onClick={() => setSelectedModule(module)}
+                  onClick={() => setSelectedModule(module as CourseModule)}
                 >
                   <h3 className="text-lg font-semibold">{module.title}</h3>
                   <p className="text-sm text-muted-foreground mb-2">{module.description}</p>
                   <div className="mt-4">
                     <h4 className="font-medium mb-2">Learning Objectives:</h4>
                     <ul className="list-disc list-inside text-sm text-muted-foreground">
-                      {module.learningObjectives.map((objective) => (
+                      {module.learningObjectives?.map((objective) => (
                         <li key={objective.id}>{objective.description}</li>
                       ))}
                     </ul>

@@ -41,7 +41,12 @@ export function useDegrees(programId: string | undefined) {
         type: degree.type,
         description: degree.description,
         requiredCredits: degree.required_credits,
-        metadata: degree.metadata
+        metadata: degree.metadata || {
+          academicYear: '',
+          deliveryFormat: '',
+          department: ''
+        },
+        courses: []
       })) as Degree[];
     },
     enabled: !!programId
@@ -65,8 +70,14 @@ export function useCourses(degreeId: string | undefined) {
         title: course.title,
         description: course.description,
         credits: course.credits,
-        level: course.level,
-        metadata: course.metadata
+        level: course.level as CourseLevel,
+        metadata: course.metadata || {
+          instructor: '',
+          meetingTimes: '',
+          tags: [],
+          skills: []
+        },
+        modules: []
       })) as Course[];
     },
     enabled: !!degreeId

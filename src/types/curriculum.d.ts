@@ -158,20 +158,51 @@ export interface Module extends ModuleData {
 
 export interface Course {
   id: string;
+  degreeId: string;
   title: string;
   description: string;
   credits: number;
   level: CourseLevel;
-  modules: Module[];
+  metadata: {
+    instructor: string;
+    meetingTimes: string;
+    tags: string[];
+    skills: string[];
+  };
+  modules?: Module[];
+}
+
+export interface CourseModule {
+  id: string;
+  courseId: string;
+  title: string;
+  description: string;
+  credits: number;
+  metadata: {
+    estimatedTime: number;
+    difficulty: 'beginner' | 'intermediate' | 'advanced';
+    prerequisites: string[];
+  };
+  learningObjectives: {
+    id: string;
+    description: string;
+    assessmentCriteria: string[];
+  }[];
 }
 
 export interface Degree {
   id: string;
+  programId: string;
   title: string;
   type: DegreeType;
   description: string;
   requiredCredits: number;
-  courses: Course[];
+  metadata: {
+    academicYear: string;
+    deliveryFormat: string;
+    department: string;
+  };
+  courses?: Course[];
 }
 
 export interface Curriculum {
