@@ -1,3 +1,7 @@
+import { useState, useEffect } from 'react';
+import { CourseCard } from '@/components/home/CourseCard';
+import { loadCurriculumData } from '@/lib/curriculum-loader';
+
 interface CurriculumViewProps {
   programId: string;
 }
