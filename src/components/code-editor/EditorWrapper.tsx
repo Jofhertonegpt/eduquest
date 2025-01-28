@@ -87,3 +87,6 @@ const EditorWrapper = memo(({ height = "calc(80vh - 2rem)", ...props }: EditorWr
 EditorWrapper.displayName = "EditorWrapper";
 
 export default EditorWrapper;
+
+// Update imports to use new consolidated types
+import { Course, Module } from '@/types/curriculum';

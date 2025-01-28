@@ -94,74 +94,44 @@ export type Question =
   | TrueFalseQuestion 
   | ShortAnswerQuestion 
   | MatchingQuestion;
-
-export interface Quiz {
-  id: string;
-  title: string;
-  description: string;
-  timeLimit?: number;
-  passingScore?: number;
-  questions: Question[];
-  instructions?: string;
-}
-
-export interface Assignment {
-  id: string;
-  title: string;
-  description: string;
-  dueDate: string;
-  points: number;
-  questions?: Question[];
-  rubric?: {
-    criteria: {
-      name: string;
-      description: string;
-      points: number;
-    }[];
-  };
-}
-
-export interface Module {
-  id: string;
-  title: string;
-  description: string;
-  credits: number;
-  type?: 'resource' | 'assignment' | 'quiz';
-  courseId?: string;
-  metadata: {
-    estimatedTime: number;
-    difficulty: DifficultyLevel;
-    prerequisites: string[];
+ 
+  
+  export interface CourseMetadata {
+    instructor: string;
+    meetingTimes: string;
     tags: string[];
     skills: string[];
-  };
-  learningObjectives: LearningObjective[];
-  resources: Resource[];
-  assignments: Assignment[];
-  quizzes: Quiz[];
-}
-
-export interface Course {
-  id: string;
-  title: string;
-  description: string;
-  credits: number;
-  level: CourseLevel;
-  modules: Module[];
-}
-
-export interface Degree {
-  id: string;
-  title: string;
-  type: DegreeType;
-  description: string;
-  requiredCredits: number;
-  courses: Course[];
-}
-
-export interface Curriculum {
-  id?: string;
-  name: string;
-  description: string;
-  degrees: Degree[];
-}
+  }
+  
+  export interface Program {
+    name: string;
+    description: string;
+    programOutcomes: string[];
+    institution: string;
+    complianceStandards: string[];
+    degrees: Degree[];
+  }
+  
+  export interface Course {
+    id: string;
+    title: string;
+    description: string;
+    credits: number;
+    level: string;
+    metadata: CourseMetadata;
+    modules: Module[];
+    category: string;
+    duration: string;
+  }
+  
+  export interface Module {
+    id: string;
+    title: string;
+    description: string;
+    credits: number;
+    metadata: ModuleMetadata;
+    learningObjectives: LearningObjective[];
+    resources: Resource[];
+    assignments: Assignment[];
+    quizzes: Quiz[];
+  }

@@ -16,10 +16,9 @@ export const ResourcesTab = ({
     <div className="space-y-6">
       {module.resources?.map((resource) => (
         <ResourceViewer
-          key={resource.id}
           resource={resource}
-          isCompleted={completedResources.includes(resource.id)}
-          onComplete={() => onResourceComplete(resource.id)}
+          isCompleted={isCompleted}
+          onComplete={handleResourceComplete}
         />
       ))}
     </div>

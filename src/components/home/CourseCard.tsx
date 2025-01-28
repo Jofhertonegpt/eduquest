@@ -7,9 +7,9 @@ import type { CourseCard as CourseCardType } from "@/types/home";
 
 interface CourseCardProps {
   course: CourseCardType;
+  modules: Module[];
   index: number;
 }
-
 export const CourseCard = ({ course, index }: CourseCardProps) => {
   return (
     <motion.div
