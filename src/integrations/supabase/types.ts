@@ -324,6 +324,42 @@ export type Database = {
           },
         ]
       }
+      curriculum_templates: {
+        Row: {
+          content: Json
+          created_at: string
+          description: string | null
+          id: string
+          is_default: boolean | null
+          name: string
+          template_type: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          content: Json
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_default?: boolean | null
+          name: string
+          template_type: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          content?: Json
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_default?: boolean | null
+          name?: string
+          template_type?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       curriculum_versions: {
         Row: {
           created_at: string | null

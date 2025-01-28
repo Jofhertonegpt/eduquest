@@ -9,6 +9,41 @@ export type Json =
 export interface Database {
   public: {
     Tables: {
+      curriculum_templates: {
+        Row: {
+          id: string
+          user_id: string | null
+          name: string
+          description: string | null
+          template_type: string
+          content: Json
+          is_default: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id?: string | null
+          name: string
+          description?: string | null
+          template_type: string
+          content: Json
+          is_default?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string | null
+          name?: string
+          description?: string | null
+          template_type?: string
+          content?: Json
+          is_default?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+      }
       profiles: {
         Row: {
           id: string
