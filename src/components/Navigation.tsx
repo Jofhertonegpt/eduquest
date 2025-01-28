@@ -13,6 +13,7 @@ import {
   PenTool,
   Download,
 } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
 
 const Navigation = () => {
   const location = useLocation();
@@ -56,6 +57,32 @@ const Navigation = () => {
     },
   ];
 
+  const handleNavigation = (e: React.MouseEvent<HTMLAnchorElement>, disabled: boolean, to: string) => {
+    if (disabled) {
+      e.preventDefault();
+      toast({
+        title: "Access Denied",
+        description: "This feature is currently unavailable",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Additional navigation error handling could be added here
+    try {
+      // Navigation will be handled by React Router
+      // This try-catch is for any pre-navigation logic
+    } catch (error) {
+      console.error("Navigation error:", error);
+      toast({
+        title: "Navigation Error",
+        description: "Failed to navigate to the requested page",
+        variant: "destructive",
+      });
+      e.preventDefault();
+    }
+  };
+
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-sm border-b">
       <div className="container mx-auto px-4">
@@ -75,14 +102,14 @@ const Navigation = () => {
                   aria-label={ariaLabel}
                   aria-disabled={disabled}
                   aria-current={location.pathname === to ? "page" : undefined}
-                  onClick={e => disabled && e.preventDefault()}
+                  onClick={(e) => handleNavigation(e, disabled, to)}
                 >
                   <Icon className="h-5 w-5" aria-hidden="true" />
                   <span>{label}</span>
                 </Link>
               </TooltipTrigger>
               <TooltipContent>
-                {ariaLabel}
+                {disabled ? "Currently unavailable" : ariaLabel}
               </TooltipContent>
             </Tooltip>
           ))}
