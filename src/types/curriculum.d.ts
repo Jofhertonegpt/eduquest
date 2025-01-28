@@ -1,9 +1,3 @@
-export interface JsonInputs {
-  curriculum: string;
-  courses: string;
-  modules: string;
-}
-
 export interface Resource {
   id: string;
   title: string;
@@ -164,4 +158,10 @@ export interface Curriculum {
   name: string;
   description: string;
   degrees: Degree[];
+}
+
+export interface JsonInputs {
+  curriculum: string;
+  courses: string;
+  modules: string;
 }
