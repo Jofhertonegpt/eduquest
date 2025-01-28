@@ -165,13 +165,18 @@ export const JofhSchool = () => {
     }));
   };
 
-  const verifyAnswer = (question: Quiz['questions'][0], answer: string | number | boolean) => {
+  const verifyAnswer = (question: Quiz['questions'][0], answer: string | number | boolean | number[]) => {
     switch (question.type) {
       case 'coding':
         // Here you would implement actual code verification
         return true;
       case 'multiple-choice':
-        return answer === (question as MultipleChoiceQuestion).correctAnswer;
+        const mcq = question as MultipleChoiceQuestion;
+        if (mcq.allowMultiple) {
+          const answers = answer as number[];
+          return answers.length > 0 && answers.every(a => mcq.correctAnswers?.includes(a));
+        }
+        return answer === mcq.correctAnswer;
       case 'true-false':
         return answer === question.correctAnswer;
       default:
@@ -231,20 +236,57 @@ export const JofhSchool = () => {
                           assignments: module.assignments.map(a => ({
                             ...a,
                             questions: a.questions.map(q => {
-                              const baseQuestion = {
+                              if (q.type === 'multiple-choice') {
+                                return {
+                                  ...q,
+                                  type: 'multiple-choice' as const,
+                                  options: q.options || [],
+                                  correctAnswer: q.correctAnswer || 0,
+                                  allowMultiple: q.allowMultiple || false,
+                                  correctAnswers: q.correctAnswers || []
+                                };
+                              }
+                              if (q.type === 'coding') {
+                                return {
+                                  ...q,
+                                  type: 'coding' as const,
+                                  initialCode: q.initialCode || '',
+                                  testCases: q.testCases || []
+                                };
+                              }
+                              return {
                                 ...q,
                                 type: q.type as Question['type']
                               };
+                            }) as Question[]
+                          })) as Assignment[],
+                          quizzes: module.quizzes.map(quiz => ({
+                            ...quiz,
+                            questions: quiz.questions.map(q => {
                               if (q.type === 'multiple-choice') {
                                 return {
-                                  ...baseQuestion,
+                                  ...q,
+                                  type: 'multiple-choice' as const,
                                   options: q.options || [],
-                                  correctAnswer: q.correctAnswer || 0
+                                  correctAnswer: q.correctAnswer || 0,
+                                  allowMultiple: q.allowMultiple || false,
+                                  correctAnswers: q.correctAnswers || []
                                 };
                               }
-                              return baseQuestion;
-                            })
-                          })) as Assignment[]
+                              if (q.type === 'coding') {
+                                return {
+                                  ...q,
+                                  type: 'coding' as const,
+                                  initialCode: q.initialCode || '',
+                                  testCases: q.testCases || []
+                                };
+                              }
+                              return {
+                                ...q,
+                                type: q.type as Question['type']
+                              };
+                            }) as Question[]
+                          })) as Quiz[]
                         })}
                       >
                         {module.title}
