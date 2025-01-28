@@ -4,14 +4,55 @@
   100% { background-position: 0% 50%; }
 }
 
-@keyframes rainbow-text {
-  0% { color: #ff0000; }
-  16.67% { color: #ff8000; }
-  33.33% { color: #ffff00; }
-  50% { color: #00ff00; }
-  66.67% { color: #0000ff; }
-  83.33% { color: #8000ff; }
-  100% { color: #ff0000; }
+:root[data-theme="rainbow"] {
+  --background: 240 10% 3.9%;
+  --foreground: 0 0% 98%;
+  --card: 240 10% 3.9%;
+  --card-foreground: 0 0% 98%;
+  --popover: 240 10% 3.9%;
+  --popover-foreground: 0 0% 98%;
+  --primary: var(--rainbow-primary);
+  --primary-foreground: 0 0% 98%;
+  --secondary: 240 3.7% 15.9%;
+  --secondary-foreground: 0 0% 98%;
+  --muted: 240 3.7% 15.9%;
+  --muted-foreground: 240 5% 64.9%;
+  --accent: var(--rainbow-accent);
+  --accent-foreground: 0 0% 98%;
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 240 3.7% 15.9%;
+  --input: 240 3.7% 15.9%;
+  --ring: var(--rainbow-ring);
+}
+
+@keyframes rainbow-gradient {
+  0% { --rainbow-primary: 0 72% 51%; --rainbow-accent: 0 72% 51%; --rainbow-ring: 0 72% 51%; }
+  16.67% { --rainbow-primary: 22 72% 51%; --rainbow-accent: 22 72% 51%; --rainbow-ring: 22 72% 51%; }
+  33.33% { --rainbow-primary: 60 72% 51%; --rainbow-accent: 60 72% 51%; --rainbow-ring: 60 72% 51%; }
+  50% { --rainbow-primary: 120 72% 51%; --rainbow-accent: 120 72% 51%; --rainbow-ring: 120 72% 51%; }
+  66.67% { --rainbow-primary: 240 72% 51%; --rainbow-accent: 240 72% 51%; --rainbow-ring: 240 72% 51%; }
+  83.33% { --rainbow-primary: 280 72% 51%; --rainbow-accent: 280 72% 51%; --rainbow-ring: 280 72% 51%; }
+  100% { --rainbow-primary: 0 72% 51%; --rainbow-accent: 0 72% 51%; --rainbow-ring: 0 72% 51%; }
+}
+
+:root[data-theme="rainbow"] {
+  animation: rainbow-gradient 20s linear infinite;
+}
+
+:root[data-theme="rainbow"] .bg-primary {
+  background-color: hsl(var(--rainbow-primary));
+  transition: background-color 0.5s ease;
+}
+
+:root[data-theme="rainbow"] .text-primary {
+  color: hsl(var(--rainbow-primary));
+  transition: color 0.5s ease;
+}
+
+:root[data-theme="rainbow"] .border-primary {
+  border-color: hsl(var(--rainbow-primary));
+  transition: border-color 0.5s ease;
 }
 
 @keyframes rainbow-border {
