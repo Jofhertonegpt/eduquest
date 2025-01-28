@@ -56,7 +56,7 @@ export const ModuleList = ({ curriculumId, onModuleSelect }: ModuleListProps) =>
 
   // Group modules by course using module_data
   const courseGroups = modules.reduce((acc, module) => {
-    const courseId = module.module_data.courseId || 'uncategorized';
+    const courseId = module.module_data?.courseId || 'uncategorized';
     if (!acc[courseId]) {
       acc[courseId] = [];
     }
@@ -106,8 +106,8 @@ export const ModuleList = ({ curriculumId, onModuleSelect }: ModuleListProps) =>
                   className="flex items-center gap-2 p-2 hover:bg-accent rounded-lg cursor-pointer"
                   onClick={() => onModuleSelect(module.module_data)}
                 >
-                  {getModuleTypeIcon(module.module_data.type)}
-                  <span>{module.module_data.title}</span>
+                  {getModuleTypeIcon(module.module_data?.type)}
+                  <span>{module.module_data?.title}</span>
                 </div>
               ))}
             </CollapsibleContent>

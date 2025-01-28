@@ -23,10 +23,7 @@ export const useCurriculumQueries = (curriculumId: string | undefined, type?: Mo
       
       if (error) throw error;
       
-      return data.map(module => ({
-        ...module,
-        content: module.module_data // Use the new module_data field
-      }));
+      return data;
     },
     enabled: !!curriculumId
   });

@@ -1,33 +1,21 @@
-import type { Module, Resource, Quiz, Assignment } from './curriculum';
-
-export interface LearningModuleProps {
-  module: Module;
-  onComplete?: (moduleId: string) => void;
-}
-
-export interface ResourceViewerProps {
-  resource: Resource;
-  onComplete?: (resourceId: string) => void;
-}
-
-export interface QuizPlayerProps {
-  quiz: Quiz;
-  onComplete: (score: number) => void;
-}
-
-export interface AssignmentProps {
-  assignment: Assignment;
-  onSubmit: (assignmentId: string, submission: any) => void;
-}
+import type { Module } from "./curriculum";
 
 export interface ModuleListProps {
   curriculumId: string;
-  type?: 'resource' | 'assignment' | 'quiz';
   onModuleSelect: (module: Module) => void;
 }
 
-export interface CurriculumSelectorProps {
-  curricula: { id: string; curriculum: any }[] | undefined;
-  currentCurriculumId?: string;
-  onCurriculumChange: (id: string) => void;
+export interface ModuleData {
+  id: string;
+  title: string;
+  description: string;
+  type?: 'resource' | 'assignment' | 'quiz';
+  courseId?: string;
+  metadata?: {
+    estimatedTime: number;
+    difficulty: string;
+    prerequisites: string[];
+    tags: string[];
+    skills: string[];
+  };
 }

@@ -17,10 +17,10 @@ const Learning = () => {
   useEffect(() => {
     if (progress?.active_module_id && modules) {
       const lastActiveModule = modules.find(
-        m => m.content.id === progress.active_module_id
+        m => m.module_data?.id === progress.active_module_id
       );
       if (lastActiveModule) {
-        setSelectedModule(lastActiveModule.content);
+        setSelectedModule(lastActiveModule.module_data as Module);
       }
     }
   }, [progress, modules]);
@@ -30,7 +30,7 @@ const Learning = () => {
     if (id) {
       await updateProgress.mutateAsync({
         moduleId: module.id,
-        courseId: module.id
+        courseId: module.courseId
       });
     }
   };
