@@ -16,7 +16,12 @@ const queryClient = new QueryClient({
 export const AppProviders = ({ children }: { children: React.ReactNode }) => {
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+      <ThemeProvider 
+        attribute="data-theme" 
+        defaultTheme="system" 
+        enableSystem
+        themes={['light', 'dark', 'system', 'rainbow']}
+      >
         <TooltipProvider delayDuration={0}>
           {children}
           <Toaster />
