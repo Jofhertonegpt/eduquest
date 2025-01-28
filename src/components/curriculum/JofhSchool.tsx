@@ -166,12 +166,13 @@ export const JofhSchool = () => {
   };
 
   const verifyAnswer = (question: Quiz['questions'][0], answer: string | number | boolean | number[]) => {
-    switch (question.type) {
-      case 'coding':
-        // Here you would implement actual code verification
-        return true;
-      case 'multiple-choice':
-        const mcq = question as MultipleChoiceQuestion;
+    if (question.type === 'coding') {
+      // Here you would implement actual code verification
+      return true;
+    }
+    
+    if (question.type === 'multiple-choice') {
+      const mcq = question as MultipleChoiceQuestion;
         if (mcq.allowMultiple) {
           const answers = answer as number[];
           return answers.length > 0 && answers.every(a => mcq.correctAnswers?.includes(a));
@@ -236,15 +237,15 @@ export const JofhSchool = () => {
                           assignments: module.assignments.map(a => ({
                             ...a,
                             questions: a.questions.map(q => {
-                              if (q.type === 'multiple-choice') {
+                              const baseQuestion = { ...q };
+                              if (baseQuestion.type === 'multiple-choice') {
+                                const mcq = baseQuestion as unknown as MultipleChoiceQuestion;
                                 return {
-                                  ...q,
+                                  ...mcq,
                                   type: 'multiple-choice' as const,
-                                  options: q.options || [],
-                                  correctAnswer: q.correctAnswer || 0,
-                                  allowMultiple: q.allowMultiple || false,
-                                  correctAnswers: q.correctAnswers || []
-                                };
+                                  options: mcq.options || [],
+                                  correctAnswer: mcq.correctAnswer || 0
+                                } as MultipleChoiceQuestion;
                               }
                               if (q.type === 'coding') {
                                 return {
