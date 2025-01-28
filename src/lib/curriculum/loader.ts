@@ -2,7 +2,6 @@ import { Program, Course, Module } from '@/types/curriculum';
 import programData from '@/data/curriculum/New defaults/program.json';
 import coursesData from '@/data/curriculum/New defaults/courses.json';
 import modulesData from '@/data/curriculum/New defaults/modules.json';
-<<<<<<< HEAD
 
 export class CurriculumLoader {
   static async loadProgram(): Promise<Program> {
@@ -17,7 +16,6 @@ export class CurriculumLoader {
     return modulesData as Module[];
   }
 }
-=======
 import { AppError } from '@/lib/errorHandling';
 
 export class CurriculumLoader {
@@ -45,4 +43,3 @@ export class CurriculumLoader {
     }
   }
 }
->>>>>>> 805ef23d12118d30d69bc74a6f2381c6c24686b5

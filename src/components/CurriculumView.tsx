@@ -1,48 +1,14 @@
-<<<<<<< HEAD
-=======
 import { useState, useEffect } from 'react';
-import { CourseCard } from '@/components/home/CourseCard';
-import { CurriculumManager } from '@/lib/curriculum/manager';
-import type { Program } from '@/types/curriculum';
 import { useToast } from '@/hooks/use-toast';
+import { CurriculumManager } from '@/lib/curriculum/manager';
+import { Program } from '@/types/curriculum';
+import { CourseCard } from '@/components/home/CourseCard';
 
->>>>>>> 805ef23d12118d30d69bc74a6f2381c6c24686b5
 interface CurriculumViewProps {
   programId: string;
 }
 
 export const CurriculumView = ({ programId }: CurriculumViewProps) => {
-<<<<<<< HEAD
-  const [curriculumData, setCurriculumData] = useState<any>(null);
-
-  useEffect(() => {
-    const loadData = async () => {
-      const data = await loadCurriculumData();
-      setCurriculumData(data);
-    };
-    loadData();
-  }, [programId]);
-
-  return (
-    <div>
-      <h1>{curriculumData?.program.name}</h1>
-      <div className="courses-grid">
-        {curriculumData?.courses.map(course => (
-          <CourseCard 
-            key={course.id}
-            course={course}
-            modules={course.modules}
-          />
-        ))}
-      </div>
-    </div>
-  );
-};
-
-import { useState, useEffect } from 'react';
-import { loadCurriculumData } from '@/lib/curriculum-loader';
-import { CourseCard } from '@/components/home/CourseCard';
-=======
   const [manager] = useState(() => new CurriculumManager());
   const [program, setProgram] = useState<Program | null>(null);
   const { toast } = useToast();
@@ -62,7 +28,7 @@ import { CourseCard } from '@/components/home/CourseCard';
       }
     };
     init();
-  }, [programId]);
+  }, [programId, manager, toast]);
 
   if (!program) {
     return (
@@ -93,4 +59,3 @@ import { CourseCard } from '@/components/home/CourseCard';
     </div>
   );
 };
->>>>>>> 805ef23d12118d30d69bc74a6f2381c6c24686b5

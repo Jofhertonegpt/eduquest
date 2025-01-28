@@ -3,20 +3,15 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Clock } from "lucide-react";
-import type { CourseCard as CourseCardType } from "@/types/home";
-import type { Module } from "@/types/curriculum";
+import type { Course, Module } from "@/types/curriculum";
 
 interface CourseCardProps {
-  course: CourseCardType;
+  course: Course;
   modules: Module[];
   index: number;
 }
-<<<<<<< HEAD
-export const CourseCard = ({ course, index }: CourseCardProps) => {
-=======
 
-export const CourseCard = ({ course, modules, index }: CourseCardProps) => {
->>>>>>> 805ef23d12118d30d69bc74a6f2381c6c24686b5
+export const CourseCard = ({ course, modules, index }: CourseCardProps): JSX.Element => {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}

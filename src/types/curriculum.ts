@@ -1,6 +1,42 @@
 export type DegreeType = 'associates' | 'bachelors' | 'masters' | 'doctorate' | 'certificate' | 'undergraduate' | string;
 
 export type DifficultyLevel = 'beginner' | 'intermediate' | 'advanced' | 'expert';
+
+export interface Degree {
+  id: string;
+  title: string;
+  type: string;
+  description: string;
+  requiredCredits: number;
+  metadata: {
+    academicYear: string;
+    deliveryFormat: string;
+    department: string;
+  };
+  courses: string[];
+}
+
+export interface ModuleMetadata {
+  estimatedTime: number;
+  difficulty: 'beginner' | 'intermediate' | 'advanced';
+  prerequisites: string[];
+}
+
+export interface Assignment {
+  id: string;
+  title: string;
+  description: string;
+  dueDate: string;
+  points: number;
+  questions: Question[];
+}
+
+export interface Quiz {
+  id: string;
+  title: string;
+  description: string;
+  questions: Question[];
+}
 export type ResourceType = 'video' | 'pdf' | 'epub' | 'article' | 'document' | 'code';
 export type CourseLevel = 'introductory' | 'intermediate' | 'advanced';
 
@@ -119,7 +155,7 @@ export type Question =
     credits: number;
     level: string;
     metadata: CourseMetadata;
-    modules: Module[];
+    modules: string[];  // Array of module IDs
     category: string;
     duration: string;
   }
