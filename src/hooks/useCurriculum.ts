@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import type { Degree, Course, CourseModule } from '@/types/curriculum-types';
+import type { Degree, Course, CourseModule, Module, ModuleData } from '@/types/curriculum-types';
 
 export function usePrograms() {
   return useQuery({
@@ -96,15 +96,22 @@ export function useModules(curriculumId: string | undefined) {
       
       console.log('Fetched modules:', data);
       
-      return data.map(module => ({
-        id: module.id,
-        courseId: module.module_data?.courseId,
-        title: module.module_data?.title || '',
-        description: module.module_data?.description || '',
-        credits: module.module_data?.credits || 0,
-        metadata: module.module_data?.metadata || {},
-        learningObjectives: module.module_data?.learningObjectives || []
-      })) as CourseModule[];
+      return data.map(module => {
+        const moduleData = module.module_data as ModuleData;
+        return {
+          id: moduleData.id,
+          courseId: moduleData.courseId,
+          title: moduleData.title,
+          description: moduleData.description,
+          credits: moduleData.credits,
+          metadata: moduleData.metadata,
+          learningObjectives: moduleData.learningObjectives,
+          type: moduleData.type,
+          resources: moduleData.resources || [],
+          assignments: moduleData.assignments || [],
+          quizzes: moduleData.quizzes || []
+        } as Module;
+      });
     },
     enabled: !!curriculumId
   });

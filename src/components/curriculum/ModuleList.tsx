@@ -6,7 +6,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import type { ModuleListProps } from "@/types/learning-types";
-import type { Module } from "@/types/curriculum";
+import type { Module, ModuleData } from "@/types/curriculum";
 
 const ModuleListSkeleton = () => (
   <div className="space-y-4">
@@ -57,13 +57,14 @@ export const ModuleList = ({ curriculumId, onModuleSelect }: ModuleListProps) =>
 
   // Group modules by course using module_data
   const courseGroups = modules.reduce((acc, module) => {
-    const courseId = module.module_data?.courseId || 'uncategorized';
+    const moduleData = module.module_data as ModuleData;
+    const courseId = moduleData?.courseId || 'uncategorized';
     if (!acc[courseId]) {
       acc[courseId] = [];
     }
-    acc[courseId].push(module);
+    acc[courseId].push(moduleData);
     return acc;
-  }, {} as Record<string, typeof modules>);
+  }, {} as Record<string, Module[]>);
 
   const getModuleTypeIcon = (type?: string) => {
     switch (type) {
@@ -101,19 +102,16 @@ export const ModuleList = ({ curriculumId, onModuleSelect }: ModuleListProps) =>
               </Badge>
             </CollapsibleTrigger>
             <CollapsibleContent className="pl-6 mt-2 space-y-2">
-              {courseModules.map((module) => {
-                const moduleData = module.module_data as Module;
-                return (
-                  <div
-                    key={moduleData.id}
-                    className="flex items-center gap-2 p-2 hover:bg-accent rounded-lg cursor-pointer"
-                    onClick={() => onModuleSelect(moduleData)}
-                  >
-                    {getModuleTypeIcon(moduleData.type)}
-                    <span>{moduleData.title}</span>
-                  </div>
-                );
-              })}
+              {courseModules.map((module) => (
+                <div
+                  key={module.id}
+                  className="flex items-center gap-2 p-2 hover:bg-accent rounded-lg cursor-pointer"
+                  onClick={() => onModuleSelect(module)}
+                >
+                  {getModuleTypeIcon(module.type)}
+                  <span>{module.title}</span>
+                </div>
+              ))}
             </CollapsibleContent>
           </Collapsible>
         ))}
