@@ -7,11 +7,13 @@ export interface LearningModuleProps {
 
 export interface ResourceViewerProps {
   resource: Resource;
+  isCompleted?: boolean;
   onComplete?: (resourceId: string) => void;
 }
 
 export interface QuizPlayerProps {
   quiz: Quiz;
+  isCompleted?: boolean;
   onComplete: (score: number) => void;
 }
 
