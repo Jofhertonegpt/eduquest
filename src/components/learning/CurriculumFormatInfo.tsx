@@ -9,12 +9,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { Info } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import defaultCurriculum from "@/data/curriculum/program.json";
-import defaultCourses from "@/data/curriculum/courses.json";
-import defaultModules from "@/data/curriculum/modules.json";
-import defaultQuizzes from "@/data/curriculum/quizzes.json";
-import defaultAssignments from "@/data/curriculum/assignments.json";
-import defaultResources from "@/data/curriculum/resources.json";
+import defaultProgram from "@/data/curriculum/New defaults/program.json";
+import defaultCourses from "@/data/curriculum/New defaults/courses.json";
+import defaultModules from "@/data/curriculum/New defaults/modules.json";
 
 export function CurriculumFormatInfo() {
   const { toast } = useToast();
@@ -58,7 +55,7 @@ export function CurriculumFormatInfo() {
                     <Button
                       variant="link"
                       size="sm"
-                      onClick={() => copyExampleFormat(defaultCurriculum, "Program")}
+                      onClick={() => copyExampleFormat(defaultProgram, "Program")}
                       className="ml-2"
                     >
                       Copy example
