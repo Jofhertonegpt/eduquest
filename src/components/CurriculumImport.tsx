@@ -269,19 +269,28 @@ export const CurriculumImport = () => {
                   <MonacoEditor
                     initialValue={previewContent}
                     onChange={() => {}}
-                    options={{ readOnly: true }}
+                    readOnly={true}
                   />
                 </div>
               </div>
             )}
 
-            <Button
-              onClick={handleImportCustom}
-              disabled={isLoading || !files.program || !files.courses || !files.modules}
-              className="w-full"
-            >
-              {isLoading ? "Importing..." : "Import Custom Curriculum"}
-            </Button>
+            <div className="flex gap-4">
+              <Button
+                onClick={handleImportCustom}
+                disabled={isLoading || !files.program || !files.courses || !files.modules}
+                className="flex-1"
+              >
+                {isLoading ? "Importing..." : "Import Custom Curriculum"}
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => window.location.href = '/jofh-school'}
+                className="flex-1"
+              >
+                View Default Curriculum
+              </Button>
+            </div>
           </Card>
         </TabsContent>
 
@@ -291,13 +300,22 @@ export const CurriculumImport = () => {
             <p className="text-gray-600 mb-8">
               Import the default curriculum template with pre-configured courses, modules, and example questions.
             </p>
-            <Button
-              onClick={handleImportDefault}
-              disabled={isLoading}
-              className="w-full"
-            >
-              {isLoading ? "Importing..." : "Import Default Curriculum"}
-            </Button>
+            <div className="flex gap-4">
+              <Button
+                onClick={handleImportDefault}
+                disabled={isLoading}
+                className="flex-1"
+              >
+                {isLoading ? "Importing..." : "Import Default Curriculum"}
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => window.location.href = '/jofh-school'}
+                className="flex-1"
+              >
+                View Default Curriculum
+              </Button>
+            </div>
           </Card>
         </TabsContent>
       </Tabs>
