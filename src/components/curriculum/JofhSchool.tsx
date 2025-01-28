@@ -92,15 +92,28 @@ export const JofhSchool = () => {
                     <div className="space-y-4">
                       {quiz.questions.map((question) => (
                         <div key={question.id} className="border-t pt-4">
-                          <h4 className="font-medium mb-2">{question.title}</h4>
+                          <div className="flex items-center gap-2 mb-2">
+                            <h4 className="font-medium">{question.title}</h4>
+                            <span className="text-xs px-2 py-1 bg-gray-100 rounded-full">
+                              {question.type}
+                            </span>
+                          </div>
                           <p className="mb-4">{question.description}</p>
                           
                           {question.type === 'coding' && (
-                            <div className="h-[400px] border rounded-lg overflow-hidden">
-                              <MonacoEditor
-                                initialValue={(question as CodingQuestion).initialCode || ''}
-                                onChange={(value) => console.log('Code changed:', value)}
-                              />
+                            <div className="space-y-4">
+                              <div className="h-[400px] border rounded-lg overflow-hidden">
+                                <MonacoEditor
+                                  initialValue={(question as CodingQuestion).initialCode || ''}
+                                  onChange={(value) => console.log('Code changed:', value)}
+                                />
+                              </div>
+                              <Button 
+                                onClick={() => console.log('Running code...')}
+                                className="w-full sm:w-auto"
+                              >
+                                Run Code
+                              </Button>
                             </div>
                           )}
                         </div>
