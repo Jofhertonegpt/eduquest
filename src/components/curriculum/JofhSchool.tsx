@@ -51,7 +51,11 @@ export const JofhSchool = () => {
               metadata: {
                 ...foundModule.metadata,
                 difficulty: foundModule.metadata.difficulty as "beginner" | "intermediate" | "advanced"
-              }
+              },
+              resources: foundModule.resources.map(resource => ({
+                ...resource,
+                type: resource.type as "video" | "pdf" | "epub" | "article" | "document" | "code"
+              }))
             };
             return (
               <Card key={module.id} className="p-4 cursor-pointer hover:bg-secondary/50" onClick={() => setSelectedModule(module)}>
