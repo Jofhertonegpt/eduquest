@@ -1,25 +1,22 @@
-import { useState, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { CurriculumTemplateList } from "./curriculum/CurriculumTemplateList";
-import { useCurriculumTemplates } from "@/hooks/useCurriculumTemplates";
-import { FileUp, Loader2 } from "lucide-react";
-import defaultProgram from "@/data/curriculum/New defaults/program.json";
-import defaultCourses from "@/data/curriculum/New defaults/courses.json";
+import { supabase } from "@/lib/supabase";
+import { validateAndTransformCurriculum } from "@/lib/curriculumValidation";
+import { defaultProgram } from "@/data/program";
+import { defaultCourses } from "@/data/curriculum/New defaults/courses";
 
-export function CurriculumImport() {
-  const [isLoading, setIsLoading] = useState(false);
-  const { createTemplate } = useCurriculumTemplates();
+export const CurriculumImport = () => {
   const { toast } = useToast();
-  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleImportDefaults = useCallback(async () => {
+  const handleImportDefault = async () => {
+    setIsLoading(true);
     try {
-      setIsLoading(true);
-      await createTemplate({
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("User not authenticated");
+
+      const template = {
+        user_id: user.id,
         name: defaultProgram.name,
         description: defaultProgram.description,
         template_type: 'program',
@@ -30,76 +27,50 @@ export function CurriculumImport() {
           institution: defaultProgram.institution,
           complianceStandards: defaultProgram.complianceStandards,
           degrees: defaultProgram.degrees.map(degree => ({
-            ...degree,
-            courses: defaultCourses.map(course => ({
-              id: course.id,
-              title: course.title,
-              description: course.description,
-              credits: course.credits,
-              level: course.level,
-              metadata: course.metadata,
-              modules: course.modules || []
-            }))
+            id: degree.id,
+            title: degree.title,
+            type: degree.type,
+            description: degree.description,
+            requiredCredits: degree.requiredCredits,
+            metadata: degree.metadata,
+            courses: degree.courses
           }))
         },
         is_default: true,
-      });
-      
-      navigate('/learning');
-    } catch (error) {
+      };
+
+      const { error } = await supabase
+        .from('curriculum_templates')
+        .insert(template);
+
+      if (error) throw error;
+
       toast({
-        title: "Import Error",
-        description: "Failed to import default curriculum",
+        title: "Success",
+        description: "Default curriculum template imported successfully",
+      });
+    } catch (error) {
+      console.error('Import error:', error);
+      toast({
+        title: "Error",
+        description: "Failed to import curriculum template",
         variant: "destructive",
       });
     } finally {
       setIsLoading(false);
     }
-  }, [createTemplate, navigate, toast]);
+  };
 
   return (
-    <Card className="p-6">
-      <Tabs defaultValue="templates" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="templates">Templates</TabsTrigger>
-          <TabsTrigger value="import">Import New</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="templates">
-          <CurriculumTemplateList />
-        </TabsContent>
-
-        <TabsContent value="import">
-          <div className="text-center space-y-4 mb-8">
-            <FileUp className="w-12 h-12 mx-auto text-muted-foreground" />
-            <div>
-              <h2 className="text-lg font-semibold">Import Your Curriculum</h2>
-              <p className="text-sm text-muted-foreground">
-                Use our default curriculum or import your own
-              </p>
-            </div>
-          </div>
-
-          <div className="space-y-4">
-            <Button 
-              onClick={handleImportDefaults} 
-              className="w-full"
-              disabled={isLoading}
-            >
-              {isLoading ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Importing...
-                </>
-              ) : (
-                'Use Default Curriculum'
-              )}
-            </Button>
-          </div>
-        </TabsContent>
-      </Tabs>
-    </Card>
+    <div>
+      <h2 className="text-lg font-semibold">Import Curriculum</h2>
+      <button
+        onClick={handleImportDefault}
+        disabled={isLoading}
+        className="mt-4 btn"
+      >
+        {isLoading ? "Importing..." : "Import Default Curriculum"}
+      </button>
+    </div>
   );
-}
-
-export default CurriculumImport;
+};
