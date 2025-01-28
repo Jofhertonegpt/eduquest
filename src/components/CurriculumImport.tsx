@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -16,12 +16,16 @@ import type { Json } from "@/lib/database.types";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Info, ArrowLeft, ArrowRight, Loader2 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
+import { z } from "zod";
 
-interface JsonInputs {
-  curriculum: string;
-  courses: string;
-  modules: string;
-}
+// JSON validation schemas
+const jsonInputSchema = z.object({
+  curriculum: z.string(),
+  courses: z.string(),
+  modules: z.string(),
+});
+
+type JsonInputs = z.infer<typeof jsonInputSchema>;
 
 interface ValidationError {
   field: keyof JsonInputs;
@@ -78,6 +82,22 @@ export function CurriculumImport() {
   const { toast } = useToast();
   const navigate = useNavigate();
 
+  // Cleanup effect
+  useEffect(() => {
+    return () => {
+      // Reset all state on unmount
+      setJsonInputs({
+        curriculum: "",
+        courses: "",
+        modules: "",
+      });
+      setValidationErrors([]);
+      setStepProgress(0);
+      setCurrentStep(1);
+    };
+  }, []);
+
+  // Authentication check effect
   useEffect(() => {
     const checkAuth = async () => {
       try {
@@ -103,7 +123,12 @@ export function CurriculumImport() {
     return () => subscription.unsubscribe();
   }, [toast]);
 
-  const validateStep = (step: number): boolean => {
+  // Reset validation errors when changing steps
+  useEffect(() => {
+    setValidationErrors([]);
+  }, [currentStep]);
+
+  const validateStep = useCallback((step: number): boolean => {
     setValidationErrors([]);
     const errors: ValidationError[] = [];
 
@@ -113,11 +138,19 @@ export function CurriculumImport() {
         errors.push({ field, message: `${field} data is required` });
         return false;
       }
-      if (!validateJSON(content)) {
+      
+      try {
+        if (!validateJSON(content)) {
+          errors.push({ field, message: 'Invalid JSON format' });
+          return false;
+        }
+        // Parse JSON to validate structure
+        JSON.parse(content);
+        return true;
+      } catch (error) {
         errors.push({ field, message: 'Invalid JSON format' });
         return false;
       }
-      return true;
     };
 
     switch (step) {
@@ -136,15 +169,15 @@ export function CurriculumImport() {
 
     setValidationErrors(errors);
     return errors.length === 0;
-  };
+  }, [jsonInputs]);
 
-  const handleInputChange = (field: keyof JsonInputs, value: string) => {
+  const handleInputChange = useCallback((field: keyof JsonInputs, value: string) => {
     setJsonInputs(prev => ({
       ...prev,
       [field]: value
     }));
     setValidationErrors(prev => prev.filter(error => error.field !== field));
-  };
+  }, []);
 
   const handleImport = async (useDefault?: boolean) => {
     if (!isAuthenticated) {
@@ -173,11 +206,22 @@ export function CurriculumImport() {
           return;
         }
         
-        dataToImport = {
-          ...JSON.parse(jsonInputs.curriculum || "{}"),
-          courses: JSON.parse(jsonInputs.courses || "[]"),
-          modules: JSON.parse(jsonInputs.modules || "[]"),
-        };
+        try {
+          dataToImport = {
+            ...JSON.parse(jsonInputs.curriculum),
+            courses: JSON.parse(jsonInputs.courses),
+            modules: jsonInputs.modules ? JSON.parse(jsonInputs.modules) : [],
+          };
+        } catch (error) {
+          handleError(error, 'JSON parsing');
+          toast({
+            title: "Invalid JSON",
+            description: "Failed to parse JSON data",
+            variant: "destructive",
+          });
+          setIsLoading(false);
+          return;
+        }
       }
 
       setStepProgress(50);
@@ -207,6 +251,15 @@ export function CurriculumImport() {
         title: "Success",
         description: "Curriculum imported successfully",
       });
+
+      // Clean up
+      setJsonInputs({
+        curriculum: "",
+        courses: "",
+        modules: "",
+      });
+      setValidationErrors([]);
+      setStepProgress(0);
 
       navigate(`/learning/${data.id}`);
     }, 'Curriculum import');
@@ -344,6 +397,6 @@ export function CurriculumImport() {
       </Card>
     </ImportErrorBoundary>
   );
-}
+};
 
 export default CurriculumImport;
