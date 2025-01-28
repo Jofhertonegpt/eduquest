@@ -1,9 +1,11 @@
 import React from "react";
 import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/components/ui/hover-card";
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Info } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -26,106 +28,157 @@ export function CurriculumFormatInfo() {
   };
 
   return (
-    <div className="relative inline-block">
-      <HoverCard>
-        <HoverCardTrigger asChild>
-          <Button variant="ghost" size="icon">
-            <Info className="h-4 w-4" />
-            <span className="sr-only">JSON Format FAQ</span>
-          </Button>
-        </HoverCardTrigger>
-        <HoverCardContent align="end" className="w-96 p-4">
-          <h3 className="font-semibold mb-2">JSON Format FAQ:</h3>
-          <div className="space-y-4 text-sm">
-            <div>
-              <p className="font-medium mb-1">Required JSON Files:</p>
-              <ul className="list-disc pl-4 space-y-2">
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button variant="ghost" size="icon">
+          <Info className="h-4 w-4" />
+          <span className="sr-only">Curriculum Format Guide</span>
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle className="text-2xl font-bold">Curriculum Format Guide</DialogTitle>
+        </DialogHeader>
+        
+        <div className="space-y-8 py-4">
+          {/* Required Section */}
+          <section>
+            <h3 className="text-xl font-semibold mb-4">[Required] JSON Structure</h3>
+            <div className="space-y-4">
+              <p className="text-muted-foreground">
+                Your curriculum must include the following JSON files, each with specific required fields:
+              </p>
+              <ul className="list-disc pl-6 space-y-4">
                 <li>
-                  <span className="font-medium">Program JSON:</span>
-                  <br />
-                  Contains basic program information and degree structure
-                  <Button
-                    variant="link"
-                    className="px-0 h-auto py-0 text-xs"
-                    onClick={() => copyExampleFormat(defaultCurriculum, "Program")}
-                  >
-                    Copy example
-                  </Button>
+                  <span className="font-semibold">Program JSON:</span>
+                  <ul className="list-disc pl-6 mt-2 space-y-1 text-sm">
+                    <li>name (string)</li>
+                    <li>description (string)</li>
+                    <li>degrees (array of degree objects)</li>
+                    <Button
+                      variant="link"
+                      size="sm"
+                      onClick={() => copyExampleFormat(defaultCurriculum, "Program")}
+                      className="ml-2"
+                    >
+                      Copy example
+                    </Button>
+                  </ul>
                 </li>
                 <li>
-                  <span className="font-medium">Courses JSON:</span>
-                  <br />
-                  Defines course details and metadata
-                  <Button
-                    variant="link"
-                    className="px-0 h-auto py-0 text-xs"
-                    onClick={() => copyExampleFormat(defaultCourses, "Courses")}
-                  >
-                    Copy example
-                  </Button>
+                  <span className="font-semibold">Courses JSON:</span>
+                  <ul className="list-disc pl-6 mt-2 space-y-1 text-sm">
+                    <li>id (string)</li>
+                    <li>title (string)</li>
+                    <li>description (string)</li>
+                    <li>credits (number)</li>
+                    <Button
+                      variant="link"
+                      size="sm"
+                      onClick={() => copyExampleFormat(defaultCourses, "Courses")}
+                      className="ml-2"
+                    >
+                      Copy example
+                    </Button>
+                  </ul>
                 </li>
                 <li>
-                  <span className="font-medium">Modules JSON:</span>
-                  <br />
-                  Contains module content and learning objectives
-                  <Button
-                    variant="link"
-                    className="px-0 h-auto py-0 text-xs"
-                    onClick={() => copyExampleFormat(defaultModules, "Modules")}
-                  >
-                    Copy example
-                  </Button>
-                </li>
-                <li>
-                  <span className="font-medium">Quizzes JSON:</span>
-                  <br />
-                  Defines quiz questions and answers
-                  <Button
-                    variant="link"
-                    className="px-0 h-auto py-0 text-xs"
-                    onClick={() => copyExampleFormat(defaultQuizzes, "Quizzes")}
-                  >
-                    Copy example
-                  </Button>
-                </li>
-                <li>
-                  <span className="font-medium">Assignments JSON:</span>
-                  <br />
-                  Contains assignment details and requirements
-                  <Button
-                    variant="link"
-                    className="px-0 h-auto py-0 text-xs"
-                    onClick={() => copyExampleFormat(defaultAssignments, "Assignments")}
-                  >
-                    Copy example
-                  </Button>
-                </li>
-                <li>
-                  <span className="font-medium">Resources JSON:</span>
-                  <br />
-                  Lists learning resources and materials
-                  <Button
-                    variant="link"
-                    className="px-0 h-auto py-0 text-xs"
-                    onClick={() => copyExampleFormat(defaultResources, "Resources")}
-                  >
-                    Copy example
-                  </Button>
+                  <span className="font-semibold">Modules JSON:</span>
+                  <ul className="list-disc pl-6 mt-2 space-y-1 text-sm">
+                    <li>id (string)</li>
+                    <li>title (string)</li>
+                    <li>description (string)</li>
+                    <li>metadata (object)</li>
+                    <Button
+                      variant="link"
+                      size="sm"
+                      onClick={() => copyExampleFormat(defaultModules, "Modules")}
+                      className="ml-2"
+                    >
+                      Copy example
+                    </Button>
+                  </ul>
                 </li>
               </ul>
             </div>
-            <div>
-              <p className="font-medium mb-1">Tips:</p>
-              <ul className="list-disc pl-4">
-                <li>Each file must be valid JSON format</li>
-                <li>IDs should be unique across all files</li>
-                <li>Files are linked through their respective IDs</li>
-                <li>Click "Copy example" to see the expected format</li>
-              </ul>
+          </section>
+
+          {/* Working Example Section */}
+          <section>
+            <h3 className="text-xl font-semibold mb-4">[Working Example]</h3>
+            <div className="space-y-4">
+              <p className="text-muted-foreground">
+                Here's a complete working example that you can use as a reference:
+              </p>
+              <div className="bg-muted p-4 rounded-lg">
+                <pre className="text-xs overflow-x-auto">
+                  {JSON.stringify({
+                    name: "Web Development 101",
+                    description: "Introduction to web development",
+                    degrees: [{
+                      id: "web-dev-cert",
+                      title: "Web Development Certificate",
+                      type: "certificate",
+                      description: "Learn web development basics",
+                      requiredCredits: 12,
+                      courses: ["html-basics"]
+                    }]
+                  }, null, 2)}
+                </pre>
+              </div>
             </div>
-          </div>
-        </HoverCardContent>
-      </HoverCard>
-    </div>
+          </section>
+
+          {/* How to Create Section */}
+          <section>
+            <h3 className="text-xl font-semibold mb-4">[How to Create Your Own Curriculum]</h3>
+            <div className="space-y-4">
+              <ol className="list-decimal pl-6 space-y-4">
+                <li>
+                  <p className="font-medium">Start with Program Structure</p>
+                  <p className="text-sm text-muted-foreground">
+                    Create your program JSON first, defining the overall structure and degrees offered.
+                  </p>
+                </li>
+                <li>
+                  <p className="font-medium">Define Your Courses</p>
+                  <p className="text-sm text-muted-foreground">
+                    Create course definitions that will be referenced by your degrees.
+                  </p>
+                </li>
+                <li>
+                  <p className="font-medium">Create Detailed Modules</p>
+                  <p className="text-sm text-muted-foreground">
+                    Break down each course into specific learning modules.
+                  </p>
+                </li>
+                <li>
+                  <p className="font-medium">Add Assessments</p>
+                  <p className="text-sm text-muted-foreground">
+                    Create quizzes and assignments for each module.
+                  </p>
+                </li>
+                <li>
+                  <p className="font-medium">Include Learning Resources</p>
+                  <p className="text-sm text-muted-foreground">
+                    Add supporting materials like videos, documents, or links.
+                  </p>
+                </li>
+              </ol>
+              
+              <div className="mt-6 p-4 bg-muted rounded-lg">
+                <h4 className="font-semibold mb-2">Pro Tips:</h4>
+                <ul className="list-disc pl-4 space-y-2 text-sm">
+                  <li>Use unique IDs across all your JSON files</li>
+                  <li>Ensure all referenced IDs exist in their respective files</li>
+                  <li>Validate your JSON before importing</li>
+                  <li>Start small and gradually add more content</li>
+                </ul>
+              </div>
+            </div>
+          </section>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }
