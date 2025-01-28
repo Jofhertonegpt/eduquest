@@ -2,8 +2,10 @@ import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/lib/supabase";
 import { validateAndTransformCurriculum } from "@/lib/curriculumValidation";
-import { defaultProgram } from "@/data/program";
-import { defaultCourses } from "@/data/curriculum/New defaults/courses";
+import type { CodingQuestion } from "@/types/curriculum";
+import programData from "@/data/curriculum/New defaults/program.json";
+import coursesData from "@/data/curriculum/New defaults/courses.json";
+import modulesData from "@/data/curriculum/New defaults/modules.json";
 
 export const CurriculumImport = () => {
   const { toast } = useToast();
@@ -17,25 +19,38 @@ export const CurriculumImport = () => {
 
       const template = {
         user_id: user.id,
-        name: defaultProgram.name,
-        description: defaultProgram.description,
+        name: programData.name,
+        description: programData.description,
         template_type: 'program',
-        content: {
-          name: defaultProgram.name,
-          description: defaultProgram.description,
-          programOutcomes: defaultProgram.programOutcomes,
-          institution: defaultProgram.institution,
-          complianceStandards: defaultProgram.complianceStandards,
-          degrees: defaultProgram.degrees.map(degree => ({
-            id: degree.id,
-            title: degree.title,
-            type: degree.type,
-            description: degree.description,
-            requiredCredits: degree.requiredCredits,
-            metadata: degree.metadata,
-            courses: degree.courses
-          }))
-        },
+          content: {
+            ...programData,
+            courses: coursesData.map(course => ({
+              ...course,
+              modules: course.modules.map(moduleId => {
+                const module = modulesData.find(m => m.id === moduleId);
+                if (module) {
+                  // Add a test coding question to the first quiz
+                  if (module.quizzes && module.quizzes.length > 0) {
+                    const codingQuestion: CodingQuestion = {
+                      id: 'test-coding-q1',
+                      type: 'coding',
+                      title: 'Test Coding Question',
+                      description: 'Write a function that returns "Hello World"',
+                      points: 10,
+                      initialCode: 'function helloWorld() {\n  // Your code here\n}',
+                      testCases: [{
+                        input: '',
+                        expectedOutput: 'Hello World'
+                      }]
+                    };
+                    module.quizzes[0].questions.push(codingQuestion);
+                  }
+                  return module;
+                }
+                return null;
+              }).filter(Boolean)
+            }))
+          },
         is_default: true,
       };
 

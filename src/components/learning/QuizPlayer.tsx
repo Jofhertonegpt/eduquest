@@ -11,14 +11,15 @@ import type { Quiz, Question } from "@/types/curriculum";
 
 interface QuizPlayerProps {
   quiz: Quiz;
+  isCompleted?: boolean;
   onComplete: (score: number) => void;
 }
 
 const SUBMISSION_TIMEOUT = 30000; // 30 seconds timeout
 
-export const QuizPlayer = ({ quiz, onComplete }: QuizPlayerProps) => {
+export const QuizPlayer = ({ quiz, isCompleted = false, onComplete }: QuizPlayerProps) => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [answers, setAnswers] = useState<Record<string, any>>({});
+  const [answers, setAnswers] = useState<Record<string, string | number>>({});
   const [submitted, setSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const submitTimeoutRef = useRef<NodeJS.Timeout>();
@@ -31,7 +32,7 @@ export const QuizPlayer = ({ quiz, onComplete }: QuizPlayerProps) => {
     };
   }, []);
 
-  const validateAnswer = useCallback((question: Question, answer: any): boolean => {
+  const validateAnswer = useCallback((question: Question, answer: string | number): boolean => {
     if (!answer) return false;
 
     switch (question.type) {
@@ -99,7 +100,7 @@ export const QuizPlayer = ({ quiz, onComplete }: QuizPlayerProps) => {
     return totalScore;
   }, [quiz.questions, answers]);
 
-  const handleAnswerChange = useCallback((questionId: string, value: any) => {
+  const handleAnswerChange = useCallback((questionId: string, value: string | number) => {
     setAnswers(prev => ({
       ...prev,
       [questionId]: value
@@ -145,11 +146,12 @@ export const QuizPlayer = ({ quiz, onComplete }: QuizPlayerProps) => {
 
   const currentQuestion = quiz.questions[currentQuestionIndex];
 
-  if (!currentQuestion) {
+  if (isCompleted || !currentQuestion) {
     return (
       <Card className="p-4">
         <div className="text-center">
           <h3 className="text-lg font-semibold mb-2">Quiz Complete!</h3>
+          {isCompleted && <p className="text-green-600 mb-2">✓ Completed</p>}
           <p>Your score: {calculateScore()} points</p>
         </div>
       </Card>

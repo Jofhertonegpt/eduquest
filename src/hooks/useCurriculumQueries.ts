@@ -58,7 +58,11 @@ export const useCurriculumQueries = (curriculumId?: string) => {
       }
 
       console.log("Raw modules data:", data);
-      return data as CurriculumModule[];
+      // Transform the data to match our JSON structure
+      return data?.map(module => ({
+        ...module.content,
+        id: module.id
+      })) as Module[];
     },
     enabled: !!curriculumId,
   });
@@ -75,7 +79,7 @@ export const useCurriculumQueries = (curriculumId?: string) => {
           .maybeSingle();
         
         if (error) throw error;
-        return data as { content: Module };
+        return data?.content as Module;
       },
     });
   };
