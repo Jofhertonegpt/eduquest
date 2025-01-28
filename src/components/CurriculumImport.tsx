@@ -11,9 +11,6 @@ import { supabase } from "@/lib/supabase";
 import defaultCurriculum from "@/data/curriculum/program.json";
 import defaultCourses from "@/data/curriculum/courses.json";
 import defaultModules from "@/data/curriculum/modules.json";
-import defaultQuizzes from "@/data/curriculum/quizzes.json";
-import defaultAssignments from "@/data/curriculum/assignments.json";
-import defaultResources from "@/data/curriculum/resources.json";
 import { CurriculumFormatInfo } from "@/components/learning/CurriculumFormatInfo";
 import type { Json } from "@/lib/database.types";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -23,9 +20,6 @@ interface JsonInputs {
   curriculum: string;
   courses: string;
   modules: string;
-  quizzes: string;
-  assignments: string;
-  resources: string;
 }
 
 const jsonPlaceholders = {
@@ -48,8 +42,7 @@ const jsonPlaceholders = {
     "id": "course-id",
     "title": "Course Title",
     "description": "Course Description",
-    "credits": 3,
-    "level": "introductory"
+    "credits": 3
   }
 ]`,
   modules: `[
@@ -62,32 +55,8 @@ const jsonPlaceholders = {
       "difficulty": "beginner"
     }
   }
-]`,
-  quizzes: `[
-  {
-    "id": "quiz-id",
-    "title": "Quiz Title",
-    "description": "Quiz Description"
-  }
-]`,
-  assignments: `[
-  {
-    "id": "assignment-id",
-    "title": "Assignment Title",
-    "description": "Assignment Description"
-  }
-]`,
-  resources: `[
-  {
-    "id": "resource-id",
-    "title": "Resource Title",
-    "type": "video",
-    "content": "Resource Content"
-  }
 ]`
 };
-
-// ... keep existing code (useState, useEffect, and other functions remain unchanged)
 
 export function CurriculumImport() {
   const [isLoading, setIsLoading] = useState(false);
@@ -95,9 +64,6 @@ export function CurriculumImport() {
     curriculum: "",
     courses: "",
     modules: "",
-    quizzes: "",
-    assignments: "",
-    resources: "",
   });
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const { toast } = useToast();
@@ -142,18 +108,12 @@ export function CurriculumImport() {
           ...defaultCurriculum,
           courses: defaultCourses,
           modules: defaultModules,
-          quizzes: defaultQuizzes,
-          assignments: defaultAssignments,
-          resources: defaultResources,
         };
       } else {
         dataToImport = {
           ...JSON.parse(jsonInputs.curriculum || "{}"),
           courses: JSON.parse(jsonInputs.courses || "[]"),
           modules: JSON.parse(jsonInputs.modules || "[]"),
-          quizzes: JSON.parse(jsonInputs.quizzes || "[]"),
-          assignments: JSON.parse(jsonInputs.assignments || "[]"),
-          resources: JSON.parse(jsonInputs.resources || "[]"),
         };
       }
 
@@ -211,13 +171,10 @@ export function CurriculumImport() {
         </Alert>
 
         <Tabs defaultValue="curriculum" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 lg:grid-cols-6">
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="curriculum">Curriculum</TabsTrigger>
             <TabsTrigger value="courses">Courses</TabsTrigger>
             <TabsTrigger value="modules">Modules</TabsTrigger>
-            <TabsTrigger value="quizzes">Quizzes</TabsTrigger>
-            <TabsTrigger value="assignments">Assignments</TabsTrigger>
-            <TabsTrigger value="resources">Resources</TabsTrigger>
           </TabsList>
 
           {Object.keys(jsonInputs).map((key) => (
