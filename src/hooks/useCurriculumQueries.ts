@@ -1,89 +1,39 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/lib/supabase";
-import type { Module } from "@/types/curriculum";
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import type { ModuleType } from '@/types/curriculum-module';
 
-interface CurriculumModule {
-  id: string;
-  curriculum_id: string;
-  content: Module;
-  created_at: string;
-  updated_at: string;
-  module_type: string;
-}
-
-export const useCurriculumQueries = (curriculumId?: string) => {
-  const queryClient = useQueryClient();
-
-  const {
-    data: modules,
-    isLoading: modulesLoading,
-    error: modulesError
-  } = useQuery({
-    queryKey: ["curriculum-modules", curriculumId],
+export const useCurriculumQueries = (curriculumId: string | undefined, type?: ModuleType) => {
+  const { data: modules, isLoading: modulesLoading, error: modulesError } = useQuery({
+    queryKey: ['curriculum-modules', curriculumId, type],
     queryFn: async () => {
-      if (!curriculumId) {
-        console.log("No curriculum ID provided");
-        return null;
-      }
+      if (!curriculumId) return [];
       
-      console.log("Fetching modules for curriculum:", curriculumId);
-      
-      const { data, error } = await supabase
-        .from("curriculum_modules")
-        .select("*")
-        .eq("curriculum_id", curriculumId)
-        .order("created_at");
-      
-      if (error) {
-        console.error("Error fetching modules:", error);
-        throw error;
+      let query = supabase
+        .from('curriculum_modules')
+        .select('*')
+        .eq('curriculum_id', curriculumId)
+        .eq('module_status', 'active')
+        .order('display_order', { ascending: true });
+
+      if (type) {
+        query = query.eq('module_type', type);
       }
 
-      if (!data || data.length === 0) {
-        console.log("No modules found for curriculum:", curriculumId);
-        // Check if the curriculum exists
-        const { data: curriculum, error: currError } = await supabase
-          .from("imported_curricula")
-          .select("curriculum")
-          .eq("id", curriculumId)
-          .single();
-
-        if (currError) {
-          console.error("Error checking curriculum:", currError);
-        } else if (!curriculum) {
-          console.log("Curriculum not found:", curriculumId);
-        } else {
-          console.log("Curriculum exists but has no modules:", curriculum);
-        }
-      }
-
-      console.log("Raw modules data:", data);
-      return data as CurriculumModule[];
+      const { data, error } = await query;
+      
+      if (error) throw error;
+      
+      return data.map(module => ({
+        ...module,
+        content: module.module_data // Use the new module_data field
+      }));
     },
-    enabled: !!curriculumId,
+    enabled: !!curriculumId
   });
-
-  // Prefetch module content when hovering over module
-  const prefetchModuleContent = async (moduleId: string) => {
-    await queryClient.prefetchQuery({
-      queryKey: ["module-content", moduleId],
-      queryFn: async () => {
-        const { data, error } = await supabase
-          .from("curriculum_modules")
-          .select("content")
-          .eq("id", moduleId)
-          .maybeSingle();
-        
-        if (error) throw error;
-        return data as { content: Module };
-      },
-    });
-  };
 
   return {
     modules,
     modulesLoading,
-    modulesError,
-    prefetchModuleContent,
+    modulesError
   };
 };

@@ -25,29 +25,28 @@ export function CurriculumViewer({ programId }: CurriculumViewerProps) {
   useEffect(() => {
     const initializeModules = async () => {
       try {
-        // Check if modules exist for this curriculum
         const { data: existingModules, error: checkError } = await supabase
           .from('curriculum_modules')
           .select('*')
-          .eq('curriculum_id', programId);
+          .eq('curriculum_id', programId)
+          .eq('module_type', 'module');
 
         if (checkError) throw checkError;
 
-        // If no modules exist, initialize them from the default data
         if (!existingModules || existingModules.length === 0) {
           console.log('No modules found, initializing from defaults');
           
-          // Import default modules
           const defaultModules = await import('@/data/curriculum/New defaults/modules.json');
           
-          // Insert modules into the database
           const { error: insertError } = await supabase
             .from('curriculum_modules')
-            .insert(defaultModules.default.map((module: any) => ({
+            .insert(defaultModules.default.map((module: any, index: number) => ({
               curriculum_id: programId,
               module_type: 'module',
-              content: module,
-              display_order: module.order || 0
+              module_data: module,
+              module_status: 'active',
+              display_order: index,
+              content: module // Keep for backward compatibility
             })));
 
           if (insertError) {

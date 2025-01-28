@@ -2,7 +2,6 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { ChevronRight, ChevronDown, BookOpen, FileText, CheckCircle } from "lucide-react";
 import { useCurriculumQueries } from "@/hooks/useCurriculumQueries";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ModuleCard } from "@/components/learning/ModuleCard";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
@@ -55,9 +54,9 @@ export const ModuleList = ({ curriculumId, onModuleSelect }: ModuleListProps) =>
     );
   };
 
-  // Group modules by course
+  // Group modules by course using module_data
   const courseGroups = modules.reduce((acc, module) => {
-    const courseId = module.content.courseId || 'uncategorized';
+    const courseId = module.module_data.courseId || 'uncategorized';
     if (!acc[courseId]) {
       acc[courseId] = [];
     }
@@ -103,12 +102,12 @@ export const ModuleList = ({ curriculumId, onModuleSelect }: ModuleListProps) =>
             <CollapsibleContent className="pl-6 mt-2 space-y-2">
               {courseModules.map((module) => (
                 <div
-                  key={module.content.id}
+                  key={module.id}
                   className="flex items-center gap-2 p-2 hover:bg-accent rounded-lg cursor-pointer"
-                  onClick={() => onModuleSelect(module.content)}
+                  onClick={() => onModuleSelect(module.module_data)}
                 >
-                  {getModuleTypeIcon(module.content.type)}
-                  <span>{module.content.title}</span>
+                  {getModuleTypeIcon(module.module_data.type)}
+                  <span>{module.module_data.title}</span>
                 </div>
               ))}
             </CollapsibleContent>
