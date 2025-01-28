@@ -17,6 +17,9 @@ export const AppRoutes = () => {
       {/* Public landing page */}
       <Route path="/" element={<Index />} />
 
+      {/* Jofh School - Default Curriculum */}
+      <Route path="/jofh-school" element={<JofhSchool />} />
+
       {/* Public authentication routes */}
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
