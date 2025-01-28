@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Hero } from "@/components/home/Hero";
-import { FeaturedCourses } from "@/components/FeaturedCourses";
+import { FeaturedCourses } from "@/components/home/FeaturedCourses";
 
 const Index = () => {
   return (
