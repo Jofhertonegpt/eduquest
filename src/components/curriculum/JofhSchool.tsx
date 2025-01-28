@@ -173,17 +173,19 @@ export const JofhSchool = () => {
     
     if (question.type === 'multiple-choice') {
       const mcq = question as MultipleChoiceQuestion;
-        if (mcq.allowMultiple) {
-          const answers = answer as number[];
-          return answers.length > 0 && answers.every(a => mcq.correctAnswers?.includes(a));
-        }
-        return answer === mcq.correctAnswer;
-      case 'true-false':
-        return answer === question.correctAnswer;
-      default:
-        // For essay, short-answer, etc., return true as they need manual grading
-        return true;
+      if (mcq.allowMultiple) {
+        const answers = answer as number[];
+        return answers.length > 0 && answers.every(a => mcq.correctAnswer === a);
+      }
+      return answer === mcq.correctAnswer;
     }
+
+    if (question.type === 'true-false') {
+      return answer === question.correctAnswer;
+    }
+
+    // For essay, short-answer, etc., return true as they need manual grading
+    return true;
   };
 
   return (
