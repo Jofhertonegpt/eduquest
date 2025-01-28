@@ -92,9 +92,9 @@ const Navigation = () => {
   };
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-sm border-b">
-      <div className="container mx-auto px-4">
-        <div className="flex items-center justify-around md:justify-start gap-1 md:gap-6 h-16">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b shadow-sm">
+      <div className="container mx-auto px-4 max-w-7xl">
+        <div className="flex items-center justify-around md:justify-start gap-1 md:gap-6 h-16 relative">
           {links.map(({ to, icon: Icon, label, ariaLabel, disabled }) => (
             <Tooltip key={to}>
               <TooltipTrigger asChild>
