@@ -11,6 +11,7 @@ import defaultProgram from "@/data/curriculum/New defaults/program.json";
 import defaultCourses from "@/data/curriculum/New defaults/courses.json";
 import { CurriculumFormatInfo } from "@/components/learning/CurriculumFormatInfo";
 import { ImportErrorBoundary } from "./import/ImportErrorBoundary";
+import { handleError, validateJSON, withErrorHandling } from "@/lib/errorHandling";
 import type { Json } from "@/lib/database.types";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Info, ArrowLeft, ArrowRight, Loader2 } from "lucide-react";
@@ -80,10 +81,11 @@ export function CurriculumImport() {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
+        const { data: { session }, error } = await supabase.auth.getSession();
+        if (error) throw error;
         setIsAuthenticated(!!session);
       } catch (error) {
-        console.error('Auth check failed:', error);
+        handleError(error, 'Authentication check');
         toast({
           title: "Authentication Error",
           description: "Failed to check authentication status",
@@ -105,36 +107,29 @@ export function CurriculumImport() {
     setValidationErrors([]);
     const errors: ValidationError[] = [];
 
+    const validateStepContent = (field: keyof JsonInputs) => {
+      const content = jsonInputs[field].trim();
+      if (!content) {
+        errors.push({ field, message: `${field} data is required` });
+        return false;
+      }
+      if (!validateJSON(content)) {
+        errors.push({ field, message: 'Invalid JSON format' });
+        return false;
+      }
+      return true;
+    };
+
     switch (step) {
       case 1:
-        if (!jsonInputs.curriculum.trim()) {
-          errors.push({ field: 'curriculum', message: 'Curriculum data is required' });
-        } else {
-          try {
-            JSON.parse(jsonInputs.curriculum);
-          } catch (e) {
-            errors.push({ field: 'curriculum', message: 'Invalid JSON format' });
-          }
-        }
+        validateStepContent('curriculum');
         break;
       case 2:
-        if (!jsonInputs.courses.trim()) {
-          errors.push({ field: 'courses', message: 'Course data is required' });
-        } else {
-          try {
-            JSON.parse(jsonInputs.courses);
-          } catch (e) {
-            errors.push({ field: 'courses', message: 'Invalid JSON format' });
-          }
-        }
+        validateStepContent('courses');
         break;
       case 3:
-        if (jsonInputs.modules.trim()) {
-          try {
-            JSON.parse(jsonInputs.modules);
-          } catch (e) {
-            errors.push({ field: 'modules', message: 'Invalid JSON format' });
-          }
+        if (jsonInputs.modules.trim() && !validateJSON(jsonInputs.modules)) {
+          errors.push({ field: 'modules', message: 'Invalid JSON format' });
         }
         break;
     }
@@ -148,22 +143,21 @@ export function CurriculumImport() {
       ...prev,
       [field]: value
     }));
-    // Clear validation errors when user starts typing
     setValidationErrors(prev => prev.filter(error => error.field !== field));
   };
 
   const handleImport = async (useDefault?: boolean) => {
-    try {
-      if (!isAuthenticated) {
-        toast({
-          title: "Authentication Required",
-          description: "Please log in to import a curriculum",
-          variant: "destructive",
-        });
-        navigate("/login", { state: { returnTo: "/import" } });
-        return;
-      }
+    if (!isAuthenticated) {
+      toast({
+        title: "Authentication Required",
+        description: "Please log in to import a curriculum",
+        variant: "destructive",
+      });
+      navigate("/login", { state: { returnTo: "/import" } });
+      return;
+    }
 
+    await withErrorHandling(async () => {
       setIsLoading(true);
       setStepProgress(25);
       
@@ -206,9 +200,7 @@ export function CurriculumImport() {
         .select()
         .single();
 
-      if (error) {
-        throw new Error(`Failed to import curriculum: ${error.message}`);
-      }
+      if (error) throw error;
 
       setStepProgress(100);
       toast({
@@ -217,17 +209,7 @@ export function CurriculumImport() {
       });
 
       navigate(`/learning/${data.id}`);
-    } catch (error) {
-      console.error("Import error:", error);
-      setStepProgress(0);
-      toast({
-        title: "Import Failed",
-        description: error instanceof Error ? error.message : "Failed to import curriculum",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
+    }, 'Curriculum import');
   };
 
   const nextStep = () => {
@@ -280,7 +262,6 @@ export function CurriculumImport() {
   return (
     <ImportErrorBoundary>
       <Card className="p-6">
-        <div className="space-y-6">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-lg font-semibold">Import Curriculum</h2>
             <CurriculumFormatInfo />
