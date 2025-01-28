@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
@@ -18,41 +18,27 @@ interface ModuleContentProps {
 export const ModuleContent = ({ module }: ModuleContentProps) => {
   const { toast } = useToast();
   const [progress, setProgress] = useState(() => {
-    const savedProgress = localStorage.getItem(`module-progress-${module.id}`);
-    return savedProgress ? JSON.parse(savedProgress) : {
-      completedResources: [],
-      completedQuizzes: [],
-      completedAssignments: [],
-      overallProgress: 0
-    };
+    try {
+      const savedProgress = localStorage.getItem(`module-progress-${module.id}`);
+      return savedProgress ? JSON.parse(savedProgress) : {
+        completedResources: [],
+        completedQuizzes: [],
+        completedAssignments: [],
+        overallProgress: 0
+      };
+    } catch (error) {
+      console.error('Error loading progress:', error);
+      return {
+        completedResources: [],
+        completedQuizzes: [],
+        completedAssignments: [],
+        overallProgress: 0
+      };
+    }
   });
 
-  const handleResourceComplete = (resourceId: string) => {
-    const newProgress = {
-      ...progress,
-      completedResources: [...progress.completedResources, resourceId]
-    };
-    updateProgress(newProgress);
-  };
-
-  const handleQuizComplete = (score: number) => {
-    const newProgress = {
-      ...progress,
-      completedQuizzes: [...progress.completedQuizzes, score]
-    };
-    updateProgress(newProgress);
-    
-    toast({
-      title: "Quiz completed",
-      description: `You scored ${score} points!`,
-      className: cn(
-        "bg-green-50 border-green-200",
-        score > 80 ? "border-l-4 border-l-green-500" : "border-l-4 border-l-yellow-500"
-      )
-    });
-  };
-
-  const updateProgress = (newProgress: any) => {
+  // Memoize progress update function to prevent unnecessary re-renders
+  const updateProgress = useCallback((newProgress: any) => {
     const total = (module.resources?.length || 0) + 
                  (module.quizzes?.length || 0) + 
                  (module.assignments?.length || 0);
@@ -72,8 +58,53 @@ export const ModuleContent = ({ module }: ModuleContentProps) => {
     };
     
     setProgress(finalProgress);
-    localStorage.setItem(`module-progress-${module.id}`, JSON.stringify(finalProgress));
-  };
+    
+    try {
+      localStorage.setItem(`module-progress-${module.id}`, JSON.stringify(finalProgress));
+    } catch (error) {
+      console.error('Error saving progress:', error);
+      toast({
+        variant: "destructive",
+        title: "Error saving progress",
+        description: "Your progress may not be saved correctly."
+      });
+    }
+  }, [module.id, module.resources?.length, module.quizzes?.length, module.assignments?.length, toast]);
+
+  const handleResourceComplete = useCallback((resourceId: string) => {
+    const newProgress = {
+      ...progress,
+      completedResources: [...progress.completedResources, resourceId]
+    };
+    updateProgress(newProgress);
+  }, [progress, updateProgress]);
+
+  const handleQuizComplete = useCallback((score: number) => {
+    const newProgress = {
+      ...progress,
+      completedQuizzes: [...progress.completedQuizzes, score]
+    };
+    updateProgress(newProgress);
+    
+    toast({
+      title: "Quiz completed",
+      description: `You scored ${score} points!`,
+      className: cn(
+        "bg-green-50 border-green-200",
+        score > 80 ? "border-l-4 border-l-green-500" : "border-l-4 border-l-yellow-500"
+      )
+    });
+  }, [progress, updateProgress, toast]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      // Clear any pending timeouts or intervals
+      const timeoutIds = (window as any).__moduleTimeouts || [];
+      timeoutIds.forEach((id: number) => clearTimeout(id));
+      (window as any).__moduleTimeouts = [];
+    };
+  }, []);
 
   if (!module) {
     return (
