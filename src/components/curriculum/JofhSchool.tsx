@@ -5,7 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { MonacoEditor } from '@/components/code-editor/MonacoEditor';
 import { useToast } from '@/hooks/use-toast';
 import { X } from 'lucide-react';
-import { Navigation } from '@/components/Navigation';
+import Navigation from '@/components/Navigation';
 import programData from '@/data/curriculum/New defaults/program.json';
 import coursesData from '@/data/curriculum/New defaults/courses.json';
 import modulesData from '@/data/curriculum/New defaults/modules.json';
@@ -30,6 +30,8 @@ interface QuestionViewProps {
 const QuestionView = ({ question, answer, onAnswerChange, onVerify }: QuestionViewProps) => {
   const { toast } = useToast();
 
+  const mcq = question.type === 'multiple-choice' ? question as MultipleChoiceQuestion : null;
+  
   switch (question.type) {
     case 'coding':
       return (
@@ -49,7 +51,7 @@ const QuestionView = ({ question, answer, onAnswerChange, onVerify }: QuestionVi
         </div>
       );
     case 'multiple-choice':
-      const mcq = question as MultipleChoiceQuestion;
+      if (!mcq) return null;
       return (
         <div className="space-y-4">
           {mcq.options.map((option, idx) => (
@@ -154,7 +156,7 @@ export const JofhSchool = () => {
     localStorage.setItem('quizAnswers', JSON.stringify(answers));
   }, [answers]);
 
-  const handleAnswerSubmit = (questionId: string, answer: string | number | boolean) => {
+  const handleAnswerSubmit = (questionId: string, answer: string | number | boolean | number[]) => {
     setAnswers(prev => ({
       ...prev,
       [questionId]: answer
@@ -223,7 +225,14 @@ export const JofhSchool = () => {
                             ...r,
                             type: r.type as ResourceType,
                             embedType: r.type === 'video' ? 'youtube' as const : undefined
-                          })) as Resource[]
+                          })) as Resource[],
+                          assignments: module.assignments.map(a => ({
+                            ...a,
+                            questions: a.questions.map(q => ({
+                              ...q,
+                              type: q.type as Quiz['questions'][0]['type']
+                            }))
+                          })) as Assignment[]
                         })}
                       >
                         {module.title}
