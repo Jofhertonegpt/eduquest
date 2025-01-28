@@ -12,6 +12,7 @@ import {
   User,
   PenTool,
   Download,
+  GraduationCap,
 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
@@ -25,6 +26,13 @@ const Navigation = () => {
       icon: Home,
       label: "Dashboard",
       ariaLabel: "Go to Dashboard",
+      disabled: false,
+    },
+    {
+      to: "/jofh-school",
+      icon: GraduationCap,
+      label: "Jofh School",
+      ariaLabel: "Go to Jofh School",
       disabled: false,
     },
     {
