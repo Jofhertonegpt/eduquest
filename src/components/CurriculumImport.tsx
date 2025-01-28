@@ -16,6 +16,8 @@ import defaultAssignments from "@/data/curriculum/assignments.json";
 import defaultResources from "@/data/curriculum/resources.json";
 import { CurriculumFormatInfo } from "@/components/learning/CurriculumFormatInfo";
 import type { Json } from "@/lib/database.types";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Info } from "lucide-react";
 
 interface JsonInputs {
   curriculum: string;
@@ -25,6 +27,103 @@ interface JsonInputs {
   assignments: string;
   resources: string;
 }
+
+const jsonPlaceholders = {
+  curriculum: `{
+  "name": "Program Name",
+  "description": "Program Description",
+  "degrees": [
+    {
+      "id": "degree-id",
+      "title": "Degree Title",
+      "type": "certificate",
+      "description": "Degree Description",
+      "requiredCredits": 12,
+      "courses": ["course-id"]
+    }
+  ]
+}`,
+  courses: `[
+  {
+    "id": "course-id",
+    "title": "Course Title",
+    "description": "Course Description",
+    "credits": 3,
+    "level": "introductory",
+    "modules": ["module-id"]
+  }
+]`,
+  modules: `[
+  {
+    "id": "module-id",
+    "title": "Module Title",
+    "description": "Module Description",
+    "credits": 1,
+    "metadata": {
+      "estimatedTime": 120,
+      "difficulty": "beginner",
+      "prerequisites": [],
+      "tags": ["tag1"],
+      "skills": ["skill1"]
+    },
+    "learningObjectives": [
+      {
+        "id": "obj-1",
+        "description": "Objective Description",
+        "assessmentCriteria": ["Criteria 1"]
+      }
+    ]
+  }
+]`,
+  quizzes: `[
+  {
+    "id": "quiz-id",
+    "title": "Quiz Title",
+    "description": "Quiz Description",
+    "questions": [
+      {
+        "id": "q1",
+        "type": "multiple-choice",
+        "title": "Question Title",
+        "description": "Question Description",
+        "points": 5,
+        "options": ["Option 1", "Option 2"],
+        "correctAnswer": 0
+      }
+    ]
+  }
+]`,
+  assignments: `[
+  {
+    "id": "assignment-id",
+    "title": "Assignment Title",
+    "description": "Assignment Description",
+    "dueDate": "2024-12-31",
+    "points": 100,
+    "questions": [
+      {
+        "id": "q1",
+        "type": "coding",
+        "title": "Question Title",
+        "description": "Question Description",
+        "points": 50,
+        "initialCode": "// Your code here"
+      }
+    ]
+  }
+]`,
+  resources: `[
+  {
+    "id": "resource-id",
+    "title": "Resource Title",
+    "type": "video",
+    "content": "Resource Content",
+    "duration": "30 minutes",
+    "url": "https://example.com/resource",
+    "embedType": "youtube"
+  }
+]`
+};
 
 export function CurriculumImport() {
   const [isLoading, setIsLoading] = useState(false);
@@ -173,8 +272,15 @@ export function CurriculumImport() {
           <CurriculumFormatInfo />
         </div>
 
+        <Alert className="mb-4">
+          <Info className="h-4 w-4" />
+          <AlertDescription>
+            Each tab below contains a template for the required JSON structure. You can modify these templates or paste your own JSON data.
+          </AlertDescription>
+        </Alert>
+
         <Tabs defaultValue="curriculum" className="w-full">
-          <TabsList className="grid grid-cols-3 lg:grid-cols-6 w-full">
+          <TabsList className="grid w-full grid-cols-2 lg:grid-cols-6">
             <TabsTrigger value="curriculum">Curriculum</TabsTrigger>
             <TabsTrigger value="courses">Courses</TabsTrigger>
             <TabsTrigger value="modules">Modules</TabsTrigger>
@@ -188,10 +294,10 @@ export function CurriculumImport() {
               <Label htmlFor={`${key}-json`} className="capitalize">{key} JSON</Label>
               <Textarea
                 id={`${key}-json`}
-                placeholder={`Paste your ${key} JSON here...`}
+                placeholder={jsonPlaceholders[key as keyof JsonInputs]}
                 value={jsonInputs[key as keyof JsonInputs]}
                 onChange={(e) => handleInputChange(key as keyof JsonInputs, e.target.value)}
-                className="min-h-[200px]"
+                className="min-h-[400px] font-mono"
               />
             </TabsContent>
           ))}
