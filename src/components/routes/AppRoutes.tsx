@@ -1,6 +1,7 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import { ProtectedRoute } from "@/components/routes/ProtectedRoute";
 import Navigation from "@/components/Navigation";
+import { JofhSchool } from "@/components/curriculum/JofhSchool";
 import Dashboard from "@/pages/Dashboard";
 import Import from "@/pages/Import";
 import Profile from "@/pages/Profile";
