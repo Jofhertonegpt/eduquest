@@ -11,18 +11,36 @@ export interface JsonInputs {
 
 export interface ModuleData {
   id: string;
-  courseId?: string;
   title: string;
   description: string;
   type?: 'resource' | 'assignment' | 'quiz';
+  courseId?: string;
   metadata?: {
     estimatedTime: number;
     difficulty: DifficultyLevel;
     prerequisites: string[];
-    tags: string[];
-    skills: string[];
+    tags?: string[];
+    skills?: string[];
   };
   learningObjectives?: {
+    id: string;
+    description: string;
+    assessmentCriteria: string[];
+  }[];
+}
+
+export interface CourseModule {
+  id: string;
+  courseId: string;
+  title: string;
+  description: string;
+  credits: number;
+  metadata: {
+    estimatedTime: number;
+    difficulty: DifficultyLevel;
+    prerequisites: string[];
+  };
+  learningObjectives: {
     id: string;
     description: string;
     assessmentCriteria: string[];
@@ -42,24 +60,6 @@ export interface Module extends ModuleData {
   version?: number;
 }
 
-export interface CourseModule {
-  id: string;
-  courseId: string;
-  title: string;
-  description: string;
-  credits: number;
-  metadata: {
-    estimatedTime: number;
-    difficulty: 'beginner' | 'intermediate' | 'advanced';
-    prerequisites: string[];
-  };
-  learningObjectives: {
-    id: string;
-    description: string;
-    assessmentCriteria: string[];
-  }[];
-}
-
 export interface Course {
   id: string;
   degreeId: string;
@@ -73,7 +73,7 @@ export interface Course {
     tags: string[];
     skills: string[];
   };
-  modules?: Module[];
+  modules: Module[];
 }
 
 export interface Degree {
@@ -88,7 +88,7 @@ export interface Degree {
     deliveryFormat: string;
     department: string;
   };
-  courses?: Course[];
+  courses: Course[];
 }
 
 export interface Resource {

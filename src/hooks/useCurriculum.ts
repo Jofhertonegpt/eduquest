@@ -122,3 +122,4 @@ export function useModules(curriculumId: string | undefined) {
     },
     enabled: !!curriculumId
   });
+}
