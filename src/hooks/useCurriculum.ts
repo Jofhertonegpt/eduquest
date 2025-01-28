@@ -1,25 +1,12 @@
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/lib/supabase';
-import type { ProgramInfo, Degree, Course, CourseModule } from '@/types/curriculum-types';
+import { supabase } from '@/integrations/supabase/client';
+import type { Degree, Course, CourseModule } from '@/types/curriculum-types';
 
-export function usePrograms() {
-  return useQuery({
-    queryKey: ['programs'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('program_info')
-        .select('*');
-      
-      if (error) throw error;
-      return data as ProgramInfo[];
-    }
-  });
-}
-
-export function useDegrees(programId?: string) {
+export function useDegrees(programId: string | undefined) {
   return useQuery({
     queryKey: ['degrees', programId],
     queryFn: async () => {
+      if (!programId) return [];
       const { data, error } = await supabase
         .from('degrees')
         .select('*')
@@ -32,10 +19,11 @@ export function useDegrees(programId?: string) {
   });
 }
 
-export function useCourses(degreeId?: string) {
+export function useCourses(degreeId: string | undefined) {
   return useQuery({
     queryKey: ['courses', degreeId],
     queryFn: async () => {
+      if (!degreeId) return [];
       const { data, error } = await supabase
         .from('courses')
         .select('*')
@@ -48,17 +36,22 @@ export function useCourses(degreeId?: string) {
   });
 }
 
-export function useModules(courseId?: string) {
+export function useModules(courseId: string | undefined) {
   return useQuery({
     queryKey: ['modules', courseId],
     queryFn: async () => {
+      if (!courseId) return [];
+      
       const { data, error } = await supabase
-        .from('course_modules')
+        .from('curriculum_modules')
         .select('*')
-        .eq('course_id', courseId);
+        .eq('module_type', 'module')
+        .order('display_order', { ascending: true });
       
       if (error) throw error;
-      return data as CourseModule[];
+      
+      // Transform the data to match the CourseModule type
+      return data.map(module => module.content) as CourseModule[];
     },
     enabled: !!courseId
   });

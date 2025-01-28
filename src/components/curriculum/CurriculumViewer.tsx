@@ -1,10 +1,12 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useDegrees, useCourses, useModules } from '@/hooks/useCurriculum';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import type { Degree, Course, CourseModule } from '@/types/curriculum-types';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 
 interface CurriculumViewerProps {
   programId: string;
@@ -14,10 +16,68 @@ export function CurriculumViewer({ programId }: CurriculumViewerProps) {
   const [selectedDegree, setSelectedDegree] = useState<Degree | null>(null);
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const [selectedModule, setSelectedModule] = useState<CourseModule | null>(null);
+  const { toast } = useToast();
 
   const { data: degrees, isLoading: loadingDegrees } = useDegrees(programId);
   const { data: courses, isLoading: loadingCourses } = useCourses(selectedDegree?.id);
   const { data: modules, isLoading: loadingModules } = useModules(selectedCourse?.id);
+
+  useEffect(() => {
+    const initializeModules = async () => {
+      try {
+        // Check if modules exist for this curriculum
+        const { data: existingModules, error: checkError } = await supabase
+          .from('curriculum_modules')
+          .select('*')
+          .eq('curriculum_id', programId);
+
+        if (checkError) throw checkError;
+
+        // If no modules exist, initialize them from the default data
+        if (!existingModules || existingModules.length === 0) {
+          console.log('No modules found, initializing from defaults');
+          
+          // Import default modules
+          const defaultModules = await import('@/data/curriculum/New defaults/modules.json');
+          
+          // Insert modules into the database
+          const { error: insertError } = await supabase
+            .from('curriculum_modules')
+            .insert(defaultModules.default.map((module: any) => ({
+              curriculum_id: programId,
+              module_type: 'module',
+              content: module,
+              display_order: module.order || 0
+            })));
+
+          if (insertError) {
+            console.error('Error inserting modules:', insertError);
+            toast({
+              title: "Error initializing modules",
+              description: "There was an error loading the curriculum modules.",
+              variant: "destructive"
+            });
+          } else {
+            toast({
+              title: "Modules initialized",
+              description: "Curriculum modules have been loaded successfully."
+            });
+          }
+        }
+      } catch (error) {
+        console.error('Error in initializeModules:', error);
+        toast({
+          title: "Error",
+          description: "Failed to initialize curriculum modules.",
+          variant: "destructive"
+        });
+      }
+    };
+
+    if (programId) {
+      initializeModules();
+    }
+  }, [programId, toast]);
 
   return (
     <Tabs defaultValue="degrees" className="w-full">
@@ -131,4 +191,3 @@ export function CurriculumViewer({ programId }: CurriculumViewerProps) {
       </div>
     </Tabs>
   );
-}
