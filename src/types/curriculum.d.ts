@@ -46,6 +46,13 @@ export interface ModuleData {
   learningObjectives?: LearningObjective[];
 }
 
+export interface CourseModule extends ModuleData {
+  courseId: string;
+  credits: number;
+  metadata: ModuleMetadata;
+  learningObjectives: LearningObjective[];
+}
+
 export interface Resource {
   id: string;
   title: string;
