@@ -25,11 +25,19 @@ const ModuleListSkeleton = () => (
 );
 
 export const ModuleList = ({ curriculumId, onModuleSelect }: ModuleListProps) => {
-  const { modules, modulesLoading, prefetchModuleContent } = useCurriculumQueries(curriculumId);
+  const { modules, modulesLoading, modulesError } = useCurriculumQueries(curriculumId);
   const [expandedCourses, setExpandedCourses] = useState<string[]>([]);
 
   if (modulesLoading) {
     return <ModuleListSkeleton />;
+  }
+
+  if (modulesError) {
+    return (
+      <div className="p-8 text-center text-muted-foreground">
+        <p>Error loading modules: {modulesError.message}</p>
+      </div>
+    );
   }
 
   if (!modules?.length) {
@@ -83,7 +91,7 @@ export const ModuleList = ({ curriculumId, onModuleSelect }: ModuleListProps) =>
                   key={module.content.id}
                   module={module.content}
                   onClick={() => onModuleSelect(module.content)}
-                  onHover={() => prefetchModuleContent(module.content.id)}
+                  onHover={() => {}}
                 />
               ))}
             </CollapsibleContent>

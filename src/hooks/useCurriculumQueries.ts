@@ -30,12 +30,10 @@ export const useCurriculumQueries = (curriculumId?: string) => {
         .order("created_at");
       
       if (error) throw error;
+      console.log("Fetched modules:", data); // Debug log
       return data as CurriculumModule[];
     },
     enabled: !!curriculumId,
-    staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes
-    gcTime: 30 * 60 * 1000, // Keep in cache for 30 minutes
-    retry: 2,
   });
 
   // Prefetch module content when hovering over module
@@ -52,7 +50,6 @@ export const useCurriculumQueries = (curriculumId?: string) => {
         if (error) throw error;
         return data as { content: Module };
       },
-      staleTime: 5 * 60 * 1000,
     });
   };
 
@@ -62,27 +59,4 @@ export const useCurriculumQueries = (curriculumId?: string) => {
     modulesError,
     prefetchModuleContent,
   };
-};
-
-// Separate hook for module-specific queries
-export const useModuleContent = (moduleId?: string) => {
-  return useQuery({
-    queryKey: ["module-content", moduleId],
-    queryFn: async () => {
-      if (!moduleId) return null;
-      
-      const { data, error } = await supabase
-        .from("curriculum_modules")
-        .select("content")
-        .eq("id", moduleId)
-        .maybeSingle();
-      
-      if (error) throw error;
-      return data as { content: Module };
-    },
-    enabled: !!moduleId,
-    staleTime: 5 * 60 * 1000,
-    gcTime: 30 * 60 * 1000,
-    retry: 2,
-  });
 };
