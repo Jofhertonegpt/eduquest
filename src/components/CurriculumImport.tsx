@@ -29,8 +29,25 @@ export const CurriculumImport = () => {
               modules: course.modules.map(moduleId => {
                 const module = modulesData.find(m => m.id === moduleId);
                 if (module) {
-                  // Add a test coding question to the first quiz
+                  // Add test questions to the first quiz
                   if (module.quizzes && module.quizzes.length > 0) {
+                    // Add a multiple choice question
+                    const mcQuestion: MultipleChoiceQuestion = {
+                      id: 'test-mc-q1',
+                      type: 'multiple-choice',
+                      title: 'Test Multiple Choice',
+                      description: 'What is the output of console.log("Hello World")?',
+                      points: 5,
+                      options: [
+                        '"Hello World"',
+                        'undefined',
+                        'null',
+                        'Error'
+                      ],
+                      correctAnswer: 0
+                    };
+
+                    // Add a coding question
                     const codingQuestion: CodingQuestion = {
                       id: 'test-coding-q1',
                       type: 'coding',
@@ -43,7 +60,8 @@ export const CurriculumImport = () => {
                         expectedOutput: 'Hello World'
                       }]
                     };
-                    module.quizzes[0].questions.push(codingQuestion);
+
+                    module.quizzes[0].questions = [mcQuestion, codingQuestion];
                   }
                   return module;
                 }
