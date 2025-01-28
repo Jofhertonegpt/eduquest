@@ -2,30 +2,62 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { Bell } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Button } from "@/components/ui/button";
+import { handleError } from "@/lib/errorHandling";
+import { useToast } from "@/hooks/use-toast";
 import type { Notification } from "@/types/academic";
 
 export const NotificationPanel = () => {
-  const { data: notifications, isLoading } = useQuery({
+  const { toast } = useToast();
+
+  const { data: notifications, isLoading, error } = useQuery({
     queryKey: ["notifications"],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
+      try {
+        const { data: { user }, error: authError } = await supabase.auth.getUser();
+        if (authError) throw authError;
+        if (!user) throw new Error("Not authenticated");
 
-      const { data, error } = await supabase
-        .from("notifications")
-        .select("*")
-        .eq("user_id", user.id)
-        .order("created_at", { ascending: false })
-        .limit(10);
+        const { data, error: notificationsError } = await supabase
+          .from("notifications")
+          .select("*")
+          .eq("user_id", user.id)
+          .order("created_at", { ascending: false })
+          .limit(10);
 
-      if (error) throw error;
-      return data as Notification[];
+        if (notificationsError) throw notificationsError;
+        return data as Notification[];
+      } catch (error) {
+        handleError(error, 'Notifications fetch');
+        throw error;
+      }
     },
+    retry: 2,
+    staleTime: 1000 * 60 * 5, // Cache for 5 minutes
   });
 
+  if (error) {
+    return (
+      <div className="glass-panel rounded-xl p-4">
+        <div className="text-center text-red-500">
+          Failed to load notifications. Please try again later.
+        </div>
+      </div>
+    );
+  }
+
   if (isLoading) {
-    return <div>Loading notifications...</div>;
+    return (
+      <div className="glass-panel rounded-xl p-4">
+        <div className="animate-pulse space-y-4">
+          <div className="h-4 bg-primary/10 rounded w-1/4"></div>
+          <div className="space-y-3">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="h-16 bg-primary/5 rounded"></div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -50,6 +82,11 @@ export const NotificationPanel = () => {
               </span>
             </div>
           ))}
+          {notifications?.length === 0 && (
+            <p className="text-center text-muted-foreground">
+              No new notifications
+            </p>
+          )}
         </div>
       </ScrollArea>
     </div>

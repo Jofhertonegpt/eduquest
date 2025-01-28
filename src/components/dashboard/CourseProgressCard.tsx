@@ -1,70 +1,84 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { BookOpen, Trophy } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
+import { handleError } from "@/lib/errorHandling";
 import type { CourseProgress } from "@/types/academic";
 
 export const CourseProgressCard = () => {
   const { toast } = useToast();
-  const queryClient = useQueryClient();
 
-  const createDefaultProgress = async (userId: string) => {
-    const defaultProgress = {
-      user_id: userId,
-      completed_modules: 0,
-      total_modules: 10, // Default value
-      current_grade: 0,
-      rank: null,
-      total_students: null
-    };
-
-    const { data, error } = await supabase
-      .from("course_progress")
-      .insert([defaultProgress])
-      .select()
-      .single();
-
-    if (error) throw error;
-    return data;
-  };
-
-  const { data: progress, isLoading } = useQuery({
+  const { data: progress, isLoading, error } = useQuery({
     queryKey: ["course-progress"],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
+      try {
+        const { data: { user }, error: authError } = await supabase.auth.getUser();
+        if (authError) throw authError;
+        if (!user) throw new Error("Not authenticated");
 
-      const { data, error } = await supabase
-        .from("course_progress")
-        .select("*")
-        .eq("user_id", user.id)
-        .maybeSingle();
+        const { data, error: progressError } = await supabase
+          .from("course_progress")
+          .select("*")
+          .eq("user_id", user.id)
+          .maybeSingle();
 
-      if (error) throw error;
+        if (progressError) throw progressError;
 
-      // If no progress exists, create a default one
-      if (!data) {
-        return createDefaultProgress(user.id);
+        if (!data) {
+          // Create default progress if none exists
+          const defaultProgress = {
+            user_id: user.id,
+            completed_modules: 0,
+            total_modules: 10,
+            current_grade: 0,
+            rank: null,
+            total_students: null
+          };
+
+          const { data: newProgress, error: createError } = await supabase
+            .from("course_progress")
+            .insert([defaultProgress])
+            .select()
+            .single();
+
+          if (createError) throw createError;
+          return newProgress;
+        }
+
+        return data as CourseProgress;
+      } catch (error) {
+        handleError(error, 'Course progress fetch');
+        throw error;
       }
-
-      // Transform snake_case to camelCase for frontend use
-      return {
-        ...data,
-        completedModules: data.completed_modules,
-        totalModules: data.total_modules,
-        currentGrade: data.current_grade,
-        totalStudents: data.total_students
-      } as CourseProgress;
     },
+    retry: 2,
+    staleTime: 1000 * 60 * 5, // Cache for 5 minutes
   });
 
-  if (isLoading) {
-    return <div>Loading progress...</div>;
+  if (error) {
+    return (
+      <div className="glass-panel rounded-xl p-4">
+        <div className="text-center text-red-500">
+          Failed to load progress. Please try again later.
+        </div>
+      </div>
+    );
   }
 
-  if (!progress) {
-    return <div>No course progress found</div>;
+  if (isLoading || !progress) {
+    return (
+      <div className="glass-panel rounded-xl p-4">
+        <div className="animate-pulse space-y-4">
+          <div className="h-4 bg-primary/10 rounded w-1/4"></div>
+          <div className="h-2 bg-primary/5 rounded"></div>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="h-20 bg-primary/5 rounded"></div>
+            <div className="h-20 bg-primary/5 rounded"></div>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   const progressPercentage = (progress.completedModules / progress.totalModules) * 100;
