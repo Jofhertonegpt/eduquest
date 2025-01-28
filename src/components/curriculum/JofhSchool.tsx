@@ -48,16 +48,27 @@ export const JofhSchool = () => {
               if (!module) return null;
               
               return (
-                <Card key={module.id} className="p-4 cursor-pointer hover:bg-gray-50"
-                      onClick={() => setSelectedModule({
-                        ...module,
-                        metadata: {
-                          ...module.metadata,
-                          difficulty: module.metadata.difficulty as 'beginner' | 'intermediate' | 'advanced'
-                        }
-                      } as Module)}>
+                <Card 
+                  key={module.id} 
+                  className={`p-4 cursor-pointer transition-all duration-200 ${
+                    selectedModule?.id === module.id 
+                      ? 'border-primary bg-primary/5' 
+                      : 'hover:bg-gray-50 hover:shadow-md'
+                  }`}
+                  onClick={() => setSelectedModule({
+                    ...module,
+                    metadata: {
+                      ...module.metadata,
+                      difficulty: module.metadata.difficulty as 'beginner' | 'intermediate' | 'advanced'
+                    }
+                  } as Module)}>
                   <h3 className="font-medium">{module.title}</h3>
                   <p className="text-sm text-gray-600">{module.description}</p>
+                  <div className="mt-2 flex items-center gap-2 text-xs text-gray-500">
+                    <span>Difficulty: {module.metadata.difficulty}</span>
+                    <span>•</span>
+                    <span>Time: {module.metadata.estimatedTime}h</span>
+                  </div>
                 </Card>
               );
             })}
