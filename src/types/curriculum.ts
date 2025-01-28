@@ -126,6 +126,8 @@ export interface Module {
   title: string;
   description: string;
   credits: number;
+  type?: 'resource' | 'assignment' | 'quiz';
+  courseId?: string;
   metadata: {
     estimatedTime: number;
     difficulty: DifficultyLevel;

@@ -1,15 +1,13 @@
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BookOpen, FileText, CheckCircle, ChevronRight, ChevronDown } from "lucide-react";
+import { ChevronRight, ChevronDown } from "lucide-react";
 import type { Module } from "@/types/curriculum";
 import { useCurriculumQueries } from "@/hooks/useCurriculumQueries";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ModuleCard } from "@/components/learning/ModuleCard";
-import { filterModulesByType } from "@/utils/learning-utils";
-import type { ModuleListProps } from "@/types/learning-types";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import type { ModuleListProps } from "@/types/learning-types";
 
 const ModuleListSkeleton = () => (
   <div className="space-y-4">
@@ -93,39 +91,5 @@ export const ModuleList = ({ curriculumId, onModuleSelect }: ModuleListProps) =>
         ))}
       </div>
     </ScrollArea>
-  );
-};
-
-ModuleList.Content = function ModuleListContent({ 
-  modules, 
-  onModuleSelect,
-  onModuleHover 
-}: { 
-  modules?: { content: Module }[];
-  onModuleSelect: (module: Module) => void;
-  onModuleHover: (moduleId: string) => void;
-}) {
-  if (!modules?.length) {
-    return (
-      <div className="p-8 text-center text-muted-foreground bg-card/50 rounded-lg border border-border/50">
-        <div className="mb-4">
-          <FileText className="w-12 h-12 mx-auto opacity-50" />
-        </div>
-        <p className="text-sm">No modules available</p>
-      </div>
-    );
-  }
-
-  return (
-    <div className="space-y-4">
-      {modules.map((module) => (
-        <ModuleCard
-          key={module.content.id}
-          module={module.content}
-          onClick={() => onModuleSelect(module.content)}
-          onHover={() => onModuleHover(module.content.id)}
-        />
-      ))}
-    </div>
   );
 };

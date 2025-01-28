@@ -11,7 +11,7 @@ interface ModuleCardProps {
 }
 
 export const ModuleCard = ({ module, onClick, onHover }: ModuleCardProps) => {
-  const getModuleIcon = (type: string) => {
+  const getModuleIcon = (type?: string) => {
     switch (type) {
       case 'resource':
         return <BookOpen className="w-4 h-4" />;
@@ -20,7 +20,7 @@ export const ModuleCard = ({ module, onClick, onHover }: ModuleCardProps) => {
       case 'quiz':
         return <CheckCircle className="w-4 h-4" />;
       default:
-        return null;
+        return <BookOpen className="w-4 h-4" />;
     }
   };
 
