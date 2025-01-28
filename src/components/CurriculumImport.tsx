@@ -262,47 +262,63 @@ export function CurriculumImport() {
   return (
     <ImportErrorBoundary>
       <Card className="p-6">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-lg font-semibold">Import Curriculum</h2>
-            <CurriculumFormatInfo />
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-lg font-semibold">Import Curriculum</h2>
+          <CurriculumFormatInfo />
+        </div>
+
+        <Alert>
+          <Info className="h-4 w-4" />
+          <AlertDescription>
+            Follow the step-by-step process to import your curriculum. Each step contains a template with required fields.
+          </AlertDescription>
+        </Alert>
+
+        <div className="space-y-6">
+          <div className="space-y-2">
+            <div className="flex justify-between text-sm text-muted-foreground">
+              <span>Step {currentStep} of 3</span>
+              <span>{Math.round((currentStep / 3) * 100)}%</span>
+            </div>
+            <Progress 
+              value={isLoading ? stepProgress : (currentStep / 3) * 100} 
+              className="h-2"
+            />
           </div>
 
-          <Alert>
-            <Info className="h-4 w-4" />
-            <AlertDescription>
-              Follow the step-by-step process to import your curriculum. Each step contains a template with required fields.
-            </AlertDescription>
-          </Alert>
+          {renderStepContent()}
 
-          <div className="space-y-6">
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm text-muted-foreground">
-                <span>Step {currentStep} of 3</span>
-                <span>{Math.round((currentStep / 3) * 100)}%</span>
-              </div>
-              <Progress 
-                value={isLoading ? stepProgress : (currentStep / 3) * 100} 
-                className="h-2"
-              />
-            </div>
+          <div className="flex justify-between pt-4">
+            <Button
+              onClick={prevStep}
+              disabled={currentStep === 1 || isLoading}
+              variant="outline"
+              className="flex items-center gap-2"
+            >
+              <ArrowLeft className="h-4 w-4" /> Previous
+            </Button>
 
-            {renderStepContent()}
-
-            <div className="flex justify-between pt-4">
+            <div className="flex gap-2">
               <Button
-                onClick={prevStep}
-                disabled={currentStep === 1 || isLoading}
-                variant="outline"
-                className="flex items-center gap-2"
+                onClick={() => handleImport(true)}
+                variant="secondary"
+                disabled={isLoading}
               >
-                <ArrowLeft className="h-4 w-4" /> Previous
+                {isLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Importing...
+                  </>
+                ) : (
+                  'Use Default'
+                )}
               </Button>
 
-              <div className="flex gap-2">
+              {currentStep === 3 ? (
                 <Button
-                  onClick={() => handleImport(true)}
-                  variant="secondary"
-                  disabled={isLoading}
+                  onClick={() => handleImport()}
+                  disabled={isLoading || !jsonInputs.curriculum}
+                  className="flex items-center gap-2"
                 >
                   {isLoading ? (
                     <>
@@ -310,35 +326,18 @@ export function CurriculumImport() {
                       Importing...
                     </>
                   ) : (
-                    'Use Default'
+                    'Import Curriculum'
                   )}
                 </Button>
-
-                {currentStep === 3 ? (
-                  <Button
-                    onClick={() => handleImport()}
-                    disabled={isLoading || !jsonInputs.curriculum}
-                    className="flex items-center gap-2"
-                  >
-                    {isLoading ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Importing...
-                      </>
-                    ) : (
-                      'Import Curriculum'
-                    )}
-                  </Button>
-                ) : (
-                  <Button
-                    onClick={nextStep}
-                    className="flex items-center gap-2"
-                    disabled={isLoading}
-                  >
-                    Next <ArrowRight className="h-4 w-4" />
-                  </Button>
-                )}
-              </div>
+              ) : (
+                <Button
+                  onClick={nextStep}
+                  className="flex items-center gap-2"
+                  disabled={isLoading}
+                >
+                  Next <ArrowRight className="h-4 w-4" />
+                </Button>
+              )}
             </div>
           </div>
         </div>
