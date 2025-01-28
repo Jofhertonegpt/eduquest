@@ -190,15 +190,60 @@ export const JofhSchool = () => {
                   {selectedModule.resources.map((resource) => (
                     <Card key={resource.id} className="p-6 mb-4">
                       <h3 className="text-xl font-semibold mb-4">{resource.title}</h3>
-                      {(resource.type as ResourceType) === 'code' &&
-                       'code' in resource && resource.code && (
-                        <div className="h-[400px] border rounded-lg overflow-hidden">
-                          <MonacoEditor
-                            initialValue={resource.code.initialCode}
-                            onChange={(value) => console.log('Code changed:', value)}
-                          />
-                        </div>
-                      )}
+                      {(() => {
+                        switch (resource.type) {
+                          case 'video':
+                            return (
+                              <div className="aspect-video rounded-lg overflow-hidden">
+                                <iframe
+                                  className="w-full h-full"
+                                  src={resource.url}
+                                  title={resource.title}
+                                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                  allowFullScreen
+                                />
+                              </div>
+                            );
+                          case 'code':
+                            return (
+                              'code' in resource && resource.code && (
+                                <div className="h-[400px] border rounded-lg overflow-hidden">
+                                  <MonacoEditor
+                                    initialValue={resource.code.initialCode}
+                                    onChange={(value) => console.log('Code changed:', value)}
+                                  />
+                                </div>
+                              )
+                            );
+                          case 'pdf':
+                          case 'document':
+                            return (
+                              <div className="border rounded-lg p-4">
+                                <a 
+                                  href={resource.url} 
+                                  target="_blank" 
+                                  rel="noopener noreferrer"
+                                  className="text-primary hover:underline flex items-center gap-2"
+                                >
+                                  View Document
+                                  <span className="text-xs">({resource.duration})</span>
+                                </a>
+                              </div>
+                            );
+                          case 'article':
+                            return (
+                              <div className="prose max-w-none">
+                                {resource.content}
+                              </div>
+                            );
+                          default:
+                            return (
+                              <div className="text-gray-500">
+                                Resource type not supported
+                              </div>
+                            );
+                        }
+                      })()}
                     </Card>
                   ))}
                 </TabsContent>
