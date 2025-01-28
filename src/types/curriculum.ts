@@ -83,7 +83,7 @@ export interface BaseQuestion {
   explanation?: string;
 }
 
-export type QuestionType = 'multiple-choice' | 'essay' | 'coding' | 'true-false' | 'short-answer' | 'matching';
+export type QuestionType = 'multiple-choice' | 'essay' | 'coding' | 'true-false' | 'short-answer' | 'matching' | 'presentation' | 'diagram';
 
 export interface MultipleChoiceQuestion extends BaseQuestion {
   type: 'multiple-choice';
@@ -133,13 +133,32 @@ export interface MatchingQuestion extends BaseQuestion {
   }[];
 }
 
+export interface PresentationQuestion extends BaseQuestion {
+  type: 'presentation';
+  rubric?: {
+    criteria: {
+      name: string;
+      points: number;
+      description: string;
+    }[];
+  };
+}
+
+export interface DiagramQuestion extends BaseQuestion {
+  type: 'diagram';
+  initialDiagram?: string;
+  expectedElements?: string[];
+}
+
 export type Question = 
   | MultipleChoiceQuestion 
   | EssayQuestion 
   | CodingQuestion 
   | TrueFalseQuestion 
   | ShortAnswerQuestion 
-  | MatchingQuestion;
+  | MatchingQuestion
+  | PresentationQuestion
+  | DiagramQuestion;
  
   
   export interface CourseMetadata {
