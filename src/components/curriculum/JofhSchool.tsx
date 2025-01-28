@@ -90,17 +90,27 @@ export const JofhSchool = () => {
             {/* Here you would implement the actual chart */}
             <div className="flex justify-between h-full items-end">
               {progress.timeSpent.labels.map((day, idx) => (
-                <div key={day} className="flex flex-col items-center gap-2">
-                  <div className="w-8 bg-primary/20 rounded-t" style={{ height: '100px' }} />
+                <div key={day} className="flex flex-col items-center gap-2 relative">
+                  <div className="flex flex-col gap-1">
+                    <div className="w-8 bg-red-400/70 rounded-t" style={{ height: `${progress.timeSpent.data[0].values[idx] * 30}px` }} />
+                    <div className="w-8 bg-blue-400/70" style={{ height: `${progress.timeSpent.data[1].values[idx] * 30}px` }} />
+                    <div className="w-8 bg-purple-400/70" style={{ height: `${progress.timeSpent.data[2].values[idx] * 30}px` }} />
+                    <div className="w-8 bg-green-400/70" style={{ height: `${progress.timeSpent.data[3].values[idx] * 30}px` }} />
+                  </div>
                   <span className="text-sm text-gray-500">{day}</span>
                 </div>
               ))}
             </div>
           </div>
-          <div className="flex gap-4 justify-center">
-            {['Vocabulary', 'Grammar', 'Listening', 'Writing'].map((type) => (
+          <div className="flex items-center gap-4 justify-center mt-4">
+            {[
+              { type: 'Vocabulary', color: 'bg-red-400' },
+              { type: 'Grammar', color: 'bg-blue-400' },
+              { type: 'Listening', color: 'bg-purple-400' },
+              { type: 'Writing', color: 'bg-green-400' }
+            ].map(({ type, color }) => (
               <div key={type} className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-primary/20" />
+                <div className={`w-3 h-3 rounded-full ${color} opacity-70`} />
                 <span className="text-sm text-gray-500">{type}</span>
               </div>
             ))}
