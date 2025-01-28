@@ -57,7 +57,7 @@ export const ModuleList = ({ curriculumId, modules, onModuleSelect }: ModuleList
 
   // Group modules by course using module_data
   const courseGroups = modules.reduce((acc, module) => {
-    const moduleData = module.module_data as ModuleData;
+    const moduleData = module as ModuleData;
     const courseId = moduleData?.courseId || 'uncategorized';
     if (!acc[courseId]) {
       acc[courseId] = [];
