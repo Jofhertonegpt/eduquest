@@ -191,3 +191,4 @@ export function CurriculumViewer({ programId }: CurriculumViewerProps) {
       </div>
     </Tabs>
   );
+}
