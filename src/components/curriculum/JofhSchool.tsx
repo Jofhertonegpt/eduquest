@@ -69,15 +69,18 @@ export const JofhSchool = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="flex">
+      <div className="fixed top-0 left-0 right-0 z-50 border-b bg-background">
+        <Navigation />
+      </div>
+      <div className="flex pt-16">
         {/* Course Sidebar */}
-        <div className="w-64 border-r min-h-screen p-4 space-y-4">
+        <div className="w-64 border-r min-h-screen p-4 space-y-4 overflow-y-auto fixed left-0 top-16 bottom-0">
           <h2 className="text-xl font-semibold mb-4">Courses</h2>
           {coursesData.map((course) => (
             <div key={course.id} className="space-y-2">
               <Button
                 variant="ghost"
-                className={`w-full justify-start ${
+                className={`w-full justify-start truncate ${
                   selectedCourse?.id === course.id ? 'bg-primary/10' : ''
                 }`}
                 onClick={() => setSelectedCourse({
@@ -133,11 +136,40 @@ export const JofhSchool = () => {
                 </div>
               </div>
 
-              <Tabs defaultValue="quizzes">
+              <Tabs defaultValue="assignments">
                 <TabsList>
+                  <TabsTrigger value="assignments">Assignments</TabsTrigger>
                   <TabsTrigger value="quizzes">Quizzes</TabsTrigger>
                   <TabsTrigger value="resources">Resources</TabsTrigger>
                 </TabsList>
+
+                <TabsContent value="assignments">
+                  {selectedModule.assignments.map((assignment) => (
+                    <Card key={assignment.id} className="p-6 mb-4">
+                      <div className="flex justify-between items-start mb-4">
+                        <div>
+                          <h3 className="text-xl font-semibold">{assignment.title}</h3>
+                          <p className="text-sm text-gray-500 mt-1">Due: {assignment.dueDate}</p>
+                        </div>
+                        <div className="text-sm font-medium">
+                          Points: {assignment.points}
+                        </div>
+                      </div>
+                      <p className="mb-4">{assignment.description}</p>
+                      <div className="space-y-8">
+                        {assignment.questions.map((question) => (
+                          <div key={question.id} className="border-t pt-4">
+                            <QuestionView 
+                              question={question}
+                              answer={answers[question.id]}
+                              onAnswerChange={(value) => handleAnswerSubmit(question.id, value)}
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    </Card>
+                  ))}
+                </TabsContent>
 
                 <TabsContent value="quizzes">
                   {selectedModule.quizzes.map((quiz: Quiz) => (
@@ -154,7 +186,122 @@ export const JofhSchool = () => {
                             </div>
                             <p className="mb-4">{question.description}</p>
                             
-                            {question.type === 'coding' && (
+const QuestionView = ({ 
+  question, 
+  answer, 
+  onAnswerChange 
+}: { 
+  question: Quiz['questions'][0], 
+  answer?: string | number | boolean,
+  onAnswerChange: (value: string | number | boolean) => void 
+}) => {
+  switch (question.type) {
+    case 'coding':
+      return (
+        <div className="space-y-4">
+          <div className="h-[400px] border rounded-lg overflow-hidden">
+            <MonacoEditor
+              initialValue={(question as CodingQuestion).initialCode || ''}
+              onChange={onAnswerChange}
+            />
+          </div>
+          <Button 
+            onClick={() => {
+              const isCorrect = verifyAnswer(question, answer);
+              toast({
+                title: isCorrect ? "Correct!" : "Try Again",
+                description: isCorrect 
+                  ? "Great job! Your code works perfectly."
+                  : "Your code needs some adjustments.",
+                variant: isCorrect ? "default" : "destructive",
+              });
+            }}
+            className="w-full sm:w-auto"
+          >
+            Run Code
+          </Button>
+        </div>
+      );
+    case 'multiple-choice':
+      const mcq = question as MultipleChoiceQuestion;
+      return (
+        <div className="space-y-4">
+          {mcq.options.map((option, idx) => (
+            <label key={idx} className="flex items-center gap-2 cursor-pointer">
+              <input
+                type={mcq.allowMultiple ? "checkbox" : "radio"}
+                name={`question-${question.id}`}
+                value={idx}
+                checked={mcq.allowMultiple 
+                  ? Array.isArray(answer) && answer.includes(idx)
+                  : answer === idx
+                }
+                onChange={(e) => {
+                  if (mcq.allowMultiple) {
+                    const currentAnswers = Array.isArray(answer) ? answer : [];
+                    if (e.target.checked) {
+                      onAnswerChange([...currentAnswers, idx]);
+                    } else {
+                      onAnswerChange(currentAnswers.filter(a => a !== idx));
+                    }
+                  } else {
+                    onAnswerChange(idx);
+                  }
+                }}
+                className="w-4 h-4"
+              />
+              <span>{option}</span>
+            </label>
+          ))}
+        </div>
+      );
+    case 'true-false':
+      return (
+        <div className="space-x-4">
+          <label className="inline-flex items-center gap-2 cursor-pointer">
+            <input
+              type="radio"
+              name={`question-${question.id}`}
+              value="true"
+              checked={answer === true}
+              onChange={() => onAnswerChange(true)}
+              className="w-4 h-4"
+            />
+            <span>True</span>
+          </label>
+          <label className="inline-flex items-center gap-2 cursor-pointer">
+            <input
+              type="radio"
+              name={`question-${question.id}`}
+              value="false"
+              checked={answer === false}
+              onChange={() => onAnswerChange(false)}
+              className="w-4 h-4"
+            />
+            <span>False</span>
+          </label>
+        </div>
+      );
+    case 'short-answer':
+    case 'essay':
+      return (
+        <textarea
+          value={answer as string || ''}
+          onChange={(e) => onAnswerChange(e.target.value)}
+          className="w-full min-h-[100px] p-2 border rounded-lg"
+          placeholder={`Enter your ${question.type} answer here...`}
+        />
+      );
+    default:
+      return (
+        <div className="text-gray-500">
+          Question type not supported
+        </div>
+      );
+  }
+};
+
+{question.type === 'coding' && (
                               <div className="space-y-4">
                                 <div className="h-[400px] border rounded-lg overflow-hidden">
                                   <MonacoEditor
