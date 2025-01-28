@@ -1,0 +1,35 @@
+{
+    "name": "Year 1 - Interdisciplinary Studies Full Curriculum",
+    "description": "A first-year college curriculum integrating Philosophy, Psychology, Full-Stack Web Development, and Neuroscience using best practices in learning science.",
+    "programOutcomes": [
+      "Develop strong foundational knowledge in key humanities and STEM fields",
+      "Enhance critical thinking, problem-solving, and self-reflection skills",
+      "Foster strong research habits, coding fundamentals, and understanding of the human mind",
+      "Promote interdisciplinary connections between mind, brain, and technology"
+    ],
+    "institution": "Global University College of Liberal & Tech Studies",
+    "complianceStandards": [
+      "xAPI"
+    ],
+    "degrees": [
+      {
+        "id": "year-1-interdisciplinary",
+        "title": "Bachelor of Interdisciplinary Studies - Year 1",
+        "type": "undergraduate",
+        "description": "First-year program uniting philosophical thought, psychological insights, coding fundamentals, and neuroscience basics.",
+        "requiredCredits": 32,
+        "metadata": {
+          "academicYear": "2025-2026",
+          "deliveryFormat": "hybrid",
+          "department": "Interdisciplinary Studies"
+        },
+        "courses": [
+          "intro-philosophy",
+          "psychology-personality",
+          "fullstack-webdev-101",
+          "intro-neuroscience"
+        ]
+      }
+    ]
+  }
+  

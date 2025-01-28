@@ -1,0 +1,118 @@
+[
+    {
+      "id": "intro-philosophy",
+      "title": "Introduction to Philosophy",
+      "description": "Examines foundational philosophical questions and critical thinking methods, using Open Yale lectures.",
+      "credits": 4,
+      "level": "beginner",
+      "metadata": {
+        "instructor": "Dr. Jane Smith",
+        "meetingTimes": "Mon & Wed 9:00 - 10:30 AM",
+        "tags": [
+          "philosophy",
+          "liberal-arts",
+          "yale",
+          "critical-thinking"
+        ],
+        "skills": [
+          "Logical Reasoning",
+          "Ethical Analysis",
+          "Argument Construction"
+        ]
+      },
+      "modules": [
+        "phil-module-1",
+        "phil-module-2",
+        "phil-module-3",
+        "phil-module-4"
+      ]
+    },
+    {
+      "id": "psychology-personality",
+      "title": "Psychology: Personality & Transformations",
+      "description": "Explores personality theory, development, and transformation using Jordan Peterson's open lectures.",
+      "credits": 4,
+      "level": "beginner",
+      "metadata": {
+        "instructor": "Prof. Alan Green",
+        "meetingTimes": "Mon & Wed 11:00 AM - 12:30 PM",
+        "tags": [
+          "psychology",
+          "jordan-peterson",
+          "personality",
+          "self-reflection"
+        ],
+        "skills": [
+          "Research Methods",
+          "Trait Analysis",
+          "Self-Exploration"
+        ]
+      },
+      "modules": [
+        "psych-module-1",
+        "psych-module-2",
+        "psych-module-3",
+        "psych-module-4"
+      ]
+    },
+    {
+      "id": "fullstack-webdev-101",
+      "title": "Full Stack Web Development 101",
+      "description": "Begins with front-end (HTML, CSS, JS) and extends to back-end fundamentals, referencing Harvard CS50 & MIT resources.",
+      "credits": 8,
+      "level": "beginner",
+      "metadata": {
+        "instructor": "Dr. Maria Rodriguez",
+        "meetingTimes": "Tue & Thu 2:00 - 4:00 PM",
+        "tags": [
+          "webdev",
+          "cs50",
+          "frontend",
+          "backend"
+        ],
+        "skills": [
+          "HTML",
+          "CSS",
+          "JavaScript",
+          "Node.js",
+          "Database Concepts",
+          "Deployment"
+        ]
+      },
+      "modules": [
+        "webdev-module-1",
+        "webdev-module-2",
+        "webdev-module-3",
+        "webdev-module-4"
+      ]
+    },
+    {
+      "id": "intro-neuroscience",
+      "title": "Introduction to Neuroscience",
+      "description": "Covers brain anatomy, neuron function, and cognition, featuring Andrew Huberman Lab and MIT OpenCourseWare videos.",
+      "credits": 4,
+      "level": "beginner",
+      "metadata": {
+        "instructor": "Dr. Emily Carter",
+        "meetingTimes": "Tue & Thu 9:00 - 10:30 AM",
+        "tags": [
+          "neuroscience",
+          "huberman-lab",
+          "MIT",
+          "biology"
+        ],
+        "skills": [
+          "Neuroanatomy",
+          "Research Methods",
+          "Scientific Literacy"
+        ]
+      },
+      "modules": [
+        "neuro-module-1",
+        "neuro-module-2",
+        "neuro-module-3",
+        "neuro-module-4"
+      ]
+    }
+  ]
+  

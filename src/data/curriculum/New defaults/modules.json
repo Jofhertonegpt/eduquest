@@ -1,0 +1,2088 @@
+[
+    {
+      "id": "phil-module-1",
+      "title": "Ancient & Classical Philosophy",
+      "description": "Focus on Pre-Socratic thinkers, Socratic dialogues, and Plato's foundational ideas. Based on Open Yale lectures.",
+      "credits": 1,
+      "metadata": {
+        "estimatedTime": 180,
+        "difficulty": "beginner",
+        "prerequisites": []
+      },
+      "learningObjectives": [
+        {
+          "id": "phil-obj-1",
+          "description": "Understand core concepts from Pre-Socratic philosophy, Socrates' method, and Plato’s Theory of Forms",
+          "assessmentCriteria": [
+            "Identify major Pre-Socratic contributions",
+            "Explain the Socratic method’s function in dialogues"
+          ]
+        }
+      ],
+      "resources": [
+        {
+          "id": "phil-res-1",
+          "title": "Open Yale Course: Introduction to Ancient Greek Philosophy",
+          "type": "video",
+          "content": "Lecture series covering early Greek philosophers, Socrates, Plato",
+          "duration": "Multiple lectures (~45 min each)",
+          "url": "https://www.youtube.com/playlist?list=PLD12A2C2BA88A6E0C",
+          "embedType": "youtube"
+        }
+      ],
+      "assignments": [
+        {
+          "id": "phil-assign-1",
+          "title": "Short Essay: Socratic Dialogue Reflection",
+          "description": "Write 500 words on how Socratic questioning can apply to modern ethical issues.",
+          "dueDate": "2025-09-15",
+          "points": 50,
+          "questions": [
+            {
+              "id": "phil-assign-1-q1",
+              "type": "essay",
+              "title": "Modern Socratic Method",
+              "description": "Discuss a current ethical debate and how Socratic questioning might clarify it.",
+              "points": 50
+            }
+          ]
+        },
+        {
+          "id": "phil-assign-2",
+          "title": "Group Presentation: Pre-Socratic vs. Platonic Thought",
+          "description": "In groups of 3, compare two Pre-Socratic philosophers with Plato’s ideas. Present for ~10 minutes.",
+          "dueDate": "2025-09-30",
+          "points": 40,
+          "questions": [
+            {
+              "id": "phil-assign-2-q1",
+              "type": "presentation",
+              "title": "Comparative Analysis",
+              "description": "Highlight differences in metaphysics, method, and impact on modern philosophy.",
+              "points": 40
+            }
+          ]
+        }
+      ],
+      "quizzes": [
+        {
+          "id": "phil-quiz-1",
+          "title": "Classical Philosophy Basics",
+          "description": "Quick check on Pre-Socratic figures, Socratic method, Plato's main concepts.",
+          "questions": [
+            {
+              "id": "phil-quiz-1-q1",
+              "type": "multiple-choice",
+              "title": "Which philosopher introduced the Theory of Forms?",
+              "points": 5,
+              "options": [
+                "Aristotle",
+                "Socrates",
+                "Plato",
+                "Heraclitus"
+              ],
+              "correctAnswer": 2
+            },
+            {
+              "id": "phil-quiz-1-q2",
+              "type": "true-false",
+              "title": "Heraclitus believed in a static, unchanging reality.",
+              "points": 5,
+              "correctAnswer": 1
+            }
+          ]
+        },
+        {
+          "id": "phil-quiz-2",
+          "title": "Socratic & Platonic Thought Quiz",
+          "description": "Additional practice assessing knowledge on Socratic dialogues and Plato’s influences.",
+          "questions": [
+            {
+              "id": "phil-quiz-2-q1",
+              "type": "multiple-choice",
+              "title": "Socrates often claimed he knew nothing, a stance known as:",
+              "points": 5,
+              "options": [
+                "Socratic Irony",
+                "Socratic Method",
+                "Platonic Realism",
+                "Aristotelian Logic"
+              ],
+              "correctAnswer": 0
+            },
+            {
+              "id": "phil-quiz-2-q2",
+              "type": "short-answer",
+              "title": "Define the Socratic Method in 1-2 sentences.",
+              "description": "",
+              "points": 5
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "phil-module-2",
+      "title": "Modern & Contemporary Philosophy",
+      "description": "Descartes, Kant, Nietzsche, and modern philosophical debates. References Yale moral & modern philosophy lectures.",
+      "credits": 1,
+      "metadata": {
+        "estimatedTime": 200,
+        "difficulty": "intermediate",
+        "prerequisites": [
+          "phil-module-1"
+        ]
+      },
+      "learningObjectives": [
+        {
+          "id": "phil-obj-2",
+          "description": "Analyze key modern thinkers and their influence on ethics, epistemology, and existential questions",
+          "assessmentCriteria": [
+            "Evaluate Descartes’ rationalism",
+            "Contrast Kant’s deontological ethics with Nietzsche’s moral skepticism"
+          ]
+        }
+      ],
+      "resources": [
+        {
+          "id": "phil-res-2",
+          "title": "Open Yale Course: Moral Foundations & Modern Thinkers",
+          "type": "video",
+          "content": "Lectures covering Kant, Mill, Nietzsche, modern moral philosophy",
+          "duration": "Multiple lectures (~1 hour each)",
+          "url": "https://www.youtube.com/user/YaleCourses",
+          "embedType": "youtube"
+        }
+      ],
+      "assignments": [
+        {
+          "id": "phil-assign-3",
+          "title": "Essay: Kant vs. Nietzsche",
+          "description": "Write ~1000 words contrasting Kant’s categorical imperative with Nietzsche’s critique of morality.",
+          "dueDate": "2025-10-15",
+          "points": 80,
+          "questions": [
+            {
+              "id": "phil-assign-3-q1",
+              "type": "essay",
+              "title": "Moral Frameworks",
+              "description": "Provide concrete examples. Cite at least one Yale lecture.",
+              "points": 80
+            }
+          ]
+        },
+        {
+          "id": "phil-assign-4",
+          "title": "Short Response: Descartes' Cogito",
+          "description": "Write a ~300-word response on the implications of “I think, therefore I am.”",
+          "dueDate": "2025-10-25",
+          "points": 40,
+          "questions": [
+            {
+              "id": "phil-assign-4-q1",
+              "type": "short-answer",
+              "title": "Rationalism in Modern Thought",
+              "description": "Reflect on how Descartes' 'Cogito' shapes modern epistemology.",
+              "points": 40
+            }
+          ]
+        }
+      ],
+      "quizzes": [
+        {
+          "id": "phil-quiz-3",
+          "title": "Modern Philosophy Quiz",
+          "description": "Multiple-choice and short-answer questions on Descartes, Kant, Nietzsche, and existential thinkers.",
+          "questions": [
+            {
+              "id": "phil-quiz-3-q1",
+              "type": "multiple-choice",
+              "title": "Which phrase is attributed to Descartes?",
+              "points": 5,
+              "options": [
+                "\"I think, therefore I am\"",
+                "\"God is dead\"",
+                "\"Existence precedes essence\"",
+                "\"The unexamined life is not worth living\""
+              ],
+              "correctAnswer": 0
+            },
+            {
+              "id": "phil-quiz-3-q2",
+              "type": "short-answer",
+              "title": "Explain how Nietzsche challenges traditional morality in 2-3 sentences.",
+              "description": "",
+              "points": 5
+            }
+          ]
+        },
+        {
+          "id": "phil-quiz-4",
+          "title": "Kantian & Existential Challenges",
+          "description": "Focused quiz on Kant’s moral principles vs. existential critiques.",
+          "questions": [
+            {
+              "id": "phil-quiz-4-q1",
+              "type": "true-false",
+              "title": "Kant’s categorical imperative is a consequentialist approach to ethics.",
+              "points": 5,
+              "correctAnswer": 1
+            },
+            {
+              "id": "phil-quiz-4-q2",
+              "type": "multiple-choice",
+              "title": "Which philosopher is strongly associated with existentialism?",
+              "points": 5,
+              "options": [
+                "Descartes",
+                "Kierkegaard",
+                "Mill",
+                "Hume"
+              ],
+              "correctAnswer": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "phil-module-3",
+      "title": "Ethics & Political Philosophy",
+      "description": "Explores utilitarianism, deontology, social contract, and political ideologies. References additional Yale political philosophy lectures.",
+      "credits": 1,
+      "metadata": {
+        "estimatedTime": 210,
+        "difficulty": "intermediate",
+        "prerequisites": [
+          "phil-module-2"
+        ]
+      },
+      "learningObjectives": [
+        {
+          "id": "phil-obj-3",
+          "description": "Compare and evaluate major ethical frameworks and their political implications",
+          "assessmentCriteria": [
+            "Discuss the social contract (Hobbes, Locke, Rousseau)",
+            "Analyze utilitarian vs. deontological stances in political contexts"
+          ]
+        }
+      ],
+      "resources": [
+        {
+          "id": "phil-res-3",
+          "title": "Yale Political Philosophy Lectures",
+          "type": "video",
+          "content": "Lectures on liberalism, conservatism, socialism, and social contract theories",
+          "duration": "Multiple (~1 hour each)",
+          "url": "https://www.youtube.com/user/YaleCourses",
+          "embedType": "youtube"
+        }
+      ],
+      "assignments": [
+        {
+          "id": "phil-assign-5",
+          "title": "Policy Analysis Paper",
+          "description": "Pick a contemporary policy issue (e.g., healthcare) and evaluate it using both utilitarian and deontological frameworks.",
+          "dueDate": "2025-11-10",
+          "points": 80,
+          "questions": [
+            {
+              "id": "phil-assign-5-q1",
+              "type": "essay",
+              "title": "Ethical Contrast",
+              "description": "Apply each framework thoroughly with references to real-world outcomes.",
+              "points": 80
+            }
+          ]
+        },
+        {
+          "id": "phil-assign-6",
+          "title": "Debate Reflection: Social Contract Theories",
+          "description": "Attend or watch a debate on social contract theory. Write a 400-word reflection analyzing key points.",
+          "dueDate": "2025-11-20",
+          "points": 40,
+          "questions": [
+            {
+              "id": "phil-assign-6-q1",
+              "type": "short-answer",
+              "title": "Debate Summary",
+              "description": "Identify at least two arguments for and two against the social contract model.",
+              "points": 40
+            }
+          ]
+        }
+      ],
+      "quizzes": [
+        {
+          "id": "phil-quiz-5",
+          "title": "Ethical Frameworks Quiz",
+          "description": "Check knowledge of deontology, utilitarianism, and social contract basics.",
+          "questions": [
+            {
+              "id": "phil-quiz-5-q1",
+              "type": "multiple-choice",
+              "title": "Which philosopher is known for the principle of 'the greatest good for the greatest number'?",
+              "points": 5,
+              "options": [
+                "Kant",
+                "Mill",
+                "Locke",
+                "Hobbes"
+              ],
+              "correctAnswer": 1
+            },
+            {
+              "id": "phil-quiz-5-q2",
+              "type": "true-false",
+              "title": "Hobbes believed humans are naturally inclined to peaceful cooperation in the state of nature.",
+              "points": 5,
+              "correctAnswer": 1
+            }
+          ]
+        },
+        {
+          "id": "phil-quiz-6",
+          "title": "Political Philosophy Quick Check",
+          "description": "Multiple-choice and short-answer about liberalism, conservatism, socialism, and their ethical roots.",
+          "questions": [
+            {
+              "id": "phil-quiz-6-q1",
+              "type": "multiple-choice",
+              "title": "Which philosopher is associated with 'Leviathan' and a strong central authority?",
+              "points": 5,
+              "options": [
+                "Hume",
+                "Rousseau",
+                "Hobbes",
+                "Bentham"
+              ],
+              "correctAnswer": 2
+            },
+            {
+              "id": "phil-quiz-6-q2",
+              "type": "short-answer",
+              "title": "Define 'social contract' in 2-3 sentences.",
+              "description": "",
+              "points": 5
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "phil-module-4",
+      "title": "Logic, Existentialism & Contemporary Debates",
+      "description": "Introduction to formal logic, existentialist themes (Sartre, Camus), and current philosophical debates.",
+      "credits": 1,
+      "metadata": {
+        "estimatedTime": 240,
+        "difficulty": "intermediate",
+        "prerequisites": [
+          "phil-module-3"
+        ]
+      },
+      "learningObjectives": [
+        {
+          "id": "phil-obj-4",
+          "description": "Apply basic logic to evaluate arguments and understand existential perspectives in modern issues",
+          "assessmentCriteria": [
+            "Identify valid vs. invalid argument forms",
+            "Summarize existentialist responses to meaning, freedom, authenticity"
+          ]
+        }
+      ],
+      "resources": [
+        {
+          "id": "phil-res-4",
+          "title": "Yale Logic Lectures & Existential Debates",
+          "type": "video",
+          "content": "Intro to logic plus existentialists like Kierkegaard, Sartre, Camus",
+          "duration": "Multiple (~1 hour each)",
+          "url": "https://www.youtube.com/user/YaleCourses",
+          "embedType": "youtube"
+        }
+      ],
+      "assignments": [
+        {
+          "id": "phil-assign-7",
+          "title": "Formal Logic Worksheet",
+          "description": "Identify valid/invalid arguments, label informal fallacies, and propose corrected forms.",
+          "dueDate": "2025-12-01",
+          "points": 60,
+          "questions": [
+            {
+              "id": "phil-assign-7-q1",
+              "type": "short-answer",
+              "title": "Fallacy Identification",
+              "description": "Spot the ad hominem, straw man, or slippery slope in sample statements.",
+              "points": 30
+            },
+            {
+              "id": "phil-assign-7-q2",
+              "type": "short-answer",
+              "title": "Argument Correction",
+              "description": "Rewrite an invalid argument to make it valid (formally).",
+              "points": 30
+            }
+          ]
+        },
+        {
+          "id": "phil-assign-8",
+          "title": "Existential Reflection Paper",
+          "description": "2000-word paper exploring how existential ideas apply to personal freedom or modern crises (climate, AI, etc.).",
+          "dueDate": "2025-12-10",
+          "points": 100,
+          "questions": [
+            {
+              "id": "phil-assign-8-q1",
+              "type": "essay",
+              "title": "Existential Inquiry",
+              "description": "Incorporate at least one existential thinker (Sartre, Camus) and discuss personal authenticity or ethical choices.",
+              "points": 100
+            }
+          ]
+        }
+      ],
+      "quizzes": [
+        {
+          "id": "phil-quiz-7",
+          "title": "Logic Fundamentals Quiz",
+          "description": "Identify valid argument forms, recognize common fallacies.",
+          "questions": [
+            {
+              "id": "phil-quiz-7-q1",
+              "type": "multiple-choice",
+              "title": "Which of the following is a valid deductive form?",
+              "points": 5,
+              "options": [
+                "Affirming the consequent",
+                "Modus ponens",
+                "Ad hominem",
+                "Straw man"
+              ],
+              "correctAnswer": 1
+            },
+            {
+              "id": "phil-quiz-7-q2",
+              "type": "true-false",
+              "title": "A straw man fallacy misrepresents an opponent’s position to make it easier to attack.",
+              "points": 5,
+              "correctAnswer": 0
+            }
+          ]
+        },
+        {
+          "id": "phil-quiz-8",
+          "title": "Existentialism & Modern Issues Quiz",
+          "description": "Short check on existential themes from Kierkegaard, Sartre, Camus, and current debates.",
+          "questions": [
+            {
+              "id": "phil-quiz-8-q1",
+              "type": "multiple-choice",
+              "title": "Which existentialist stated, 'Existence precedes essence'?",
+              "points": 5,
+              "options": [
+                "Albert Camus",
+                "Jean-Paul Sartre",
+                "Friedrich Nietzsche",
+                "Simone de Beauvoir"
+              ],
+              "correctAnswer": 1
+            },
+            {
+              "id": "phil-quiz-8-q2",
+              "type": "short-answer",
+              "title": "Briefly define 'absurdism' in Camus's philosophy.",
+              "description": "",
+              "points": 5
+            }
+          ]
+        }
+      ]
+    },
+  
+
+  
+    {
+      "id": "psych-module-1",
+      "title": "Foundations of Personality",
+      "description": "Introduces Big Five model, trait theory, and Jordan Peterson’s perspectives from his open lectures.",
+      "credits": 1,
+      "metadata": {
+        "estimatedTime": 180,
+        "difficulty": "beginner",
+        "prerequisites": []
+      },
+      "learningObjectives": [
+        {
+          "id": "psych-obj-1",
+          "description": "Identify and describe key personality models and examine role of genetics vs. environment",
+          "assessmentCriteria": [
+            "Big Five trait definitions",
+            "Heritability evidence"
+          ]
+        }
+      ],
+      "resources": [
+        {
+          "id": "psych-res-1",
+          "title": "Jordan Peterson: Personality and Its Transformations",
+          "type": "video",
+          "content": "Lecture series covering personality psychology, trait theory, transformations",
+          "duration": "Multiple (~1.5 hours each)",
+          "url": "https://www.youtube.com/playlist?list=PL22J3VaeABQApSdW7Y6wq9bIw05cl2h-B",
+          "embedType": "youtube"
+        }
+      ],
+      "assignments": [
+        {
+          "id": "psych-assign-1",
+          "title": "Personality Inventory & Reflection",
+          "description": "Complete a Big Five inventory and write a reflective piece on the results.",
+          "dueDate": "2025-09-20",
+          "points": 60,
+          "questions": [
+            {
+              "id": "psych-assign-1-q1",
+              "type": "short-answer",
+              "title": "Big Five Results",
+              "description": "Summarize your scores and any surprises.",
+              "points": 20
+            },
+            {
+              "id": "psych-assign-1-q2",
+              "type": "essay",
+              "title": "Nature vs. Nurture",
+              "description": "Reflect on how upbringing or genetics influenced at least two traits.",
+              "points": 40
+            }
+          ]
+        },
+        {
+          "id": "psych-assign-2",
+          "title": "Research Article Review",
+          "description": "Locate a peer-reviewed study on personality stability. Summarize methods, results, and your critique.",
+          "dueDate": "2025-09-30",
+          "points": 50,
+          "questions": [
+            {
+              "id": "psych-assign-2-q1",
+              "type": "essay",
+              "title": "Study Critique",
+              "description": "Highlight strengths, weaknesses, and relation to the Big Five model.",
+              "points": 50
+            }
+          ]
+        }
+      ],
+      "quizzes": [
+        {
+          "id": "psych-quiz-1",
+          "title": "Big Five Basics",
+          "description": "Short quiz on trait definitions and Peterson’s foundational concepts.",
+          "questions": [
+            {
+              "id": "psych-quiz-1-q1",
+              "type": "multiple-choice",
+              "title": "Which trait is NOT part of the Big Five?",
+              "points": 5,
+              "options": [
+                "Openness",
+                "Conscientiousness",
+                "Agreeableness",
+                "Intelligence"
+              ],
+              "correctAnswer": 3
+            },
+            {
+              "id": "psych-quiz-1-q2",
+              "type": "true-false",
+              "title": "Peterson's lectures argue that biological factors are irrelevant to personality.",
+              "points": 5,
+              "correctAnswer": 1
+            }
+          ]
+        },
+        {
+          "id": "psych-quiz-2",
+          "title": "Trait Theory & Heritability",
+          "description": "Checks deeper knowledge of how genetics and environment interact in personality formation.",
+          "questions": [
+            {
+              "id": "psych-quiz-2-q1",
+              "type": "short-answer",
+              "title": "Define 'heritability' in the context of personality psychology.",
+              "description": "1-2 sentences.",
+              "points": 5
+            },
+            {
+              "id": "psych-quiz-2-q2",
+              "type": "multiple-choice",
+              "title": "Which approach examines how genes and environment jointly influence trait development?",
+              "points": 5,
+              "options": [
+                "Behavioral genetics",
+                "Psychoanalysis",
+                "Humanistic psychology",
+                "Biological determinism"
+              ],
+              "correctAnswer": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "psych-module-2",
+      "title": "Personality Development & Transformation",
+      "description": "Explores how personality evolves across the lifespan, referencing deeper Jordan Peterson lectures.",
+      "credits": 1,
+      "metadata": {
+        "estimatedTime": 210,
+        "difficulty": "intermediate",
+        "prerequisites": [
+          "psych-module-1"
+        ]
+      },
+      "learningObjectives": [
+        {
+          "id": "psych-obj-2",
+          "description": "Examine life events and therapeutic methods that alter personality over time",
+          "assessmentCriteria": [
+            "Evaluate effects of major life transitions",
+            "Identify at least two therapy forms influencing trait change"
+          ]
+        }
+      ],
+      "resources": [
+        {
+          "id": "psych-res-2",
+          "title": "Jordan Peterson: Advanced Transformations Lectures",
+          "type": "video",
+          "content": "Open lectures discussing personality evolution, therapy, major transformations",
+          "duration": "Multiple (~1 hour each)",
+          "url": "https://www.youtube.com/@JordanPetersonVideos",
+          "embedType": "youtube"
+        }
+      ],
+      "assignments": [
+        {
+          "id": "psych-assign-3",
+          "title": "Case Study: Personality Shift",
+          "description": "Interview someone who experienced a significant life change and analyze how it affected their personality.",
+          "dueDate": "2025-10-10",
+          "points": 70,
+          "questions": [
+            {
+              "id": "psych-assign-3-q1",
+              "type": "short-answer",
+              "title": "Interview Summary",
+              "description": "Key life events and trait changes observed.",
+              "points": 30
+            },
+            {
+              "id": "psych-assign-3-q2",
+              "type": "essay",
+              "title": "Link to Theory",
+              "description": "Relate changes to recognized psychological theories or Peterson’s content.",
+              "points": 40
+            }
+          ]
+        },
+        {
+          "id": "psych-assign-4",
+          "title": "Therapy Comparative Analysis",
+          "description": "Brief paper contrasting CBT vs. psychodynamic therapy in terms of altering personality traits.",
+          "dueDate": "2025-10-20",
+          "points": 50,
+          "questions": [
+            {
+              "id": "psych-assign-4-q1",
+              "type": "essay",
+              "title": "Therapeutic Influences",
+              "description": "Discuss how each approach might shift conscientiousness or neuroticism.",
+              "points": 50
+            }
+          ]
+        }
+      ],
+      "quizzes": [
+        {
+          "id": "psych-quiz-3",
+          "title": "Personality Transformation Quiz",
+          "description": "Knowledge check on how therapy, life transitions, environment can shift traits.",
+          "questions": [
+            {
+              "id": "psych-quiz-3-q1",
+              "type": "multiple-choice",
+              "title": "Which therapy focuses on altering core beliefs and thought patterns?",
+              "points": 5,
+              "options": [
+                "Psychoanalysis",
+                "CBT",
+                "Gestalt",
+                "Humanistic"
+              ],
+              "correctAnswer": 1
+            },
+            {
+              "id": "psych-quiz-3-q2",
+              "type": "short-answer",
+              "title": "Define 'critical life event' in personality psychology (1-2 sentences).",
+              "points": 5
+            }
+          ]
+        },
+        {
+          "id": "psych-quiz-4",
+          "title": "Life Transitions & Therapy Methods",
+          "description": "Short quiz on major life transitions and different therapeutic modalities.",
+          "questions": [
+            {
+              "id": "psych-quiz-4-q1",
+              "type": "true-false",
+              "title": "Humanistic therapy generally ignores the individual's subjective experience.",
+              "points": 5,
+              "correctAnswer": 1
+            },
+            {
+              "id": "psych-quiz-4-q2",
+              "type": "multiple-choice",
+              "title": "Which major milestone is typically associated with a reevaluation of personality?",
+              "points": 5,
+              "options": [
+                "Early childhood",
+                "Entering retirement",
+                "Adolescence",
+                "All of the above"
+              ],
+              "correctAnswer": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "psych-module-3",
+      "title": "Clinical & Therapeutic Approaches",
+      "description": "Focus on how clinical settings, e.g. CBT, psychodynamic, and group therapy, shape or modify personality traits.",
+      "credits": 1,
+      "metadata": {
+        "estimatedTime": 240,
+        "difficulty": "intermediate",
+        "prerequisites": [
+          "psych-module-2"
+        ]
+      },
+      "learningObjectives": [
+        {
+          "id": "psych-obj-3",
+          "description": "Differentiate key therapeutic approaches and explain their impact on personality development",
+          "assessmentCriteria": [
+            "Describe core principles of CBT, psychodynamic, and humanistic approaches",
+            "Identify typical personality-related outcomes"
+          ]
+        }
+      ],
+      "resources": [
+        {
+          "id": "psych-res-3",
+          "title": "Jordan Peterson Clinical Psychology Lectures",
+          "type": "video",
+          "content": "Talks about therapy, personal development, transformation",
+          "duration": "Multiple (~1 hour each)",
+          "url": "https://www.youtube.com/@JordanPetersonVideos",
+          "embedType": "youtube"
+        }
+      ],
+      "assignments": [
+        {
+          "id": "psych-assign-5",
+          "title": "Therapy Session Analysis",
+          "description": "Watch a recorded or simulated therapy session (publicly available). Write a short analysis linking to personality outcomes.",
+          "dueDate": "2025-11-05",
+          "points": 60,
+          "questions": [
+            {
+              "id": "psych-assign-5-q1",
+              "type": "short-answer",
+              "title": "Session Summary",
+              "description": "Key therapeutic techniques observed.",
+              "points": 20
+            },
+            {
+              "id": "psych-assign-5-q2",
+              "type": "essay",
+              "title": "Impact on Traits",
+              "description": "Discuss how therapy might alter neuroticism, openness, etc.",
+              "points": 40
+            }
+          ]
+        },
+        {
+          "id": "psych-assign-6",
+          "title": "Group Presentation: Therapy Modalities",
+          "description": "Groups of 3 pick a modality (CBT, psychoanalysis, etc.) and present a 10-min summary of how it shifts personality patterns.",
+          "dueDate": "2025-11-15",
+          "points": 50,
+          "questions": [
+            {
+              "id": "psych-assign-6-q1",
+              "type": "presentation",
+              "title": "Therapy Modality Presentation",
+              "description": "Explain core theory, typical client outcomes, and strengths/weaknesses.",
+              "points": 50
+            }
+          ]
+        }
+      ],
+      "quizzes": [
+        {
+          "id": "psych-quiz-5",
+          "title": "Therapy Approach Basics",
+          "description": "Multiple-choice and short-answer on CBT, psychodynamic, humanistic, group therapy concepts.",
+          "questions": [
+            {
+              "id": "psych-quiz-5-q1",
+              "type": "multiple-choice",
+              "title": "Which approach often explores early childhood to uncover unconscious motives?",
+              "points": 5,
+              "options": [
+                "CBT",
+                "Psychodynamic",
+                "Humanistic",
+                "Behavioral"
+              ],
+              "correctAnswer": 1
+            },
+            {
+              "id": "psych-quiz-5-q2",
+              "type": "short-answer",
+              "title": "Name one advantage and one limitation of group therapy for personality change.",
+              "description": "",
+              "points": 5
+            }
+          ]
+        },
+        {
+          "id": "psych-quiz-6",
+          "title": "Clinical Psychology Terms Quiz",
+          "description": "Quick check on common clinical terms like transference, countertransference, unconditional positive regard, etc.",
+          "questions": [
+            {
+              "id": "psych-quiz-6-q1",
+              "type": "multiple-choice",
+              "title": "Which term describes a client's projection of feelings about important figures onto their therapist?",
+              "points": 5,
+              "options": [
+                "Transference",
+                "Resistance",
+                "Repression",
+                "Modeling"
+              ],
+              "correctAnswer": 0
+            },
+            {
+              "id": "psych-quiz-6-q2",
+              "type": "true-false",
+              "title": "Unconditional positive regard is central to psychodynamic therapy.",
+              "points": 5,
+              "correctAnswer": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "psych-module-4",
+      "title": "Cultural & Biological Perspectives on Personality",
+      "description": "Investigates how culture, society, and neurobiology shape personality development, referencing advanced Peterson materials.",
+      "credits": 1,
+      "metadata": {
+        "estimatedTime": 240,
+        "difficulty": "intermediate",
+        "prerequisites": [
+          "psych-module-3"
+        ]
+      },
+      "learningObjectives": [
+        {
+          "id": "psych-obj-4",
+          "description": "Analyze the interplay between cultural context, biological factors, and personality formation",
+          "assessmentCriteria": [
+            "Examine cross-cultural studies on personality traits",
+            "Discuss neurobiological correlates of trait differences"
+          ]
+        }
+      ],
+      "resources": [
+        {
+          "id": "psych-res-4",
+          "title": "Jordan Peterson: Biology & Culture (selected talks)",
+          "type": "video",
+          "content": "Lectures on how society and biology shape personality over time",
+          "duration": "Multiple (~1 hour each)",
+          "url": "https://www.youtube.com/@JordanPetersonVideos",
+          "embedType": "youtube"
+        }
+      ],
+      "assignments": [
+        {
+          "id": "psych-assign-7",
+          "title": "Cross-Cultural Personality Study",
+          "description": "Find a research article comparing personality across different cultures. Critique methodology, results, and cultural context.",
+          "dueDate": "2025-12-01",
+          "points": 80,
+          "questions": [
+            {
+              "id": "psych-assign-7-q1",
+              "type": "essay",
+              "title": "Study Critique",
+              "description": "Evaluate sample, measurement tools, and the authors’ interpretation. Relate to course materials.",
+              "points": 80
+            }
+          ]
+        },
+        {
+          "id": "psych-assign-8",
+          "title": "Neurobiological Basis of Personality",
+          "description": "Write a 1200-word paper discussing how brain regions (e.g., amygdala, prefrontal cortex) correlate with specific traits.",
+          "dueDate": "2025-12-10",
+          "points": 90,
+          "questions": [
+            {
+              "id": "psych-assign-8-q1",
+              "type": "essay",
+              "title": "Biological Correlates of Personality",
+              "description": "Cite at least two neuroscience studies or references from Jordan Peterson's lectures.",
+              "points": 90
+            }
+          ]
+        }
+      ],
+      "quizzes": [
+        {
+          "id": "psych-quiz-7",
+          "title": "Culture & Personality Quiz",
+          "description": "Multiple-choice and short-answer on cross-cultural differences in trait expression.",
+          "questions": [
+            {
+              "id": "psych-quiz-7-q1",
+              "type": "multiple-choice",
+              "title": "Which statement best captures cross-cultural personality research?",
+              "points": 5,
+              "options": [
+                "All cultures share identical trait distributions",
+                "Culture has no impact on trait manifestations",
+                "Culture can influence mean trait levels and behavioral expressions",
+                "Only genetics matter for personality development"
+              ],
+              "correctAnswer": 2
+            },
+            {
+              "id": "psych-quiz-7-q2",
+              "type": "short-answer",
+              "title": "Define 'cultural dimension' in the context of personality psychology.",
+              "description": "1-2 sentences.",
+              "points": 5
+            }
+          ]
+        },
+        {
+          "id": "psych-quiz-8",
+          "title": "Biological Factors & Personality",
+          "description": "Assesses knowledge of neurobiological correlates with personality traits.",
+          "questions": [
+            {
+              "id": "psych-quiz-8-q1",
+              "type": "multiple-choice",
+              "title": "Which brain structure is often linked to fear responses and trait neuroticism?",
+              "points": 5,
+              "options": [
+                "Hippocampus",
+                "Amygdala",
+                "Cerebellum",
+                "Occipital lobe"
+              ],
+              "correctAnswer": 1
+            },
+            {
+              "id": "psych-quiz-8-q2",
+              "type": "true-false",
+              "title": "Prefrontal cortex activity has no correlation with conscientiousness.",
+              "points": 5,
+              "correctAnswer": 1
+            }
+          ]
+        }
+      ]
+    },
+  
+   
+  
+    {
+      "id": "webdev-module-1",
+      "title": "Front-End Foundations",
+      "description": "Introduction to HTML, CSS, and basic JavaScript, referencing Harvard CS50 & MIT tutorials on front-end.",
+      "credits": 2,
+      "metadata": {
+        "estimatedTime": 240,
+        "difficulty": "beginner",
+        "prerequisites": []
+      },
+      "learningObjectives": [
+        {
+          "id": "webdev-obj-1",
+          "description": "Build basic, responsive web pages with semantic HTML/CSS and simple DOM manipulation",
+          "assessmentCriteria": [
+            "Use semantic HTML tags",
+            "Implement a responsive layout with Flexbox/Grid"
+          ]
+        }
+      ],
+      "resources": [
+        {
+          "id": "webdev-res-1",
+          "title": "Harvard CS50 Web Programming (Front-End Basics)",
+          "type": "video",
+          "content": "Lectures on fundamental front-end concepts",
+          "duration": "Multiple (~1 hour each)",
+          "url": "https://www.youtube.com/playlist?list=PLhQjrBD2T3828ZVcVzEIhsHVgjANGZveu",
+          "embedType": "youtube"
+        }
+      ],
+      "assignments": [
+        {
+          "id": "webdev-assign-1",
+          "title": "Personal Profile Page",
+          "description": "Create a personal profile site with at least two pages, a responsive layout, and minimal JS interactivity.",
+          "dueDate": "2025-09-25",
+          "points": 80,
+          "questions": [
+            {
+              "id": "webdev-assign-1-q1",
+              "type": "coding",
+              "title": "HTML/CSS Structure",
+              "description": "Use semantic tags, style with Flexbox or Grid, ensure mobile responsiveness.",
+              "points": 50
+            },
+            {
+              "id": "webdev-assign-1-q2",
+              "type": "coding",
+              "title": "JS Interactivity",
+              "description": "Add at least one interactive feature (like a form validation or dynamic content).",
+              "points": 30
+            }
+          ]
+        },
+        {
+          "id": "webdev-assign-2",
+          "title": "CSS Layout Challenge",
+          "description": "Recreate a given mockup focusing on advanced layout (Grid, Flexbox). Must be fully responsive.",
+          "dueDate": "2025-10-05",
+          "points": 60,
+          "questions": [
+            {
+              "id": "webdev-assign-2-q1",
+              "type": "coding",
+              "title": "Layout Replication",
+              "description": "Match the design specs closely, handle breakpoints for mobile/tablet/desktop.",
+              "points": 60
+            }
+          ]
+        }
+      ],
+      "quizzes": [
+        {
+          "id": "webdev-quiz-1",
+          "title": "Front-End Basics Quiz",
+          "description": "Multiple-choice & short-answer on HTML, CSS, basic JS syntax.",
+          "questions": [
+            {
+              "id": "webdev-quiz-1-q1",
+              "type": "multiple-choice",
+              "title": "Which tag is used for the largest heading in HTML?",
+              "points": 5,
+              "options": [
+                "<h1>",
+                "<h2>",
+                "<header>",
+                "<p>"
+              ],
+              "correctAnswer": 0
+            },
+            {
+              "id": "webdev-quiz-1-q2",
+              "type": "short-answer",
+              "title": "Explain the difference between margin and padding in 1-2 sentences.",
+              "points": 5
+            }
+          ]
+        },
+        {
+          "id": "webdev-quiz-2",
+          "title": "CSS & DOM Quiz",
+          "description": "Focus on advanced CSS (Grid, Flexbox) and basic DOM manipulation events.",
+          "questions": [
+            {
+              "id": "webdev-quiz-2-q1",
+              "type": "multiple-choice",
+              "title": "Which CSS property is used to create a grid layout?",
+              "points": 5,
+              "options": [
+                "display: block",
+                "display: flex",
+                "display: grid",
+                "position: relative"
+              ],
+              "correctAnswer": 2
+            },
+            {
+              "id": "webdev-quiz-2-q2",
+              "type": "short-answer",
+              "title": "Name one method to attach an event listener in JavaScript.",
+              "points": 5
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "webdev-module-2",
+      "title": "Intermediate Front-End & Tooling",
+      "description": "Deep dive into DOM manipulation, asynchronous JS (fetch), and dev tools. Also covers basic bundlers/build tools.",
+      "credits": 2,
+      "metadata": {
+        "estimatedTime": 300,
+        "difficulty": "intermediate",
+        "prerequisites": [
+          "webdev-module-1"
+        ]
+      },
+      "learningObjectives": [
+        {
+          "id": "webdev-obj-2",
+          "description": "Create dynamic UIs with JavaScript event handling, fetch API, and basic build processes",
+          "assessmentCriteria": [
+            "Implement asynchronous data fetching",
+            "Use browser dev tools for debugging"
+          ]
+        }
+      ],
+      "resources": [
+        {
+          "id": "webdev-res-2",
+          "title": "CS50 Lectures: DOM, Async JS, and Build Tools",
+          "type": "video",
+          "content": "Guidance on advanced front-end patterns, including fetch API, webpack, etc.",
+          "duration": "Multiple (~1 hour each)",
+          "url": "https://www.youtube.com/user/CS50",
+          "embedType": "youtube"
+        }
+      ],
+      "assignments": [
+        {
+          "id": "webdev-assign-3",
+          "title": "SPA Fetch Project",
+          "description": "Build a small Single Page App using only vanilla JS. Fetch data from a public API and display dynamically.",
+          "dueDate": "2025-10-25",
+          "points": 90,
+          "questions": [
+            {
+              "id": "webdev-assign-3-q1",
+              "type": "coding",
+              "title": "Fetch & Render",
+              "description": "Retrieve JSON from an open API, display in the DOM with minimal reloading.",
+              "points": 50
+            },
+            {
+              "id": "webdev-assign-3-q2",
+              "type": "coding",
+              "title": "Event Handling & Error Handling",
+              "description": "Show loading states, handle errors gracefully, incorporate at least 2 user-triggered events.",
+              "points": 40
+            }
+          ]
+        },
+        {
+          "id": "webdev-assign-4",
+          "title": "Debugging Exercise",
+          "description": "Given a buggy front-end, use browser dev tools to identify errors. Submit a short report on solutions.",
+          "dueDate": "2025-11-05",
+          "points": 50,
+          "questions": [
+            {
+              "id": "webdev-assign-4-q1",
+              "type": "short-answer",
+              "title": "Bug Summary",
+              "description": "Detail the main issues and how you located them.",
+              "points": 25
+            },
+            {
+              "id": "webdev-assign-4-q2",
+              "type": "coding",
+              "title": "Fix Implementation",
+              "description": "Show the corrected code or patches for each bug found.",
+              "points": 25
+            }
+          ]
+        }
+      ],
+      "quizzes": [
+        {
+          "id": "webdev-quiz-3",
+          "title": "Async & DOM Quiz",
+          "description": "Covers fetch API usage, promises, event handling, plus some dev tooling basics.",
+          "questions": [
+            {
+              "id": "webdev-quiz-3-q1",
+              "type": "multiple-choice",
+              "title": "Which method returns a promise that resolves to a Response object of the request?",
+              "points": 5,
+              "options": [
+                "fetch()",
+                "XMLHttpRequest()",
+                "axios()",
+                "event.preventDefault()"
+              ],
+              "correctAnswer": 0
+            },
+            {
+              "id": "webdev-quiz-3-q2",
+              "type": "short-answer",
+              "title": "Name one advantage of using a build tool (like webpack or parcel).",
+              "points": 5
+            }
+          ]
+        },
+        {
+          "id": "webdev-quiz-4",
+          "title": "Tooling & Dev Tools Quiz",
+          "description": "Focuses on debugging, bundlers, and performance checks.",
+          "questions": [
+            {
+              "id": "webdev-quiz-4-q1",
+              "type": "true-false",
+              "title": "Source maps help map minified code back to original source files.",
+              "points": 5,
+              "correctAnswer": 0
+            },
+            {
+              "id": "webdev-quiz-4-q2",
+              "type": "multiple-choice",
+              "title": "Which Chrome DevTools feature allows you to inspect real-time performance metrics?",
+              "points": 5,
+              "options": [
+                "Elements panel",
+                "Network panel",
+                "Performance panel",
+                "Application panel"
+              ],
+              "correctAnswer": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "webdev-module-3",
+      "title": "Server-Side Fundamentals: Node.js, Express, and Databases",
+      "description": "Intro to Node.js server-side, Express routing, plus either SQL or NoSQL databases. Uses Harvard CS50 & MIT resources.",
+      "credits": 2,
+      "metadata": {
+        "estimatedTime": 300,
+        "difficulty": "intermediate",
+        "prerequisites": [
+          "webdev-module-2"
+        ]
+      },
+      "learningObjectives": [
+        {
+          "id": "webdev-obj-3",
+          "description": "Build and deploy simple server-side apps using Node.js, Express, and a database",
+          "assessmentCriteria": [
+            "Implement RESTful routes",
+            "Handle errors, parse JSON data"
+          ]
+        }
+      ],
+      "resources": [
+        {
+          "id": "webdev-res-3",
+          "title": "Harvard CS50: Introduction to Back-End, Databases",
+          "type": "video",
+          "content": "Lectures covering server basics, Express, SQL, and NoSQL",
+          "duration": "Multiple (~1 hour each)",
+          "url": "https://www.youtube.com/user/CS50",
+          "embedType": "youtube"
+        }
+      ],
+      "assignments": [
+        {
+          "id": "webdev-assign-5",
+          "title": "Node.js/Express CRUD App",
+          "description": "Create a basic resource manager with GET, POST, PUT, DELETE endpoints. Choose SQLite or MongoDB for storage.",
+          "dueDate": "2025-11-20",
+          "points": 100,
+          "questions": [
+            {
+              "id": "webdev-assign-5-q1",
+              "type": "coding",
+              "title": "Server Setup & Routing",
+              "description": "Implement Express routes for listing, creating, updating, deleting resources.",
+              "points": 60
+            },
+            {
+              "id": "webdev-assign-5-q2",
+              "type": "short-answer",
+              "title": "Database Integration",
+              "description": "Explain how you connect to and interact with your chosen database.",
+              "points": 40
+            }
+          ]
+        },
+        {
+          "id": "webdev-assign-6",
+          "title": "Error Handling & Logging",
+          "description": "Enhance your CRUD app with robust error handling (404, 500) and basic request logging. Submit short doc on approach.",
+          "dueDate": "2025-11-30",
+          "points": 70,
+          "questions": [
+            {
+              "id": "webdev-assign-6-q1",
+              "type": "coding",
+              "title": "Add Custom Error Responses",
+              "description": "Handle invalid routes or data with friendly error messages.",
+              "points": 40
+            },
+            {
+              "id": "webdev-assign-6-q2",
+              "type": "short-answer",
+              "title": "Logging Strategy",
+              "description": "Outline how you log requests and errors (e.g. Morgan, Winston).",
+              "points": 30
+            }
+          ]
+        }
+      ],
+      "quizzes": [
+        {
+          "id": "webdev-quiz-5",
+          "title": "Server & REST Quiz",
+          "description": "Questions on Node.js basics, Express routing, HTTP methods.",
+          "questions": [
+            {
+              "id": "webdev-quiz-5-q1",
+              "type": "multiple-choice",
+              "title": "Which HTTP method is typically used to update an existing resource?",
+              "points": 5,
+              "options": [
+                "GET",
+                "POST",
+                "PUT",
+                "DELETE"
+              ],
+              "correctAnswer": 2
+            },
+            {
+              "id": "webdev-quiz-5-q2",
+              "type": "true-false",
+              "title": "Express cannot parse JSON data without a middleware like body-parser or express.json.",
+              "points": 5,
+              "correctAnswer": 0
+            }
+          ]
+        },
+        {
+          "id": "webdev-quiz-6",
+          "title": "Database Fundamentals Quiz",
+          "description": "Multiple-choice & short-answer on relational vs. non-relational DBs, basic SQL commands.",
+          "questions": [
+            {
+              "id": "webdev-quiz-6-q1",
+              "type": "multiple-choice",
+              "title": "Which is a NoSQL database?",
+              "points": 5,
+              "options": [
+                "PostgreSQL",
+                "MongoDB",
+                "MySQL",
+                "SQLite"
+              ],
+              "correctAnswer": 1
+            },
+            {
+              "id": "webdev-quiz-6-q2",
+              "type": "short-answer",
+              "title": "Give one example of a basic SQL statement for creating a table.",
+              "points": 5
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "webdev-module-4",
+      "title": "Advanced Topics & Deployment",
+      "description": "Focus on advanced back-end patterns, authentication, and deployment. Summarize the full-stack capstone project.",
+      "credits": 2,
+      "metadata": {
+        "estimatedTime": 360,
+        "difficulty": "intermediate",
+        "prerequisites": [
+          "webdev-module-3"
+        ]
+      },
+      "learningObjectives": [
+        {
+          "id": "webdev-obj-4",
+          "description": "Implement authentication, advanced back-end features, and deploy a full-stack application",
+          "assessmentCriteria": [
+            "Set up basic user auth",
+            "Deploy app to a cloud platform"
+          ]
+        }
+      ],
+      "resources": [
+        {
+          "id": "webdev-res-4",
+          "title": "CS50 Database & Cloud Deployment",
+          "type": "video",
+          "content": "Introduces SQL advanced concepts, NoSQL, and deployment on Heroku/AWS",
+          "duration": "Multiple (~1 hour each)",
+          "url": "https://www.youtube.com/user/CS50",
+          "embedType": "youtube"
+        }
+      ],
+      "assignments": [
+        {
+          "id": "webdev-assign-7",
+          "title": "User Authentication Integration",
+          "description": "Add signup/login functionality to your Node/Express app. Implement session or token-based auth.",
+          "dueDate": "2025-12-10",
+          "points": 100,
+          "questions": [
+            {
+              "id": "webdev-assign-7-q1",
+              "type": "coding",
+              "title": "Auth Routes & Middleware",
+              "description": "Protect certain routes, require login to access them. Provide a basic login form (if front-end integrated).",
+              "points": 70
+            },
+            {
+              "id": "webdev-assign-7-q2",
+              "type": "short-answer",
+              "title": "Security Considerations",
+              "description": "Explain how you handle password hashing, sessions, or JWT tokens.",
+              "points": 30
+            }
+          ]
+        },
+        {
+          "id": "webdev-assign-8",
+          "title": "Capstone: Full-Stack Project",
+          "description": "In groups of up to 4, create a fully functional app with front-end, back-end, DB, and deploy to a cloud platform (Heroku, Netlify, etc.).",
+          "dueDate": "2025-12-20",
+          "points": 200,
+          "questions": [
+            {
+              "id": "webdev-assign-8-q1",
+              "type": "presentation",
+              "title": "Project Demo & Architecture",
+              "description": "Include a short doc or slides explaining your tech stack, DB schema, front-end, and deployment steps.",
+              "points": 200
+            }
+          ]
+        }
+      ],
+      "quizzes": [
+        {
+          "id": "webdev-quiz-7",
+          "title": "Authentication & Security Quiz",
+          "description": "Tests knowledge of hashing, sessions, tokens, and security best practices.",
+          "questions": [
+            {
+              "id": "webdev-quiz-7-q1",
+              "type": "multiple-choice",
+              "title": "Which hashing algorithm is commonly recommended for passwords?",
+              "points": 5,
+              "options": [
+                "MD5",
+                "SHA-1",
+                "bcrypt or Argon2",
+                "Base64"
+              ],
+              "correctAnswer": 2
+            },
+            {
+              "id": "webdev-quiz-7-q2",
+              "type": "true-false",
+              "title": "Storing plain-text passwords in your database is acceptable for small projects.",
+              "points": 5,
+              "correctAnswer": 1
+            }
+          ]
+        },
+        {
+          "id": "webdev-quiz-8",
+          "title": "Deployment & Scaling Quiz",
+          "description": "Short quiz on cloud hosting, environment variables, and performance considerations.",
+          "questions": [
+            {
+              "id": "webdev-quiz-8-q1",
+              "type": "short-answer",
+              "title": "What is an environment variable, and why is it important in deployment?",
+              "points": 5
+            },
+            {
+              "id": "webdev-quiz-8-q2",
+              "type": "multiple-choice",
+              "title": "Which service is NOT typically used for hosting Node.js apps?",
+              "points": 5,
+              "options": [
+                "Heroku",
+                "AWS",
+                "Netlify",
+                "GoDaddy (shared cPanel hosting without Node support)"
+              ],
+              "correctAnswer": 3
+            }
+          ]
+        }
+      ]
+    },
+  
+    
+    {
+      "id": "neuro-module-1",
+      "title": "Neuroanatomy & Brain Structures",
+      "description": "Focus on major brain regions, referencing Andrew Huberman’s foundational talks and MIT OpenCourseWare resources.",
+      "credits": 1,
+      "metadata": {
+        "estimatedTime": 180,
+        "difficulty": "beginner",
+        "prerequisites": []
+      },
+      "learningObjectives": [
+        {
+          "id": "neuro-obj-1",
+          "description": "Identify the main areas of the brain and describe their primary functions",
+          "assessmentCriteria": [
+            "Label cortical lobes, subcortical areas",
+            "Explain roles of hippocampus and amygdala"
+          ]
+        }
+      ],
+      "resources": [
+        {
+          "id": "neuro-res-1",
+          "title": "Andrew Huberman Lab: Brain Anatomy Basics",
+          "type": "video",
+          "content": "Intro discussions on major brain structures",
+          "duration": "Multiple (~1 hour each)",
+          "url": "https://www.youtube.com/@hubermanlab",
+          "embedType": "youtube"
+        },
+        {
+          "id": "neuro-res-2",
+          "title": "MIT OpenCourseWare: Intro to Neuroscience",
+          "type": "video",
+          "content": "Lecture series detailing fundamental neuroanatomy",
+          "duration": "Multiple (~1 hour each)",
+          "url": "https://www.youtube.com/c/mitocw",
+          "embedType": "youtube"
+        }
+      ],
+      "assignments": [
+        {
+          "id": "neuro-assign-1",
+          "title": "Brain Diagram Labeling",
+          "description": "Download a blank brain diagram, label lobes/subcortical structures, provide brief functional notes.",
+          "dueDate": "2025-09-30",
+          "points": 40,
+          "questions": [
+            {
+              "id": "neuro-assign-1-q1",
+              "type": "diagram",
+              "title": "Brain Regions",
+              "description": "Ensure correct labeling of frontal, parietal, occipital, temporal lobes, plus hippocampus, amygdala.",
+              "points": 40
+            }
+          ]
+        },
+        {
+          "id": "neuro-assign-2",
+          "title": "Neuroanatomy Short Essay",
+          "description": "Write ~500 words on how understanding brain regions can inform medical or psychological interventions.",
+          "dueDate": "2025-10-05",
+          "points": 50,
+          "questions": [
+            {
+              "id": "neuro-assign-2-q1",
+              "type": "essay",
+              "title": "Practical Neuroanatomy",
+              "description": "Discuss real-world relevance for therapy or neurosurgery examples.",
+              "points": 50
+            }
+          ]
+        }
+      ],
+      "quizzes": [
+        {
+          "id": "neuro-quiz-1",
+          "title": "Neuroanatomy Quiz",
+          "description": "Multiple-choice/short-answer on major brain structures and their basic functions.",
+          "questions": [
+            {
+              "id": "neuro-quiz-1-q1",
+              "type": "multiple-choice",
+              "title": "Which lobe is primarily responsible for visual processing?",
+              "points": 5,
+              "options": [
+                "Frontal",
+                "Temporal",
+                "Parietal",
+                "Occipital"
+              ],
+              "correctAnswer": 3
+            },
+            {
+              "id": "neuro-quiz-1-q2",
+              "type": "short-answer",
+              "title": "Explain the primary role of the hippocampus in 1-2 sentences.",
+              "points": 5
+            }
+          ]
+        },
+        {
+          "id": "neuro-quiz-2",
+          "title": "Brain Structures & Functions Check",
+          "description": "Additional check on subcortical structures, including amygdala, basal ganglia, cerebellum.",
+          "questions": [
+            {
+              "id": "neuro-quiz-2-q1",
+              "type": "multiple-choice",
+              "title": "Which structure is most involved in emotional processing, especially fear?",
+              "points": 5,
+              "options": [
+                "Basal ganglia",
+                "Hippocampus",
+                "Amygdala",
+                "Cerebellum"
+              ],
+              "correctAnswer": 2
+            },
+            {
+              "id": "neuro-quiz-2-q2",
+              "type": "true-false",
+              "title": "The cerebellum primarily coordinates cognitive function rather than motor control.",
+              "points": 5,
+              "correctAnswer": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "neuro-module-2",
+      "title": "Neuronal Communication & Plasticity",
+      "description": "Explores how neurons communicate (action potentials, synapses) and introduces concepts of neuroplasticity.",
+      "credits": 1,
+      "metadata": {
+        "estimatedTime": 240,
+        "difficulty": "intermediate",
+        "prerequisites": [
+          "neuro-module-1"
+        ]
+      },
+      "learningObjectives": [
+        {
+          "id": "neuro-obj-2",
+          "description": "Describe action potentials, synaptic transmission, and principles of brain plasticity",
+          "assessmentCriteria": [
+            "Outline steps of an action potential",
+            "Discuss how experience can reshape neuronal connections"
+          ]
+        }
+      ],
+      "resources": [
+        {
+          "id": "neuro-res-3",
+          "title": "Andrew Huberman: Synapses & Plasticity Talks",
+          "type": "video",
+          "content": "Discussions on neuronal firing, synaptic changes, and learning",
+          "duration": "Multiple (~1 hour each)",
+          "url": "https://www.youtube.com/playlist?list=PLfBne2aWQhY3gq4Sf7S1Zio9QIKmteMtZ",
+          "embedType": "youtube"
+        }
+      ],
+      "assignments": [
+        {
+          "id": "neuro-assign-3",
+          "title": "Neuron Firing Simulation Report",
+          "description": "Use an online action potential simulator (HHsim). Adjust ion concentrations, record changes, submit short report.",
+          "dueDate": "2025-10-20",
+          "points": 70,
+          "questions": [
+            {
+              "id": "neuro-assign-3-q1",
+              "type": "short-answer",
+              "title": "Simulation Setup",
+              "description": "Summarize how you configured sodium/potassium channels.",
+              "points": 30
+            },
+            {
+              "id": "neuro-assign-3-q2",
+              "type": "essay",
+              "title": "Analysis of Results",
+              "description": "Explain how altering ion channels affected the AP amplitude or threshold. Cite Huberman's lecture if relevant.",
+              "points": 40
+            }
+          ]
+        },
+        {
+          "id": "neuro-assign-4",
+          "title": "Plasticity Case Study",
+          "description": "Find a published case study of brain plasticity (e.g., stroke recovery) and write a 600-word summary.",
+          "dueDate": "2025-10-30",
+          "points": 60,
+          "questions": [
+            {
+              "id": "neuro-assign-4-q1",
+              "type": "essay",
+              "title": "Case Study Summary & Discussion",
+              "description": "Highlight the neural changes observed, referencing at least one concept from lecture (LTP, neurogenesis, etc.).",
+              "points": 60
+            }
+          ]
+        }
+      ],
+      "quizzes": [
+        {
+          "id": "neuro-quiz-3",
+          "title": "Synaptic Transmission & Plasticity",
+          "description": "Short quiz on basic neurotransmission steps, excitatory vs. inhibitory synapses, neuroplasticity.",
+          "questions": [
+            {
+              "id": "neuro-quiz-3-q1",
+              "type": "multiple-choice",
+              "title": "Which ion primarily triggers neurotransmitter release?",
+              "points": 5,
+              "options": [
+                "Na+",
+                "Cl-",
+                "Ca2+",
+                "K+"
+              ],
+              "correctAnswer": 2
+            },
+            {
+              "id": "neuro-quiz-3-q2",
+              "type": "true-false",
+              "title": "Neuroplasticity only occurs during childhood and cannot happen in adulthood.",
+              "points": 5,
+              "correctAnswer": 1
+            }
+          ]
+        },
+        {
+          "id": "neuro-quiz-4",
+          "title": "Advanced Neuroplasticity Check",
+          "description": "Additional quiz focusing on LTP, LTD, and real-world implications of plasticity.",
+          "questions": [
+            {
+              "id": "neuro-quiz-4-q1",
+              "type": "short-answer",
+              "title": "Define 'long-term potentiation' in 1-2 sentences.",
+              "points": 5
+            },
+            {
+              "id": "neuro-quiz-4-q2",
+              "type": "multiple-choice",
+              "title": "Which factor is NOT typically associated with enhancing neuroplasticity?",
+              "points": 5,
+              "options": [
+                "Consistent mental practice",
+                "Physical exercise",
+                "High chronic stress",
+                "Enriched environment"
+              ],
+              "correctAnswer": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "neuro-module-3",
+      "title": "Sensory & Motor Systems",
+      "description": "Study how the brain processes sensory inputs (vision, hearing, etc.) and coordinates motor outputs. References MIT OCW and Huberman on vision & movement.",
+      "credits": 1,
+      "metadata": {
+        "estimatedTime": 240,
+        "difficulty": "intermediate",
+        "prerequisites": [
+          "neuro-module-2"
+        ]
+      },
+      "learningObjectives": [
+        {
+          "id": "neuro-obj-3",
+          "description": "Describe pathways for key senses and the neural control of movement",
+          "assessmentCriteria": [
+            "Illustrate visual pathway from retina to visual cortex",
+            "Explain motor cortex and basal ganglia roles"
+          ]
+        }
+      ],
+      "resources": [
+        {
+          "id": "neuro-res-4",
+          "title": "MIT OpenCourseWare: Sensory & Motor Systems",
+          "type": "video",
+          "content": "In-depth coverage of how the brain interprets sensory data and executes motor control",
+          "duration": "Multiple (~1 hour each)",
+          "url": "https://www.youtube.com/c/mitocw",
+          "embedType": "youtube"
+        },
+        {
+          "id": "neuro-res-5",
+          "title": "Huberman Lab: Vision & Movement Episodes",
+          "type": "video",
+          "content": "Discussions of the neuroscience behind sight and motor coordination",
+          "duration": "Multiple (~1 hour each)",
+          "url": "https://www.youtube.com/@hubermanlab",
+          "embedType": "youtube"
+        }
+      ],
+      "assignments": [
+        {
+          "id": "neuro-assign-5",
+          "title": "Visual Pathway Diagram",
+          "description": "Create a flowchart showing how visual signals travel from retina to V1, noting key relay stations.",
+          "dueDate": "2025-11-15",
+          "points": 50,
+          "questions": [
+            {
+              "id": "neuro-assign-5-q1",
+              "type": "diagram",
+              "title": "Retina-to-Visual Cortex",
+              "description": "Include optic nerve, chiasm, LGN, and primary visual cortex labeling.",
+              "points": 50
+            }
+          ]
+        },
+        {
+          "id": "neuro-assign-6",
+          "title": "Motor Control Mini-Report",
+          "description": "Discuss a disorder affecting motor control (e.g. Parkinson’s) and relate it to basal ganglia function.",
+          "dueDate": "2025-11-25",
+          "points": 60,
+          "questions": [
+            {
+              "id": "neuro-assign-6-q1",
+              "type": "essay",
+              "title": "Motor Disorder & Basal Ganglia",
+              "description": "Explain how impairment leads to motor symptoms, referencing at least one lecture.",
+              "points": 60
+            }
+          ]
+        }
+      ],
+      "quizzes": [
+        {
+          "id": "neuro-quiz-5",
+          "title": "Sensory Systems Quiz",
+          "description": "Multiple-choice on visual, auditory, and somatosensory pathways.",
+          "questions": [
+            {
+              "id": "neuro-quiz-5-q1",
+              "type": "multiple-choice",
+              "title": "Which thalamic nucleus relays visual information to the cortex?",
+              "points": 5,
+              "options": [
+                "MGN (Medial Geniculate Nucleus)",
+                "LGN (Lateral Geniculate Nucleus)",
+                "VPN (Ventral Posterior Nucleus)",
+                "Pulvinar"
+              ],
+              "correctAnswer": 1
+            },
+            {
+              "id": "neuro-quiz-5-q2",
+              "type": "true-false",
+              "title": "Auditory information does not pass through any thalamic nucleus before reaching the cortex.",
+              "points": 5,
+              "correctAnswer": 1
+            }
+          ]
+        },
+        {
+          "id": "neuro-quiz-6",
+          "title": "Motor Control Check",
+          "description": "Short quiz on motor cortex, basal ganglia, and cerebellum involvement in movement.",
+          "questions": [
+            {
+              "id": "neuro-quiz-6-q1",
+              "type": "multiple-choice",
+              "title": "Which region is most involved in planning voluntary movements?",
+              "points": 5,
+              "options": [
+                "Occipital lobe",
+                "Primary motor cortex",
+                "Wernicke's area",
+                "Hippocampus"
+              ],
+              "correctAnswer": 1
+            },
+            {
+              "id": "neuro-quiz-6-q2",
+              "type": "short-answer",
+              "title": "Briefly describe the role of the basal ganglia in movement.",
+              "points": 5
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "neuro-module-4",
+      "title": "Higher Cognition, Memory & Advanced Topics",
+      "description": "Focuses on learning, memory formation, advanced cognitive functions, referencing Huberman & MIT course materials.",
+      "credits": 1,
+      "metadata": {
+        "estimatedTime": 300,
+        "difficulty": "intermediate",
+        "prerequisites": [
+          "neuro-module-3"
+        ]
+      },
+      "learningObjectives": [
+        {
+          "id": "neuro-obj-4",
+          "description": "Explain how memory is formed, stored, and retrieved, plus examine advanced cognitive functions (language, executive control)",
+          "assessmentCriteria": [
+            "Differentiate short-term vs. long-term memory systems",
+            "Describe frontal lobe involvement in executive functions"
+          ]
+        }
+      ],
+      "resources": [
+        {
+          "id": "neuro-res-6",
+          "title": "Andrew Huberman Lab: Neural Plasticity & Learning",
+          "type": "video",
+          "content": "Podcasts/lectures discussing how the brain changes in response to learning",
+          "duration": "Multiple (~1 hour each)",
+          "url": "https://www.youtube.com/playlist?list=PLfBne2aWQhY3gq4Sf7S1Zio9QIKmteMtZ",
+          "embedType": "youtube"
+        },
+        {
+          "id": "neuro-res-7",
+          "title": "MIT OCW: Memory and Cognition",
+          "type": "video",
+          "content": "Exploring short-term vs. long-term memory, hippocampal function, consolidation",
+          "duration": "Multiple (~1 hour each)",
+          "url": "https://www.youtube.com/c/mitocw",
+          "embedType": "youtube"
+        }
+      ],
+      "assignments": [
+        {
+          "id": "neuro-assign-7",
+          "title": "Memory Formation Paper",
+          "description": "Write ~1200 words summarizing how LTP supports memory, referencing at least two studies from MIT or Huberman.",
+          "dueDate": "2025-12-05",
+          "points": 80,
+          "questions": [
+            {
+              "id": "neuro-assign-7-q1",
+              "type": "essay",
+              "title": "Mechanisms of Memory",
+              "description": "Focus on hippocampal involvement, consolidation, or neural network changes.",
+              "points": 80
+            }
+          ]
+        },
+        {
+          "id": "neuro-assign-8",
+          "title": "Executive Function Project",
+          "description": "Design a small experiment or observation testing executive control (e.g., a Stroop test). Summarize methodology & results.",
+          "dueDate": "2025-12-15",
+          "points": 90,
+          "questions": [
+            {
+              "id": "neuro-assign-8-q1",
+              "type": "short-answer",
+              "title": "Experimental Setup",
+              "description": "Describe your participants, tasks, and data collection in 200 words.",
+              "points": 40
+            },
+            {
+              "id": "neuro-assign-8-q2",
+              "type": "essay",
+              "title": "Analysis & Brain Regions",
+              "description": "Connect results to frontal cortex or other relevant brain areas from course material.",
+              "points": 50
+            }
+          ]
+        }
+      ],
+      "quizzes": [
+        {
+          "id": "neuro-quiz-7",
+          "title": "Memory Systems Quiz",
+          "description": "Multiple-choice & short-answer on short-term vs. long-term memory, consolidation, and hippocampal function.",
+          "questions": [
+            {
+              "id": "neuro-quiz-7-q1",
+              "type": "multiple-choice",
+              "title": "Which brain structure is critical for forming new long-term memories?",
+              "points": 5,
+              "options": [
+                "Amygdala",
+                "Hippocampus",
+                "Prefrontal cortex",
+                "Cerebellum"
+              ],
+              "correctAnswer": 1
+            },
+            {
+              "id": "neuro-quiz-7-q2",
+              "type": "short-answer",
+              "title": "Define 'memory consolidation' in 1-2 sentences.",
+              "points": 5
+            }
+          ]
+        },
+        {
+          "id": "neuro-quiz-8",
+          "title": "Advanced Cognition & Executive Function Quiz",
+          "description": "Short check on roles of the frontal lobe, language areas, and top-down control processes.",
+          "questions": [
+            {
+              "id": "neuro-quiz-8-q1",
+              "type": "multiple-choice",
+              "title": "Which region is often called the 'executive' of the brain?",
+              "points": 5,
+              "options": [
+                "Occipital cortex",
+                "Prefrontal cortex",
+                "Temporal cortex",
+                "Brainstem"
+              ],
+              "correctAnswer": 1
+            },
+            {
+              "id": "neuro-quiz-8-q2",
+              "type": "true-false",
+              "title": "Language production is typically associated with the temporal lobe.",
+              "points": 5,
+              "correctAnswer": 1
+            }
+          ]
+        }
+      ]
+    }
+  ]
+  
