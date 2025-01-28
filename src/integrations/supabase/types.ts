@@ -227,6 +227,8 @@ export type Database = {
           curriculum_id: string | null
           display_order: number | null
           id: string
+          import_status: string | null
+          import_step: number | null
           is_draft: boolean | null
           module_type: string
           parent_id: string | null
@@ -239,6 +241,8 @@ export type Database = {
           curriculum_id?: string | null
           display_order?: number | null
           id?: string
+          import_status?: string | null
+          import_step?: number | null
           is_draft?: boolean | null
           module_type: string
           parent_id?: string | null
@@ -251,6 +255,8 @@ export type Database = {
           curriculum_id?: string | null
           display_order?: number | null
           id?: string
+          import_status?: string | null
+          import_step?: number | null
           is_draft?: boolean | null
           module_type?: string
           parent_id?: string | null
