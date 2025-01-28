@@ -1,6 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
-import { decryptData } from "@/lib/encryption";
 import type { Curriculum } from "@/types/curriculum";
 import { useToast } from "@/hooks/use-toast";
 
@@ -22,10 +21,7 @@ export const useCurriculum = () => {
 
       if (error) throw error;
 
-      return data.map(curr => ({
-        ...curr,
-        curriculum: JSON.parse(decryptData(curr.curriculum))
-      }));
+      return data;
     },
     staleTime: 5 * 60 * 1000, // Data remains fresh for 5 minutes
     gcTime: 30 * 60 * 1000, // Keep in cache for 30 minutes
