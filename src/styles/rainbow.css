@@ -1,0 +1,56 @@
+@keyframes rainbow-text {
+  0% { color: #ff0000; }
+  16.67% { color: #ff8000; }
+  33.33% { color: #ffff00; }
+  50% { color: #00ff00; }
+  66.67% { color: #0000ff; }
+  83.33% { color: #8000ff; }
+  100% { color: #ff0000; }
+}
+
+@keyframes rainbow-border {
+  0% { border-color: #ff0000; }
+  16.67% { border-color: #ff8000; }
+  33.33% { border-color: #ffff00; }
+  50% { border-color: #00ff00; }
+  66.67% { border-color: #0000ff; }
+  83.33% { border-color: #8000ff; }
+  100% { border-color: #ff0000; }
+}
+
+@keyframes rainbow-bg {
+  0% { background-color: rgba(255, 0, 0, 0.1); }
+  16.67% { background-color: rgba(255, 128, 0, 0.1); }
+  33.33% { background-color: rgba(255, 255, 0, 0.1); }
+  50% { background-color: rgba(0, 255, 0, 0.1); }
+  66.67% { background-color: rgba(0, 0, 255, 0.1); }
+  83.33% { background-color: rgba(128, 0, 255, 0.1); }
+  100% { background-color: rgba(255, 0, 0, 0.1); }
+}
+
+:root[data-theme="rainbow"] {
+  --animation-duration: 10s;
+}
+
+:root[data-theme="rainbow"] * {
+  animation: rainbow-text var(--animation-duration) linear infinite;
+}
+
+:root[data-theme="rainbow"] *[class*="border"] {
+  animation: rainbow-border var(--animation-duration) linear infinite;
+}
+
+:root[data-theme="rainbow"] *[class*="bg-"] {
+  animation: rainbow-bg var(--animation-duration) linear infinite;
+}
+
+:root[data-theme="rainbow"] button,
+:root[data-theme="rainbow"] a {
+  transition: all 0.3s ease;
+}
+
+:root[data-theme="rainbow"] button:hover,
+:root[data-theme="rainbow"] a:hover {
+  filter: brightness(1.2);
+  transform: scale(1.05);
+}
