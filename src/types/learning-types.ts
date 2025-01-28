@@ -1,4 +1,4 @@
-import type { ModuleData } from "./curriculum";
+import type { ModuleData } from '@/types/curriculum';
 
 export interface ModuleListProps {
   curriculumId: string;
