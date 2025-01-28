@@ -17,13 +17,15 @@ import type {
   MultipleChoiceQuestion,
   ModuleMetadata,
   ResourceType,
-  Resource
+  Resource,
+  Assignment,
+  Question
 } from '@/types/curriculum';
 
 interface QuestionViewProps {
   question: Quiz['questions'][0];
-  answer?: string | number | boolean;
-  onAnswerChange: (value: string | number | boolean) => void;
+  answer?: string | number | boolean | number[];
+  onAnswerChange: (value: string | number | boolean | number[]) => void;
   onVerify?: () => void;
 }
 
@@ -132,7 +134,7 @@ const QuestionView = ({ question, answer, onAnswerChange, onVerify }: QuestionVi
 export const JofhSchool = () => {
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const [selectedModule, setSelectedModule] = useState<Module | null>(null);
-  const [answers, setAnswers] = useState<Record<string, string | number | boolean>>({});
+  const [answers, setAnswers] = useState<Record<string, string | number | boolean | number[]>>({});
   const { toast } = useToast();
 
   useEffect(() => {
@@ -228,10 +230,20 @@ export const JofhSchool = () => {
                           })) as Resource[],
                           assignments: module.assignments.map(a => ({
                             ...a,
-                            questions: a.questions.map(q => ({
-                              ...q,
-                              type: q.type as Quiz['questions'][0]['type']
-                            }))
+                            questions: a.questions.map(q => {
+                              const baseQuestion = {
+                                ...q,
+                                type: q.type as Question['type']
+                              };
+                              if (q.type === 'multiple-choice') {
+                                return {
+                                  ...baseQuestion,
+                                  options: q.options || [],
+                                  correctAnswer: q.correctAnswer || 0
+                                };
+                              }
+                              return baseQuestion;
+                            })
                           })) as Assignment[]
                         })}
                       >
