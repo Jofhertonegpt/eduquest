@@ -49,8 +49,7 @@ const jsonPlaceholders = {
     "title": "Course Title",
     "description": "Course Description",
     "credits": 3,
-    "level": "introductory",
-    "modules": ["module-id"]
+    "level": "introductory"
   }
 ]`,
   modules: `[
@@ -58,58 +57,24 @@ const jsonPlaceholders = {
     "id": "module-id",
     "title": "Module Title",
     "description": "Module Description",
-    "credits": 1,
     "metadata": {
       "estimatedTime": 120,
-      "difficulty": "beginner",
-      "prerequisites": [],
-      "tags": ["tag1"],
-      "skills": ["skill1"]
-    },
-    "learningObjectives": [
-      {
-        "id": "obj-1",
-        "description": "Objective Description",
-        "assessmentCriteria": ["Criteria 1"]
-      }
-    ]
+      "difficulty": "beginner"
+    }
   }
 ]`,
   quizzes: `[
   {
     "id": "quiz-id",
     "title": "Quiz Title",
-    "description": "Quiz Description",
-    "questions": [
-      {
-        "id": "q1",
-        "type": "multiple-choice",
-        "title": "Question Title",
-        "description": "Question Description",
-        "points": 5,
-        "options": ["Option 1", "Option 2"],
-        "correctAnswer": 0
-      }
-    ]
+    "description": "Quiz Description"
   }
 ]`,
   assignments: `[
   {
     "id": "assignment-id",
     "title": "Assignment Title",
-    "description": "Assignment Description",
-    "dueDate": "2024-12-31",
-    "points": 100,
-    "questions": [
-      {
-        "id": "q1",
-        "type": "coding",
-        "title": "Question Title",
-        "description": "Question Description",
-        "points": 50,
-        "initialCode": "// Your code here"
-      }
-    ]
+    "description": "Assignment Description"
   }
 ]`,
   resources: `[
@@ -117,13 +82,12 @@ const jsonPlaceholders = {
     "id": "resource-id",
     "title": "Resource Title",
     "type": "video",
-    "content": "Resource Content",
-    "duration": "30 minutes",
-    "url": "https://example.com/resource",
-    "embedType": "youtube"
+    "content": "Resource Content"
   }
 ]`
 };
+
+// ... keep existing code (useState, useEffect, and other functions remain unchanged)
 
 export function CurriculumImport() {
   const [isLoading, setIsLoading] = useState(false);
@@ -158,38 +122,6 @@ export function CurriculumImport() {
     }));
   };
 
-  const mergeCurriculumData = () => {
-    try {
-      const curriculumData = jsonInputs.curriculum ? JSON.parse(jsonInputs.curriculum) : {};
-      const coursesData = jsonInputs.courses ? JSON.parse(jsonInputs.courses) : [];
-      const modulesData = jsonInputs.modules ? JSON.parse(jsonInputs.modules) : [];
-      const quizzesData = jsonInputs.quizzes ? JSON.parse(jsonInputs.quizzes) : [];
-      const assignmentsData = jsonInputs.assignments ? JSON.parse(jsonInputs.assignments) : [];
-      const resourcesData = jsonInputs.resources ? JSON.parse(jsonInputs.resources) : [];
-
-      console.log("Merged curriculum data:", {
-        ...curriculumData,
-        courses: coursesData,
-        modules: modulesData,
-        quizzes: quizzesData,
-        assignments: assignmentsData,
-        resources: resourcesData,
-      });
-
-      return {
-        ...curriculumData,
-        courses: coursesData,
-        modules: modulesData,
-        quizzes: quizzesData,
-        assignments: assignmentsData,
-        resources: resourcesData,
-      };
-    } catch (error) {
-      console.error("Error merging curriculum data:", error);
-      throw new Error("Invalid JSON format in one or more inputs");
-    }
-  };
-
   const handleImport = async (useDefault?: boolean) => {
     try {
       if (!isAuthenticated) {
@@ -214,19 +146,23 @@ export function CurriculumImport() {
           assignments: defaultAssignments,
           resources: defaultResources,
         };
-        console.log("Using default curriculum:", dataToImport);
       } else {
-        dataToImport = mergeCurriculumData();
+        dataToImport = {
+          ...JSON.parse(jsonInputs.curriculum || "{}"),
+          courses: JSON.parse(jsonInputs.courses || "[]"),
+          modules: JSON.parse(jsonInputs.modules || "[]"),
+          quizzes: JSON.parse(jsonInputs.quizzes || "[]"),
+          assignments: JSON.parse(jsonInputs.assignments || "[]"),
+          resources: JSON.parse(jsonInputs.resources || "[]"),
+        };
       }
 
       const validatedCurriculum = validateAndTransformCurriculum(dataToImport);
-      console.log("Validated curriculum:", validatedCurriculum);
 
       const { data: { user } } = await supabase.auth.getUser();
       
       if (!user) throw new Error("Not authenticated");
 
-      // Convert the curriculum to a plain object that matches the Json type
       const curriculumJson = JSON.parse(JSON.stringify(validatedCurriculum)) as Json;
 
       const { data, error } = await supabase
@@ -239,12 +175,7 @@ export function CurriculumImport() {
         .select()
         .single();
 
-      if (error) {
-        console.error("Supabase error:", error);
-        throw error;
-      }
-
-      console.log("Imported curriculum data:", data);
+      if (error) throw error;
 
       toast({
         title: "Success",
@@ -275,7 +206,7 @@ export function CurriculumImport() {
         <Alert className="mb-4">
           <Info className="h-4 w-4" />
           <AlertDescription>
-            Each tab below contains a template for the required JSON structure. You can modify these templates or paste your own JSON data.
+            Each tab contains a minimal template with required fields. Additional fields can be added as needed.
           </AlertDescription>
         </Alert>
 
