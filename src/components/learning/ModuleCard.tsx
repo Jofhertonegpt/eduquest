@@ -3,7 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Clock, Tag, BookOpen, FileText, CheckCircle, AlertCircle } from "lucide-react";
 import type { Module } from "@/types/curriculum";
 import { cn } from "@/lib/utils";
-import { ErrorBoundary } from "@/components/ErrorBoundary";
+import ErrorBoundary from "@/components/ErrorBoundary";
 
 interface ModuleCardProps {
   module: Module;
