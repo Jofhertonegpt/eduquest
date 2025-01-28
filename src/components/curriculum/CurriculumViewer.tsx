@@ -1,12 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useDegrees, useCourses, useModules } from '@/hooks/useCurriculum';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
-import type { Degree, Course, CourseModule } from '@/types/curriculum';
-import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
+import type { Degree, Course, CourseModule } from '@/types/curriculum-types';
 
 interface CurriculumViewerProps {
   programId: string;
@@ -16,92 +14,10 @@ export function CurriculumViewer({ programId }: CurriculumViewerProps) {
   const [selectedDegree, setSelectedDegree] = useState<Degree | null>(null);
   const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
   const [selectedModule, setSelectedModule] = useState<CourseModule | null>(null);
-  const { toast } = useToast();
 
   const { data: degrees, isLoading: loadingDegrees } = useDegrees(programId);
   const { data: courses, isLoading: loadingCourses } = useCourses(selectedDegree?.id);
   const { data: modules, isLoading: loadingModules } = useModules(selectedCourse?.id);
-
-  const handleDegreeSelect = (degree: Degree) => {
-    setSelectedDegree({
-      ...degree,
-      courses: [],
-      metadata: degree.metadata || {
-        academicYear: '',
-        deliveryFormat: '',
-        department: ''
-      }
-    });
-  };
-
-  const handleCourseSelect = (course: Course) => {
-    setSelectedCourse({
-      ...course,
-      modules: [],
-      metadata: course.metadata || {
-        instructor: '',
-        meetingTimes: '',
-        tags: [],
-        skills: []
-      }
-    });
-  };
-
-  useEffect(() => {
-    const initializeModules = async () => {
-      try {
-        const { data: existingModules, error: checkError } = await supabase
-          .from('curriculum_modules')
-          .select('*')
-          .eq('curriculum_id', programId)
-          .eq('module_type', 'module');
-
-        if (checkError) throw checkError;
-
-        if (!existingModules || existingModules.length === 0) {
-          console.log('No modules found, initializing from defaults');
-          
-          const defaultModules = await import('@/data/curriculum/New defaults/modules.json');
-          
-          const { error: insertError } = await supabase
-            .from('curriculum_modules')
-            .insert(defaultModules.default.map((module: any, index: number) => ({
-              curriculum_id: programId,
-              module_type: 'module',
-              module_data: module,
-              module_status: 'active',
-              display_order: index,
-              content: module
-            })));
-
-          if (insertError) {
-            console.error('Error inserting modules:', insertError);
-            toast({
-              title: "Error initializing modules",
-              description: "There was an error loading the curriculum modules.",
-              variant: "destructive"
-            });
-          } else {
-            toast({
-              title: "Modules initialized",
-              description: "Curriculum modules have been loaded successfully."
-            });
-          }
-        }
-      } catch (error) {
-        console.error('Error in initializeModules:', error);
-        toast({
-          title: "Error",
-          description: "Failed to initialize curriculum modules.",
-          variant: "destructive"
-        });
-      }
-    };
-
-    if (programId) {
-      initializeModules();
-    }
-  }, [programId, toast]);
 
   return (
     <Tabs defaultValue="degrees" className="w-full">
@@ -120,13 +36,13 @@ export function CurriculumViewer({ programId }: CurriculumViewerProps) {
                 <Card
                   key={degree.id}
                   className="p-4 hover:bg-accent cursor-pointer transition-colors"
-                  onClick={() => handleDegreeSelect(degree)}
+                  onClick={() => setSelectedDegree(degree)}
                 >
                   <h3 className="text-lg font-semibold">{degree.title}</h3>
                   <p className="text-sm text-muted-foreground mb-2">{degree.description}</p>
                   <div className="flex items-center justify-between mt-4">
                     <span className="text-sm">Credits: {degree.requiredCredits}</span>
-                    <Button variant="outline" onClick={() => handleDegreeSelect(degree)}>
+                    <Button variant="outline" onClick={() => setSelectedDegree(degree)}>
                       View Courses
                     </Button>
                   </div>
@@ -143,13 +59,13 @@ export function CurriculumViewer({ programId }: CurriculumViewerProps) {
                 <Card
                   key={course.id}
                   className="p-4 hover:bg-accent cursor-pointer transition-colors"
-                  onClick={() => handleCourseSelect(course)}
+                  onClick={() => setSelectedCourse(course)}
                 >
                   <h3 className="text-lg font-semibold">{course.title}</h3>
                   <p className="text-sm text-muted-foreground mb-2">{course.description}</p>
                   <div className="flex items-center justify-between mt-4">
                     <span className="text-sm">Credits: {course.credits}</span>
-                    <Button variant="outline" onClick={() => handleCourseSelect(course)}>
+                    <Button variant="outline" onClick={() => setSelectedCourse(course)}>
                       View Modules
                     </Button>
                   </div>
@@ -166,14 +82,14 @@ export function CurriculumViewer({ programId }: CurriculumViewerProps) {
                 <Card
                   key={module.id}
                   className="p-4 hover:bg-accent cursor-pointer transition-colors"
-                  onClick={() => setSelectedModule(module as CourseModule)}
+                  onClick={() => setSelectedModule(module)}
                 >
                   <h3 className="text-lg font-semibold">{module.title}</h3>
                   <p className="text-sm text-muted-foreground mb-2">{module.description}</p>
                   <div className="mt-4">
                     <h4 className="font-medium mb-2">Learning Objectives:</h4>
                     <ul className="list-disc list-inside text-sm text-muted-foreground">
-                      {module.learningObjectives?.map((objective) => (
+                      {module.learningObjectives.map((objective) => (
                         <li key={objective.id}>{objective.description}</li>
                       ))}
                     </ul>

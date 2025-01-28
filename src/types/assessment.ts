@@ -41,7 +41,7 @@ export interface Assessment {
   description: string;
   difficultyLevel: DifficultyLevel;
   points: number;
-  timeLimit?: number;
+  timeLimit?: number; // in minutes
   rubric?: Rubric;
   codingExercise?: CodingExercise;
   peerReviewRequired?: boolean;

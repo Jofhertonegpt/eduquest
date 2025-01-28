@@ -1,5 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { validateAndTransformCurriculum } from "@/lib/curriculumValidation";
@@ -7,12 +10,16 @@ import { supabase } from "@/lib/supabase";
 import defaultProgram from "@/data/curriculum/New defaults/program.json";
 import defaultCourses from "@/data/curriculum/New defaults/courses.json";
 import { CurriculumFormatInfo } from "@/components/learning/CurriculumFormatInfo";
+import type { Json } from "@/lib/database.types";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Info } from "lucide-react";
-import { ImportStepContent } from "./curriculum/ImportStepContent";
-import { ImportStepNavigation } from "./curriculum/ImportStepNavigation";
-import { ImportProgress } from "./curriculum/ImportProgress";
-import type { JsonInputs } from "@/types/curriculum";
+import { Info, ArrowLeft, ArrowRight } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
+
+interface JsonInputs {
+  curriculum: string;
+  courses: string;
+  modules: string;
+}
 
 const jsonPlaceholders = {
   curriculum: `{
@@ -115,11 +122,13 @@ export function CurriculumImport() {
       
       if (!user) throw new Error("Not authenticated");
 
+      const curriculumJson = JSON.parse(JSON.stringify(validatedCurriculum)) as Json;
+
       const { data, error } = await supabase
         .from("imported_curricula")
         .insert({
           user_id: user.id,
-          curriculum: validatedCurriculum,
+          curriculum: curriculumJson,
           created_at: new Date().toISOString(),
         })
         .select()
@@ -157,6 +166,50 @@ export function CurriculumImport() {
     }
   };
 
+  const renderStepContent = () => {
+    switch (currentStep) {
+      case 1:
+        return (
+          <div className="space-y-4">
+            <Label htmlFor="curriculum-json">Program Structure</Label>
+            <Textarea
+              id="curriculum-json"
+              placeholder={jsonPlaceholders.curriculum}
+              value={jsonInputs.curriculum}
+              onChange={(e) => handleInputChange("curriculum", e.target.value)}
+              className="min-h-[300px] font-mono"
+            />
+          </div>
+        );
+      case 2:
+        return (
+          <div className="space-y-4">
+            <Label htmlFor="courses-json">Course Definitions</Label>
+            <Textarea
+              id="courses-json"
+              placeholder={jsonPlaceholders.courses}
+              value={jsonInputs.courses}
+              onChange={(e) => handleInputChange("courses", e.target.value)}
+              className="min-h-[300px] font-mono"
+            />
+          </div>
+        );
+      case 3:
+        return (
+          <div className="space-y-4">
+            <Label htmlFor="modules-json">Module Details</Label>
+            <Textarea
+              id="modules-json"
+              placeholder={jsonPlaceholders.modules}
+              value={jsonInputs.modules}
+              onChange={(e) => handleInputChange("modules", e.target.value)}
+              className="min-h-[300px] font-mono"
+            />
+          </div>
+        );
+    }
+  };
+
   return (
     <Card className="p-6">
       <div className="space-y-6">
@@ -173,23 +226,53 @@ export function CurriculumImport() {
         </Alert>
 
         <div className="space-y-6">
-          <ImportProgress currentStep={currentStep} totalSteps={3} />
+          <div className="space-y-2">
+            <div className="flex justify-between text-sm text-muted-foreground">
+              <span>Step {currentStep} of 3</span>
+              <span>{Math.round((currentStep / 3) * 100)}%</span>
+            </div>
+            <Progress value={(currentStep / 3) * 100} className="h-2" />
+          </div>
 
-          <ImportStepContent
-            currentStep={currentStep}
-            jsonInputs={jsonInputs}
-            jsonPlaceholders={jsonPlaceholders}
-            onInputChange={handleInputChange}
-          />
+          {renderStepContent()}
 
-          <ImportStepNavigation
-            currentStep={currentStep}
-            isLoading={isLoading}
-            hasRequiredInput={!!jsonInputs.curriculum}
-            onPrevious={prevStep}
-            onNext={nextStep}
-            onImport={handleImport}
-          />
+          <div className="flex justify-between pt-4">
+            <Button
+              onClick={prevStep}
+              disabled={currentStep === 1}
+              variant="outline"
+              className="flex items-center gap-2"
+            >
+              <ArrowLeft className="h-4 w-4" /> Previous
+            </Button>
+
+            <div className="flex gap-2">
+              <Button
+                onClick={() => handleImport(true)}
+                variant="secondary"
+                disabled={isLoading}
+              >
+                Use Default
+              </Button>
+
+              {currentStep === 3 ? (
+                <Button
+                  onClick={() => handleImport()}
+                  disabled={isLoading || !jsonInputs.curriculum}
+                  className="flex items-center gap-2"
+                >
+                  {isLoading ? "Importing..." : "Import Curriculum"}
+                </Button>
+              ) : (
+                <Button
+                  onClick={nextStep}
+                  className="flex items-center gap-2"
+                >
+                  Next <ArrowRight className="h-4 w-4" />
+                </Button>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </Card>

@@ -4,7 +4,7 @@ export interface CurriculumModule {
   id: string;
   curriculum_id: string;
   module_type: ModuleType;
-  content: any;
+  content: any; // Using any for now as content structure varies by type
   created_at: string;
   updated_at: string;
 }

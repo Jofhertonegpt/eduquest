@@ -230,8 +230,6 @@ export type Database = {
           import_status: string | null
           import_step: number | null
           is_draft: boolean | null
-          module_data: Json
-          module_status: string
           module_type: string
           parent_id: string | null
           updated_at: string | null
@@ -246,8 +244,6 @@ export type Database = {
           import_status?: string | null
           import_step?: number | null
           is_draft?: boolean | null
-          module_data?: Json
-          module_status?: string
           module_type: string
           parent_id?: string | null
           updated_at?: string | null
@@ -262,8 +258,6 @@ export type Database = {
           import_status?: string | null
           import_step?: number | null
           is_draft?: boolean | null
-          module_data?: Json
-          module_status?: string
           module_type?: string
           parent_id?: string | null
           updated_at?: string | null

@@ -2,11 +2,11 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { ChevronRight, ChevronDown, BookOpen, FileText, CheckCircle } from "lucide-react";
 import { useCurriculumQueries } from "@/hooks/useCurriculumQueries";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ModuleCard } from "@/components/learning/ModuleCard";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import type { ModuleListProps } from "@/types/learning-types";
-import type { ModuleData } from "@/types/curriculum";
 
 const ModuleListSkeleton = () => (
   <div className="space-y-4">
@@ -23,8 +23,8 @@ const ModuleListSkeleton = () => (
   </div>
 );
 
-export const ModuleList = ({ curriculumId, modules, onModuleSelect }: ModuleListProps) => {
-  const { modulesLoading, modulesError } = useCurriculumQueries(curriculumId);
+export const ModuleList = ({ curriculumId, onModuleSelect }: ModuleListProps) => {
+  const { modules, modulesLoading, modulesError } = useCurriculumQueries(curriculumId);
   const [expandedCourses, setExpandedCourses] = useState<string[]>([]);
 
   if (modulesLoading) {
@@ -55,16 +55,15 @@ export const ModuleList = ({ curriculumId, modules, onModuleSelect }: ModuleList
     );
   };
 
-  // Group modules by course using module_data
+  // Group modules by course
   const courseGroups = modules.reduce((acc, module) => {
-    const moduleData = module as ModuleData;
-    const courseId = moduleData?.courseId || 'uncategorized';
+    const courseId = module.content.courseId || 'uncategorized';
     if (!acc[courseId]) {
       acc[courseId] = [];
     }
-    acc[courseId].push(moduleData);
+    acc[courseId].push(module);
     return acc;
-  }, {} as Record<string, ModuleData[]>);
+  }, {} as Record<string, typeof modules>);
 
   const getModuleTypeIcon = (type?: string) => {
     switch (type) {
@@ -104,12 +103,12 @@ export const ModuleList = ({ curriculumId, modules, onModuleSelect }: ModuleList
             <CollapsibleContent className="pl-6 mt-2 space-y-2">
               {courseModules.map((module) => (
                 <div
-                  key={module.id}
+                  key={module.content.id}
                   className="flex items-center gap-2 p-2 hover:bg-accent rounded-lg cursor-pointer"
-                  onClick={() => onModuleSelect(module)}
+                  onClick={() => onModuleSelect(module.content)}
                 >
-                  {getModuleTypeIcon(module.type)}
-                  <span>{module.title}</span>
+                  {getModuleTypeIcon(module.content.type)}
+                  <span>{module.content.title}</span>
                 </div>
               ))}
             </CollapsibleContent>
