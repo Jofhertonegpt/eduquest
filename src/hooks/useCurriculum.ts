@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import type { Degree, Course, CourseModule, Module, ModuleData } from '@/types/curriculum';
+import type { Degree, Course, CourseModule, Module, ModuleData, CourseLevel } from '@/types/curriculum';
 
 export function usePrograms() {
   return useQuery({
@@ -122,4 +122,3 @@ export function useModules(curriculumId: string | undefined) {
     },
     enabled: !!curriculumId
   });
-}

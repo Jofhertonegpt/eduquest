@@ -12,12 +12,7 @@ import { Info } from "lucide-react";
 import { ImportStepContent } from "./curriculum/ImportStepContent";
 import { ImportStepNavigation } from "./curriculum/ImportStepNavigation";
 import { ImportProgress } from "./curriculum/ImportProgress";
-
-interface JsonInputs {
-  curriculum: string;
-  courses: string;
-  modules: string;
-}
+import type { JsonInputs } from "@/types/curriculum";
 
 const jsonPlaceholders = {
   curriculum: `{
