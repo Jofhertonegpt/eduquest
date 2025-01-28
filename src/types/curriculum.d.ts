@@ -9,19 +9,34 @@ export interface JsonInputs {
   modules: string;
 }
 
+export interface ModuleMetadata {
+  estimatedTime: number;
+  difficulty: DifficultyLevel;
+  prerequisites: string[];
+  tags: string[];
+  skills: string[];
+}
+
+export interface CourseMetadata {
+  instructor: string;
+  meetingTimes: string;
+  tags: string[];
+  skills: string[];
+}
+
+export interface DegreeMetadata {
+  academicYear: string;
+  deliveryFormat: string;
+  department: string;
+}
+
 export interface ModuleData {
   id: string;
   title: string;
   description: string;
   type?: 'resource' | 'assignment' | 'quiz';
   courseId?: string;
-  metadata?: {
-    estimatedTime: number;
-    difficulty: DifficultyLevel;
-    prerequisites: string[];
-    tags: string[];
-    skills: string[];
-  };
+  metadata?: ModuleMetadata;
   learningObjectives?: {
     id: string;
     description: string;
@@ -35,11 +50,7 @@ export interface CourseModule {
   title: string;
   description: string;
   credits: number;
-  metadata: {
-    estimatedTime: number;
-    difficulty: DifficultyLevel;
-    prerequisites: string[];
-  };
+  metadata: ModuleMetadata;
   learningObjectives: {
     id: string;
     description: string;
@@ -66,12 +77,7 @@ export interface Course {
   description: string;
   credits: number;
   level: CourseLevel;
-  metadata: {
-    instructor: string;
-    meetingTimes: string;
-    tags: string[];
-    skills: string[];
-  };
+  metadata: CourseMetadata;
   modules: Module[];
 }
 
@@ -81,11 +87,7 @@ export interface Degree {
   type: DegreeType;
   description: string;
   requiredCredits: number;
-  metadata: {
-    academicYear: string;
-    deliveryFormat: string;
-    department: string;
-  };
+  metadata: DegreeMetadata;
   courses: Course[];
 }
 
